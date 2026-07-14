@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://haifarmer.com/sitemap.xml
+
+# Disallow admin routes
+Disallow: /admin/
+Disallow: /admin-login
+
+# Disallow farmer portal from search engines
+Disallow: /farmers/
