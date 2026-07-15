@@ -1,5 +1,6 @@
 import express from 'express'
 import cors from 'cors'
+import { connectDB } from './lib/db.js'
 
 import authRoutes from './routes/auth.js'
 import productRoutes from './routes/products.js'
@@ -29,6 +30,16 @@ app.use(cors({
   credentials: true,
 }))
 app.use(express.json({ limit: '10mb' }))
+
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error('DB connection failed:', err);
+    res.status(503).json({ error: 'Database unavailable' });
+  }
+});
 
 app.use('/api/auth', authRoutes)
 app.use('/api/products', productRoutes)

@@ -5,6 +5,7 @@ import { useSiteSettings } from '../contexts/SiteSettingsContext'
 import ProductCard from '../components/ProductCard'
 import BundleCard from '../components/BundleCard'
 import { getImageUrl } from '../lib/utils'
+import { cloudinaryUrl } from '../lib/cloudinary'
 import { CartIcon } from '../components/Icons'
 
 const PLACEHOLDER_SVG = '/placeholder.jpg'
@@ -186,11 +187,13 @@ export default function Home() {
                 return (
                   <img
                     key={`main-banner-${idx}`}
-                    src={url}
+                    src={cloudinaryUrl(url, { width: 1600 })}
                     alt={`Main offer banner ${idx + 1}`}
                     loading={idx === 0 ? 'eager' : 'lazy'}
                     fetchPriority={idx === 0 ? 'high' : 'auto'}
                     onClick={() => handleBannerClick(bannerKey)}
+                    width={1600}
+                    height={330}
                     className={`h-48 w-full flex-shrink-0 object-cover sm:h-64 lg:h-[330px]${hasLink ? ' cursor-pointer hover:opacity-90' : ''}`}
                     style={{ width: `${100 / allBanners.length}%` }}
                   />
@@ -202,20 +205,24 @@ export default function Home() {
           <div className="grid grid-cols-2 gap-3 md:grid-cols-1">
             <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
               <img
-                src={sideBanners.middleTop}
+                src={cloudinaryUrl(sideBanners.middleTop, { width: 800 })}
                 alt="Top side offer banner"
                 loading="eager"
                 fetchPriority="high"
+                width={800}
+                height={159}
                 onClick={() => handleBannerClick('home_middle_top_banner')}
                 className={`w-full object-contain sm:h-[158px] sm:object-cover lg:h-[159px] ${bannerLinksMap.home_middle_top_banner ? 'cursor-pointer hover:opacity-90' : ''}`}
               />
             </div>
             <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
               <img
-                src={sideBanners.middleBottom}
+                src={cloudinaryUrl(sideBanners.middleBottom, { width: 800 })}
                 alt="Bottom side offer banner"
                 loading="eager"
                 fetchPriority="high"
+                width={800}
+                height={159}
                 onClick={() => handleBannerClick('home_middle_bottom_banner')}
                 className={`w-full object-contain sm:h-[158px] sm:object-cover lg:h-[159px] ${bannerLinksMap.home_middle_bottom_banner ? 'cursor-pointer hover:opacity-90' : ''}`}
               />
@@ -224,10 +231,12 @@ export default function Home() {
 
           <div className="hidden overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm lg:block">
             <img
-              src={sideBanners.rightStory}
+              src={cloudinaryUrl(sideBanners.rightStory, { width: 800 })}
               alt="Farmer story banner"
               loading="eager"
               fetchPriority="high"
+              width={800}
+              height={330}
               onClick={() => handleBannerClick('home_right_story_banner')}
               className={`h-48 w-full object-cover sm:h-64 lg:h-[330px] ${bannerLinksMap.home_right_story_banner ? 'cursor-pointer hover:opacity-90' : ''}`}
             />
@@ -270,8 +279,11 @@ export default function Home() {
           {adBanners.left && (
             <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
               <img
-                src={adBanners.left}
+                src={cloudinaryUrl(adBanners.left, { width: 800 })}
                 alt="Advertisement banner for dry fruits"
+                width={800}
+                height={250}
+                loading="lazy"
                 onClick={() => handleBannerClick('ad_banner_left')}
                 className={`aspect-[16/5] w-full object-cover ${bannerLinksMap.ad_banner_left ? 'cursor-pointer hover:opacity-90' : ''}`}
               />
@@ -280,8 +292,11 @@ export default function Home() {
           {adBanners.right && (
             <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
               <img
-                src={adBanners.right}
+                src={cloudinaryUrl(adBanners.right, { width: 800 })}
                 alt="Advertisement banner for spices and masalas"
+                width={800}
+                height={250}
+                loading="lazy"
                 onClick={() => handleBannerClick('ad_banner_right')}
                 className={`aspect-[16/5] w-full object-cover ${bannerLinksMap.ad_banner_right ? 'cursor-pointer hover:opacity-90' : ''}`}
               />
