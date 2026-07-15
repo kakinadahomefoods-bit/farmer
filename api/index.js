@@ -12,15 +12,15 @@ async function connectDB() {
       socketTimeoutMS: 45000,
     }).then(m => m)
   }
-  cached.conn = await cached.promise
+  try {
+    cached.conn = await cached.promise
+  } catch (err) {
+    cached.promise = null
+    console.error('MongoDB connection failed:', err.message)
+  }
   return cached.conn
 }
 
-export default async function handler(req, res) {
-  try {
-    await connectDB()
-  } catch (err) {
-    console.error('MongoDB connection failed:', err.message)
-  }
-  return app(req, res)
-}
+connectDB()
+
+export default app
