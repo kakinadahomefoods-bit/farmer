@@ -1,5 +1,5 @@
 import 'dotenv/config'
-import connectDB from './config/db.js'
+import { connectDB } from './lib/mongoose.js'
 import User from './models/User.js'
 import SiteSetting from './models/SiteSetting.js'
 
