@@ -1,10 +1,16 @@
 {
-  "services": {
-    "frontend": { "root": "frontend", "framework": "vite" },
-    "backend": { "root": "backend", "entrypoint": "server.js" }
+  "functions": {
+    "api/index.js": {
+      "memory": 256,
+      "maxDuration": 30,
+      "includeFiles": "backend/**"
+    }
   },
+  "installCommand": "npm --prefix backend install",
+  "buildCommand": "cd frontend && npm ci && npm run build",
+  "outputDirectory": "frontend/dist",
   "rewrites": [
-    { "source": "/api(/.*)?", "destination": { "type": "service", "service": "backend" } },
-    { "source": "/(.*)", "destination": { "type": "service", "service": "frontend" } }
+    { "source": "/api/(.*)", "destination": "/api/index" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
