@@ -2,20 +2,18 @@ import mongoose from 'mongoose'
 import app from '../backend/app.js'
 
 let cached = global._mongooseCache
-if (!cached) cached = global._mongooseCache = { conn: null, promise: null }
+if (!cached) cached = global._mongooseCache = { conn: null }
 
 async function connectDB() {
   if (cached.conn) return cached.conn
-  if (!cached.promise) {
-    cached.promise = mongoose.connect(process.env.MONGODB_URI, {
-      serverSelectionTimeoutMS: 15000,
-      socketTimeoutMS: 45000,
-    }).then(m => m)
-  }
   try {
-    cached.conn = await cached.promise
+    cached.conn = await mongoose.connect(process.env.MONGODB_URI, {
+      serverSelectionTimeoutMS: 10000,
+      bufferCommands: false,
+    })
+    console.log('MongoDB connected')
   } catch (err) {
-    cached.promise = null
+    cached.conn = null
     console.error('MongoDB connection failed:', err.message)
   }
   return cached.conn
@@ -23,4 +21,15 @@ async function connectDB() {
 
 connectDB()
 
-export default app
+export default async function handler(req, res) {
+  if (!cached.conn) {
+    try {
+      await connectDB()
+    } catch {}
+    if (!cached.conn) {
+      res.status(503).json({ error: 'Database not connected. Check MONGODB_URI env var and Atlas IP whitelist.' })
+      return
+    }
+  }
+  app(req, res)
+}
