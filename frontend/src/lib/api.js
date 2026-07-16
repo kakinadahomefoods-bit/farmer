@@ -70,6 +70,7 @@ export const api = {
   deleteProduct: (id) => request(`/products/${id}`, { method: 'DELETE' }),
   toggleProductActive: (id) => request(`/products/${id}/toggle-active`, { method: 'PATCH' }),
   toggleProductFeatured: (id) => request(`/products/${id}/toggle-featured`, { method: 'PATCH' }),
+  reorderProducts: (orders) => request('/products/reorder', { method: 'PATCH', body: JSON.stringify({ orders }) }),
 
   // Categories
   getCategories: () => request('/categories'),
@@ -96,7 +97,7 @@ export const api = {
   updateCoupon: (id, data) => request(`/coupons/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   deleteCoupon: (id) => request(`/coupons/${id}`, { method: 'DELETE' }),
   toggleCouponActive: (id) => request(`/coupons/${id}/toggle-active`, { method: 'PATCH' }),
-  validateCoupon: (code, cartValue) => request('/coupons/validate', { method: 'POST', body: JSON.stringify({ code, cartValue }) }),
+  validateCoupon: (code, cartValue, cartItems) => request('/coupons/validate', { method: 'POST', body: JSON.stringify({ code, cartValue, cartItems }) }),
 
   // Banners
   getBanners: (params = {}) => request(`/banners?${new URLSearchParams(params)}`),

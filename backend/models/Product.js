@@ -28,6 +28,7 @@ const productSchema = new mongoose.Schema({
   isActive: { type: Boolean, default: true },
   isFeatured: { type: Boolean, default: false },
   isNewArrival: { type: Boolean, default: false },
+  displayOrder: { type: Number, default: 0 },
   seo: {
     metaTitle: String,
     metaDescription: String,

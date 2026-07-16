@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
     if (active === 'true' || !active) query.isActive = true
     if (active === 'all') delete query.isActive
 
-    let sortObj = { createdAt: -1 }
+    let sortObj = { displayOrder: 1, createdAt: -1 }
     if (sort === 'price') sortObj = { basePrice: 1 }
     else if (sort === 'price_desc') sortObj = { basePrice: -1 }
     else if (sort === 'name') sortObj = { name: 1 }
@@ -121,6 +121,20 @@ router.patch('/:id/toggle-featured', protect, adminOnly, async (req, res) => {
     product.isFeatured = !product.isFeatured
     await product.save()
     res.json(product)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
+router.patch('/reorder', protect, adminOnly, async (req, res) => {
+  try {
+    const { orders } = req.body
+    if (!Array.isArray(orders)) return res.status(400).json({ error: 'orders must be an array' })
+    const ops = orders.map(({ id, displayOrder }) =>
+      Product.updateOne({ _id: id }, { $set: { displayOrder: Number(displayOrder) } })
+    )
+    await Promise.all(ops)
+    res.json({ message: 'Products reordered' })
   } catch (err) {
     res.status(500).json({ error: err.message })
   }

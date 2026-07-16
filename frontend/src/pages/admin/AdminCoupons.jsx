@@ -2,10 +2,14 @@ import { useState, useEffect } from 'react'
 import { api } from '../../lib/api'
 import { toast } from 'react-toastify'
 
+const typeLabels = { universal: 'Grocery + Combo', grocery: 'Grocery Only', combo: 'Combo Only' }
+const typeColors = { universal: 'bg-blue-100 text-blue-700', grocery: 'bg-green-100 text-green-700', combo: 'bg-purple-100 text-purple-700' }
+
 export default function AdminCoupons() {
   const [coupons, setCoupons] = useState([])
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState(null)
+  const [typeFilter, setTypeFilter] = useState('')
   const [form, setForm] = useState({
     code: '', type: 'universal', discountType: 'percentage', discountValue: '',
     maxDiscount: '', minPurchase: 0, maxUses: 0, expiryDate: '', isActive: true, oneUsePerUser: false,
@@ -57,6 +61,8 @@ export default function AdminCoupons() {
     catch (err) { toast.error(err.message) }
   }
 
+  const filtered = typeFilter ? coupons.filter(c => c.type === typeFilter) : coupons
+
   if (loading) return <div className="flex min-h-screen items-center justify-center"><div className="h-10 w-10 animate-spin rounded-full border-4 border-brand-600 border-t-transparent" /></div>
 
   return (
@@ -69,17 +75,31 @@ export default function AdminCoupons() {
             <h2 className="text-lg font-bold text-slate-900 mb-4">{editing ? 'Edit Coupon' : 'Add Coupon'}</h2>
             <form onSubmit={handleSubmit} className="space-y-3">
               <input value={form.code} onChange={e => setForm(prev => ({ ...prev, code: e.target.value.toUpperCase() }))} placeholder="Coupon Code *" required className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-brand-500 uppercase" />
-              <select value={form.type} onChange={e => setForm(prev => ({ ...prev, type: e.target.value }))} className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-brand-500">
-                <option value="universal">Universal</option><option value="grocery">Grocery</option><option value="combo">Combo</option>
-              </select>
-              <select value={form.discountType} onChange={e => setForm(prev => ({ ...prev, discountType: e.target.value }))} className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-brand-500">
-                <option value="percentage">Percentage</option><option value="flat">Flat</option>
-              </select>
+              <div>
+                <label className="text-xs font-medium text-slate-500 mb-1 block">Applies To</label>
+                <select value={form.type} onChange={e => setForm(prev => ({ ...prev, type: e.target.value }))} className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-brand-500">
+                  <option value="universal">Both Grocery + Combo</option>
+                  <option value="grocery">Grocery Products Only</option>
+                  <option value="combo">Combo Products Only</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-slate-500 mb-1 block">Discount Type</label>
+                <select value={form.discountType} onChange={e => setForm(prev => ({ ...prev, discountType: e.target.value }))} className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-brand-500">
+                  <option value="percentage">Percentage (%)</option>
+                  <option value="flat">Flat Amount (₹)</option>
+                </select>
+              </div>
               <input type="number" value={form.discountValue} onChange={e => setForm(prev => ({ ...prev, discountValue: e.target.value }))} placeholder="Discount Value *" required className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-brand-500" />
-              <input type="number" value={form.maxDiscount} onChange={e => setForm(prev => ({ ...prev, maxDiscount: e.target.value }))} placeholder="Max Discount (for %)" className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-brand-500" />
-              <input type="number" value={form.minPurchase} onChange={e => setForm(prev => ({ ...prev, minPurchase: e.target.value }))} placeholder="Min Purchase" className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-brand-500" />
+              {form.discountType === 'percentage' && (
+                <input type="number" value={form.maxDiscount} onChange={e => setForm(prev => ({ ...prev, maxDiscount: e.target.value }))} placeholder="Max Discount ₹ (optional)" className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-brand-500" />
+              )}
+              <input type="number" value={form.minPurchase} onChange={e => setForm(prev => ({ ...prev, minPurchase: e.target.value }))} placeholder="Min Order Value ₹" className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-brand-500" />
               <input type="number" value={form.maxUses} onChange={e => setForm(prev => ({ ...prev, maxUses: e.target.value }))} placeholder="Max Uses (0 = unlimited)" className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-brand-500" />
-              <input type="date" value={form.expiryDate} onChange={e => setForm(prev => ({ ...prev, expiryDate: e.target.value }))} className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-brand-500" />
+              <div>
+                <label className="text-xs font-medium text-slate-500 mb-1 block">Expiry Date</label>
+                <input type="date" value={form.expiryDate} onChange={e => setForm(prev => ({ ...prev, expiryDate: e.target.value }))} className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-brand-500" />
+              </div>
               <label className="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer">
                 <input type="checkbox" checked={form.oneUsePerUser} onChange={e => setForm(prev => ({ ...prev, oneUsePerUser: e.target.checked }))} className="rounded border-slate-300 text-brand-600 focus:ring-brand-500" />
                 One Use Per User
@@ -93,17 +113,26 @@ export default function AdminCoupons() {
         </div>
 
         <div className="lg:col-span-2">
+          <div className="flex gap-2 mb-3 flex-wrap">
+            <button onClick={() => setTypeFilter('')} className={`rounded-full px-3 py-1 text-xs font-semibold ${!typeFilter ? 'bg-brand-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>All ({coupons.length})</button>
+            {['universal', 'grocery', 'combo'].map(t => (
+              <button key={t} onClick={() => setTypeFilter(t)} className={`rounded-full px-3 py-1 text-xs font-semibold ${typeFilter === t ? 'bg-brand-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
+                {typeLabels[t]} ({coupons.filter(c => c.type === t).length})
+              </button>
+            ))}
+          </div>
           <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
             <table className="w-full text-sm">
               <thead><tr className="border-b border-slate-100 bg-slate-50 text-left text-xs text-slate-500 uppercase">
-                <th className="p-3 font-medium">Code</th><th className="p-3 font-medium">Type</th><th className="p-3 font-medium">Discount</th><th className="p-3 font-medium">Uses</th><th className="p-3 font-medium">Expires</th><th className="p-3 font-medium">Status</th><th className="p-3 font-medium">Actions</th>
+                <th className="p-3 font-medium">Code</th><th className="p-3 font-medium">Applies To</th><th className="p-3 font-medium">Discount</th><th className="p-3 font-medium">Min Order</th><th className="p-3 font-medium">Uses</th><th className="p-3 font-medium">Expires</th><th className="p-3 font-medium">Status</th><th className="p-3 font-medium">Actions</th>
               </tr></thead>
               <tbody>
-                {coupons.map(c => (
+                {filtered.map(c => (
                   <tr key={c._id} className="border-b border-slate-50 hover:bg-slate-50/50">
                     <td className="p-3 font-mono text-sm font-bold text-brand-700">{c.code}</td>
-                    <td className="p-3 text-slate-600">{c.type}</td>
+                    <td className="p-3"><span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${typeColors[c.type]}`}>{typeLabels[c.type]}</span></td>
                     <td className="p-3">{c.discountType === 'percentage' ? `${c.discountValue}%` : `₹${c.discountValue}`}{c.maxDiscount ? ` (max ₹${c.maxDiscount})` : ''}</td>
+                    <td className="p-3 text-slate-600">{c.minPurchase ? `₹${c.minPurchase}` : 'None'}</td>
                     <td className="p-3 text-slate-600">{c.usedCount}/{c.maxUses || '∞'}</td>
                     <td className="p-3 text-xs text-slate-500">{c.expiryDate ? new Date(c.expiryDate).toLocaleDateString() : 'No expiry'}</td>
                     <td className="p-3"><button onClick={() => handleToggle(c._id)} className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${c.isActive ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}`}>{c.isActive ? 'Active' : 'Inactive'}</button></td>
@@ -112,10 +141,10 @@ export default function AdminCoupons() {
                 ))}
               </tbody>
             </table>
-            {coupons.length === 0 && (
+            {filtered.length === 0 && (
               <div className="flex flex-col items-center justify-center py-12 text-center">
-                <p className="text-lg font-medium text-slate-400 mb-1">No coupons yet</p>
-                <p className="text-sm text-slate-400">Create your first coupon using the form</p>
+                <p className="text-lg font-medium text-slate-400 mb-1">No coupons found</p>
+                <p className="text-sm text-slate-400">{typeFilter ? 'Try a different filter' : 'Create your first coupon using the form'}</p>
               </div>
             )}
           </div>

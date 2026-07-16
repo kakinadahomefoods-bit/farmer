@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../../lib/api'
 import { formatPrice } from '../../lib/utils'
@@ -11,6 +11,9 @@ export default function AdminProducts() {
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
   const [total, setTotal] = useState(0)
+  const [dragIdx, setDragIdx] = useState(null)
+  const [overIdx, setOverIdx] = useState(null)
+  const dragItem = useRef(null)
 
   const load = async () => {
     setLoading(true)
@@ -42,6 +45,42 @@ export default function AdminProducts() {
     catch (err) { toast.error(err.message) }
   }
 
+  const handleDragStart = (e, idx) => {
+    dragItem.current = idx
+    setDragIdx(idx)
+    e.dataTransfer.effectAllowed = 'move'
+  }
+
+  const handleDragOver = (e, idx) => {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'move'
+    setOverIdx(idx)
+  }
+
+  const handleDragEnd = () => {
+    setDragIdx(null)
+    setOverIdx(null)
+  }
+
+  const handleDrop = async (e, dropIdx) => {
+    e.preventDefault()
+    const fromIdx = dragItem.current
+    if (fromIdx === null || fromIdx === dropIdx) { handleDragEnd(); return }
+    const reordered = [...products]
+    const [moved] = reordered.splice(fromIdx, 1)
+    reordered.splice(dropIdx, 0, moved)
+    setProducts(reordered)
+    handleDragEnd()
+    try {
+      const orders = reordered.map((p, i) => ({ id: p._id, displayOrder: i }))
+      await api.reorderProducts(orders)
+      toast.success('Products reordered')
+    } catch (err) {
+      toast.error(err.message)
+      load()
+    }
+  }
+
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
@@ -54,6 +93,10 @@ export default function AdminProducts() {
         <button type="submit" className="rounded-xl bg-brand-600 px-4 py-2 text-sm font-bold text-white hover:bg-brand-700 transition">Search</button>
       </form>
 
+      {!search && products.length > 1 && (
+        <p className="mb-2 text-xs text-slate-400">Drag rows to reorder products</p>
+      )}
+
       {loading ? (
         <div className="flex min-h-[40vh] items-center justify-center"><div className="h-10 w-10 animate-spin rounded-full border-4 border-brand-600 border-t-transparent" /></div>
       ) : (
@@ -61,11 +104,25 @@ export default function AdminProducts() {
           <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
             <table className="w-full text-sm">
               <thead><tr className="border-b border-slate-100 bg-slate-50 text-left text-xs text-slate-500 uppercase">
+                <th className="p-3 font-medium w-8"></th>
                 <th className="p-3 font-medium">Product</th><th className="p-3 font-medium">Category</th><th className="p-3 font-medium">Price</th><th className="p-3 font-medium">Stock</th><th className="p-3 font-medium">Status</th><th className="p-3 font-medium">Featured</th><th className="p-3 font-medium">Actions</th>
               </tr></thead>
               <tbody>
-                {products.map(p => (
-                  <tr key={p._id} className="border-b border-slate-50 hover:bg-slate-50/50">
+                {products.map((p, idx) => (
+                  <tr
+                    key={p._id}
+                    draggable={!search}
+                    onDragStart={(e) => handleDragStart(e, idx)}
+                    onDragOver={(e) => handleDragOver(e, idx)}
+                    onDrop={(e) => handleDrop(e, idx)}
+                    onDragEnd={handleDragEnd}
+                    className={`border-b border-slate-50 transition-colors ${
+                      dragIdx === idx ? 'opacity-40' : ''
+                    } ${overIdx === idx && dragIdx !== idx ? 'border-t-2 border-t-brand-500' : 'hover:bg-slate-50/50'}`}
+                  >
+                    <td className="p-3 text-center text-slate-300 cursor-grab active:cursor-grabbing select-none">
+                      <svg className="h-4 w-4 mx-auto" fill="currentColor" viewBox="0 0 24 24"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>
+                    </td>
                     <td className="p-3">
                       <div className="flex items-center gap-3">
                         <img src={cld(p.images?.[0], 'f_auto,q_auto,w_200,c_fill')} alt={p.name} className="h-10 w-10 rounded-lg object-cover bg-slate-100" />
