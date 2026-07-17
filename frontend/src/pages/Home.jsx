@@ -6,7 +6,7 @@ import SeoHead from '../components/SeoHead'
 import ProductCard from '../components/ProductCard'
 import BundleCard from '../components/BundleCard'
 import { api } from '../lib/api'
-import { getImageUrl } from '../lib/utils'
+import { getImageUrl, optimizeImage } from '../lib/utils'
 import { CartIcon } from '../components/Icons'
 import { getNewArrivals as getSupabaseNewArrivals, getComboBundles as getSupabaseComboBundles, getActiveBanners as getSupabaseBanners } from '../lib/productService'
 
@@ -152,6 +152,19 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
+    if (bannerUrls.length > 0) {
+      const first = optimizeImage(bannerUrls[0], 2000)
+      const link = document.createElement('link')
+      link.rel = 'preload'
+      link.as = 'image'
+      link.href = first
+      link.fetchPriority = 'high'
+      document.head.appendChild(link)
+      return () => { document.head.removeChild(link) }
+    }
+  }, [bannerUrls])
+
+  useEffect(() => {
     const mql = window.matchMedia('(max-width: 639px)')
     const handler = (e) => setIsMobile(e.matches)
     setIsMobile(mql.matches)
@@ -215,10 +228,11 @@ export default function Home() {
                 return (
                   <img
                     key={`main-banner-${idx}`}
-                    src={url}
+                    src={optimizeImage(url, 2000)}
                     alt={banner?.title || `Main offer banner ${idx + 1}`}
                     loading={idx === 0 ? 'eager' : 'lazy'}
                     fetchPriority={idx === 0 ? 'high' : 'auto'}
+                    decoding={idx === 0 ? 'sync' : 'async'}
                     onClick={() => handleBannerClick(banner?.redirectLink)}
                     className={`h-48 w-full flex-shrink-0 object-cover sm:h-64 lg:h-[330px]${hasLink ? ' cursor-pointer hover:opacity-90' : ''}`}
                     style={{ width: `${100 / bannerUrls.length}%` }}
@@ -247,33 +261,35 @@ export default function Home() {
             {sideList.length >= 1 ? (
               <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
                 <img
-                  src={sideList[0].image}
+                  src={optimizeImage(sideList[0].image, 800)}
                   alt={sideList[0].title || 'Side offer banner'}
                   loading="eager"
                   fetchPriority="high"
+                  decoding="sync"
                   onClick={() => handleBannerClick(sideList[0].redirectLink)}
                   className={`w-full object-contain sm:h-[158px] sm:object-cover lg:h-[159px] ${sideList[0].redirectLink ? 'cursor-pointer hover:opacity-90' : ''}`}
                 />
               </div>
             ) : fallbackSideUrls.middleTop ? (
               <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-                <img src={fallbackSideUrls.middleTop} alt="Top side offer banner" loading="eager" fetchPriority="high" className="w-full object-contain sm:h-[158px] sm:object-cover lg:h-[159px]" />
+                <img src={optimizeImage(fallbackSideUrls.middleTop, 800)} alt="Top side offer banner" loading="eager" fetchPriority="high" decoding="sync" className="w-full object-contain sm:h-[158px] sm:object-cover lg:h-[159px]" />
               </div>
             ) : null}
             {sideList.length >= 2 ? (
               <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
                 <img
-                  src={sideList[1].image}
+                  src={optimizeImage(sideList[1].image, 800)}
                   alt={sideList[1].title || 'Side offer banner'}
                   loading="eager"
                   fetchPriority="high"
+                  decoding="sync"
                   onClick={() => handleBannerClick(sideList[1].redirectLink)}
                   className={`w-full object-contain sm:h-[158px] sm:object-cover lg:h-[159px] ${sideList[1].redirectLink ? 'cursor-pointer hover:opacity-90' : ''}`}
                 />
               </div>
             ) : fallbackSideUrls.middleBottom ? (
               <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-                <img src={fallbackSideUrls.middleBottom} alt="Bottom side offer banner" loading="eager" fetchPriority="high" className="w-full object-contain sm:h-[158px] sm:object-cover lg:h-[159px]" />
+                <img src={optimizeImage(fallbackSideUrls.middleBottom, 800)} alt="Bottom side offer banner" loading="eager" fetchPriority="high" decoding="sync" className="w-full object-contain sm:h-[158px] sm:object-cover lg:h-[159px]" />
               </div>
             ) : null}
           </div>
@@ -281,15 +297,16 @@ export default function Home() {
           <div className="hidden overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm lg:block">
             {sideList.length >= 3 ? (
               <img
-                src={sideList[2].image}
+                src={optimizeImage(sideList[2].image, 600)}
                 alt={sideList[2].title || 'Side story banner'}
                 loading="eager"
                 fetchPriority="high"
+                decoding="sync"
                 onClick={() => handleBannerClick(sideList[2].redirectLink)}
                 className={`h-48 w-full object-cover sm:h-64 lg:h-[330px] ${sideList[2].redirectLink ? 'cursor-pointer hover:opacity-90' : ''}`}
               />
             ) : fallbackSideUrls.rightStory ? (
-              <img src={fallbackSideUrls.rightStory} alt="Farmer story banner" loading="eager" fetchPriority="high" className="h-48 w-full object-cover sm:h-64 lg:h-[330px]" />
+              <img src={optimizeImage(fallbackSideUrls.rightStory, 600)} alt="Farmer story banner" loading="eager" fetchPriority="high" decoding="sync" className="h-48 w-full object-cover sm:h-64 lg:h-[330px]" />
             ) : null}
           </div>
         </section>
@@ -331,10 +348,10 @@ export default function Home() {
             <div key={i} className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
               {b.link ? (
                 <a href={b.link.startsWith('/') ? undefined : b.link} onClick={b.link.startsWith('/') ? () => navigate(b.link) : undefined} target={b.link.startsWith('/') ? undefined : '_blank'} rel={b.link.startsWith('/') ? undefined : 'noopener noreferrer'}>
-                  <img src={b.url} alt={`Promotional banner ${i + 1}`} loading="lazy" className="aspect-[4/3] w-full object-cover transition hover:opacity-90 sm:aspect-[3/2]" />
+                  <img src={optimizeImage(b.url, 800)} alt={`Promotional banner ${i + 1}`} loading="lazy" fetchPriority="low" className="aspect-[4/3] w-full object-cover transition hover:opacity-90 sm:aspect-[3/2]" />
                 </a>
               ) : (
-                <img src={b.url} alt={`Promotional banner ${i + 1}`} loading="lazy" className="aspect-[4/3] w-full object-cover sm:aspect-[3/2]" />
+                <img src={optimizeImage(b.url, 800)} alt={`Promotional banner ${i + 1}`} loading="lazy" fetchPriority="low" className="aspect-[4/3] w-full object-cover sm:aspect-[3/2]" />
               )}
             </div>
           ))}

@@ -1,4 +1,12 @@
 const PLACEHOLDER_IMAGE = 'https://hnilmlhyqcgsbfbguuuz.supabase.co/storage/v1/object/public/images/placeholder.jpg'
+const CLOUDINARY_REGEX = /https?:\/\/res\.cloudinary\.com\/[^/]+\/image\/upload\//
+
+export function optimizeImage(url, width = 1200) {
+  if (!url) return url
+  if (!CLOUDINARY_REGEX.test(url)) return url
+  const idx = url.indexOf('/upload/') + 8
+  return url.slice(0, idx) + `q_auto,f_auto,w_${width},c_limit/` + url.slice(idx)
+}
 
 export function formatPrice(amount) {
   if (amount == null || isNaN(amount)) return '₹0'
