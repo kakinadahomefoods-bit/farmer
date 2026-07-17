@@ -163,6 +163,38 @@ router.post('/', protect, async (req, res) => {
   }
 })
 
+router.post('/direct', async (req, res) => {
+  try {
+    const { items, total, shippingCost, couponDiscount, couponCode, paymentMethod, shippingAddress, guestInfo, paymentId } = req.body
+    if (!items || items.length === 0) return res.status(400).json({ error: 'Order must have items' })
+    const subtotal = items.reduce((sum, item) => sum + (item.price || 0) * item.quantity, 0)
+    const order = await Order.create({
+      user: req.user?._id,
+      items: items.map(item => ({
+        name: item.name,
+        variantName: item.variantName,
+        quantity: item.quantity,
+        price: item.price,
+        image: item.image,
+      })),
+      guestInfo: guestInfo || {},
+      shippingAddress: shippingAddress || {},
+      subtotal,
+      shippingCost: shippingCost || 0,
+      couponDiscount: couponDiscount || 0,
+      couponCode: couponCode || null,
+      total: total || subtotal + (shippingCost || 0) - (couponDiscount || 0),
+      paymentMethod: paymentMethod || 'whatsapp',
+      paymentStatus: paymentId ? 'paid' : 'pending',
+      paymentId: paymentId || null,
+      status: 'pending',
+    })
+    res.status(201).json(order)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
 router.patch('/:id/status', protect, adminOnly, async (req, res) => {
   try {
     const { status } = req.body

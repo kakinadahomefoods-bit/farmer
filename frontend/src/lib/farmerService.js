@@ -1,12 +1,8 @@
-import { supabase } from './supabase'
+import { api } from './api'
 
 export async function getFarmers() {
   try {
-    const { data, error } = await supabase
-      .from('farmers')
-      .select('*')
-      .order('created_at', { ascending: false })
-    if (error) throw error
+    const data = await api.getFarmers({ approved: 'true' })
     return data || []
   } catch (e) {
     throw e

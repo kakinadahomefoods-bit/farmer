@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import SeoHead from '../components/SeoHead'
 import { formatPrice, getImageUrl } from '../lib/utils'
 import { useSiteSettings } from '../contexts/SiteSettingsContext'
 
@@ -27,8 +28,23 @@ export default function ProductDetail() {
 
   const imgSrc = getImageUrl(product.images?.[0] || product.image_url, settings?.placeholder_image)
 
+  const productSchema = product ? {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.name,
+    description: product.description || product.tagline || '',
+    image: product.images?.[0] || product.image_url,
+    offers: {
+      '@type': 'Offer',
+      price: product.base_price || product.price,
+      priceCurrency: 'INR',
+      availability: 'https://schema.org/InStock',
+    },
+  } : null
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <SeoHead title={product?.name} description={product?.description || product?.tagline} ogImage={product?.images?.[0] || product?.image_url} schema={productSchema} canonical={`https://haifarmer.com/products/${slug}`} />
       <Link to="/products" className="mb-6 inline-flex items-center gap-1 text-sm font-semibold text-brand-600 hover:text-brand-700">← Back to Products</Link>
       <div className="grid gap-8 lg:grid-cols-2">
         <div className="overflow-hidden rounded-2xl bg-slate-50">

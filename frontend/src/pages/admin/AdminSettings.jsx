@@ -140,6 +140,8 @@ export default function AdminSettings() {
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-slate-900 mb-4">Payment Settings</h2>
             <div className="grid sm:grid-cols-2 gap-4">
+              <Input label="Razorpay ON/OFF" path="razorpayEnabled" type="checkbox" placeholder="Enable Razorpay online payments" />
+              <Input label="Razorpay Key ID" path="razorpayKeyId" />
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Payment Method</label>
                 <select value={settings?.paymentMethod || 'both'} onChange={e => handleChange('paymentMethod', e.target.value)} className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-brand-500">
@@ -148,7 +150,6 @@ export default function AdminSettings() {
                   <option value="whatsapp">WhatsApp Only</option>
                 </select>
               </div>
-              <Input label="Razorpay Key ID" path="razorpayKeyId" />
             </div>
           </div>
         )}

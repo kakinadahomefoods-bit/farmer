@@ -10,6 +10,7 @@ export default function AdminFarmers() {
   const [page, setPage] = useState(1)
   const [total, setTotal] = useState(0)
   const [qrData, setQrData] = useState(null)
+  const qrFileRef = useRef(null)
   const [form, setForm] = useState({
     name: '', phone: '', village: '', district: '', state: '',
     products: '', quantity: '', availability: '', pickupDetails: '',
@@ -57,6 +58,27 @@ export default function AdminFarmers() {
       else { await api.createFarmer(payload); toast.success('Farmer created') }
       resetForm(); load()
     } catch (err) { toast.error(err.message) }
+  }
+
+  const handleToggleActive = async (id) => {
+    try {
+      await api.toggleFarmerActive(id)
+      toast.success('Toggled')
+      load()
+    } catch (err) { toast.error(err.message) }
+  }
+
+  const handleQRUpload = async (e, id) => {
+    const file = e.target.files[0]
+    if (!file) return
+    try {
+      toast.info('Uploading QR...')
+      const result = await api.uploadImage(file, 'haifarmer/farmers/qr')
+      await api.updateFarmer(id, { qrImage: result.url, qrPublicId: result.publicId })
+      toast.success('QR code uploaded')
+      load()
+    } catch (err) { toast.error(err.message) }
+    if (qrFileRef.current) qrFileRef.current.value = ''
   }
 
   const handleDelete = async (id) => {
@@ -151,7 +173,7 @@ export default function AdminFarmers() {
       <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
         <table className="w-full text-sm">
           <thead><tr className="border-b border-slate-100 bg-slate-50 text-left text-xs text-slate-500 uppercase">
-            <th className="p-3 font-medium">Name</th><th className="p-3 font-medium">Phone</th><th className="p-3 font-medium">Village</th><th className="p-3 font-medium">Status</th><th className="p-3 font-medium">QR</th><th className="p-3 font-medium">Actions</th>
+            <th className="p-3 font-medium">Name</th><th className="p-3 font-medium">Phone</th><th className="p-3 font-medium">Village</th><th className="p-3 font-medium">Active</th><th className="p-3 font-medium">Status</th><th className="p-3 font-medium">QR</th><th className="p-3 font-medium">Actions</th>
           </tr></thead>
           <tbody>
             {farmers.map(f => (
@@ -160,12 +182,18 @@ export default function AdminFarmers() {
                 <td className="p-3 text-slate-600">{f.phone}</td>
                 <td className="p-3 text-slate-600">{f.village || '-'}</td>
                 <td className="p-3">
+                  <button onClick={() => handleToggleActive(f._id)} className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${f.isActive ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}`}>{f.isActive ? 'Active' : 'Inactive'}</button>
+                </td>
+                <td className="p-3">
                   <select value={f.status} onChange={e => handleStatus(f._id, e.target.value)} className={`rounded-lg border px-2 py-1 text-xs outline-none ${f.status === 'approved' ? 'border-green-200 text-green-700' : f.status === 'rejected' ? 'border-red-200 text-red-700' : 'border-amber-200 text-amber-700'}`}>
                     <option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option>
                   </select>
                 </td>
                 <td className="p-3">
-                  <button onClick={() => handleQR(f._id)} className="text-xs font-semibold text-brand-600 hover:text-brand-700">Get QR</button>
+                  <div className="flex gap-1">
+                    <button onClick={() => handleQR(f._id)} className="text-xs font-semibold text-brand-600 hover:text-brand-700">View</button>
+                    <button onClick={() => { qrFileRef.current?.click(); qrFileRef.current.dataset.farmerId = f._id }} className="text-xs font-semibold text-blue-600 hover:text-blue-700">Upload</button>
+                  </div>
                 </td>
                 <td className="p-3">
                   <div className="flex gap-2">
@@ -184,6 +212,8 @@ export default function AdminFarmers() {
           </div>
         )}
       </div>
+
+      <input ref={qrFileRef} type="file" accept="image/*" onChange={(e) => { const id = qrFileRef.current?.dataset?.farmerId; if (id) handleQRUpload(e, id) }} className="hidden" />
 
       {qrData && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={() => setQrData(null)}>

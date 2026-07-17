@@ -27,6 +27,7 @@ const siteSettingSchema = new mongoose.Schema({
   expressDelivery: { type: Boolean, default: false },
 
   // Payment
+  razorpayEnabled: { type: Boolean, default: true },
   paymentMethod: { type: String, enum: ['razorpay', 'whatsapp', 'both'], default: 'both' },
   razorpayKeyId: { type: String, default: 'rzp_live_SeagFUXcQMCgdT' },
   razorpayKeySecret: String,

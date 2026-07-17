@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
-import { getComboBundles } from '../lib/productService'
+import { Link } from 'react-router-dom'
+import { api } from '../lib/api'
+import SeoHead from '../components/SeoHead'
 import BundleCard from '../components/BundleCard'
 
 export default function Combos() {
@@ -10,8 +12,8 @@ export default function Combos() {
     const load = async () => {
       setLoading(true)
       try {
-        const result = await getComboBundles()
-        setBundles(result || [])
+        const data = await api.getBundles({ combo: 'true' })
+        setBundles(data || [])
       } catch (e) { console.error(e) }
       finally { setLoading(false) }
     }
@@ -20,6 +22,7 @@ export default function Combos() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <SeoHead title="Combos & Bundles" description="Save big with curated product bundles from HAiFarmer. Organic vegetable combos, fruit bundles, spice packs and more at special discount prices." />
       <h1 className="heading-font text-3xl font-extrabold text-slate-900">Combos & Bundles</h1>
       <p className="mt-2 text-slate-600">Save big with our curated product bundles.</p>
 
@@ -32,7 +35,7 @@ export default function Combos() {
         </div>
       ) : (
         <div className="mt-6 grid grid-cols-1 gap-6">
-          {bundles.map(bundle => <BundleCard key={bundle.id} bundle={bundle} />)}
+          {bundles.map(bundle => <BundleCard key={bundle._id} bundle={bundle} />)}
         </div>
       )}
     </div>

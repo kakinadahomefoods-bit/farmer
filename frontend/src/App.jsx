@@ -17,6 +17,7 @@ const Combos = lazy(() => import('./pages/Combos'))
 const BundleDetail = lazy(() => import('./pages/BundleDetail'))
 const About = lazy(() => import('./pages/About'))
 const Farmers = lazy(() => import('./pages/Farmers'))
+const FarmerDetail = lazy(() => import('./pages/FarmerDetail'))
 const Login = lazy(() => import('./pages/Login'))
 const Signup = lazy(() => import('./pages/Signup'))
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'))
@@ -32,6 +33,7 @@ const AdminCategories = lazy(() => import('./pages/admin/AdminCategories'))
 const AdminOrders = lazy(() => import('./pages/admin/AdminOrders'))
 const AdminCoupons = lazy(() => import('./pages/admin/AdminCoupons'))
 const AdminBanners = lazy(() => import('./pages/admin/AdminBanners'))
+const AdminBundles = lazy(() => import('./pages/admin/AdminBundles'))
 const AdminFarmers = lazy(() => import('./pages/admin/AdminFarmers'))
 const AdminSettings = lazy(() => import('./pages/admin/AdminSettings'))
 
@@ -55,11 +57,11 @@ function AppLayout() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
-            <Route path="/farmers" element={<Farmers />} />
             <Route path="/products" element={<Products />} />
             <Route path="/products/:slug" element={<ProductDetail />} />
+            <Route path="/farmers/:code" element={<FarmerDetail />} />
             <Route path="/combos" element={<Combos />} />
-            <Route path="/combos/:id" element={<BundleDetail />} />
+            <Route path="/combos/:slug" element={<BundleDetail />} />
             <Route path="/cart" element={<Navigate to="/checkout" replace />} />
             <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
             <Route path="/payment" element={<ProtectedRoute><Payment /></ProtectedRoute>} />
@@ -93,6 +95,7 @@ export default function App() {
           <Route path="orders" element={<AdminOrders />} />
           <Route path="coupons" element={<AdminCoupons />} />
           <Route path="banners" element={<AdminBanners />} />
+          <Route path="bundles" element={<AdminBundles />} />
           <Route path="farmers" element={<AdminFarmers />} />
           <Route path="settings" element={<AdminSettings />} />
         </Route>

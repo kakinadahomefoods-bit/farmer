@@ -4,9 +4,9 @@ import { useSiteSettings } from '../contexts/SiteSettingsContext'
 export default function Footer() {
   const { settings } = useSiteSettings()
   const year = new Date().getFullYear()
-  const whatsapp = settings?.whatsapp_number || '9709704563'
-  const phone = settings?.contact_phone || '9709704563'
-  const email = settings?.contact_email || ''
+  const whatsapp = settings?.whatsapp || settings?.whatsapp_number || '9709704563'
+  const phone = settings?.phone || settings?.contact_phone || '9709704563'
+  const email = settings?.email || settings?.contact_email || ''
 
   return (
     <footer className="mt-16 border-t border-slate-200 bg-slate-900 text-slate-300">
@@ -28,7 +28,7 @@ export default function Footer() {
               <li><Link to="/products" className="text-sm hover:text-brand-400 transition">Products</Link></li>
               <li><Link to="/combos" className="text-sm hover:text-brand-400 transition">Combo Packs</Link></li>
               <li><Link to="/about" className="text-sm hover:text-brand-400 transition">About Us</Link></li>
-              <li><Link to="/farmers" className="text-sm hover:text-brand-400 transition">Our Farmers</Link></li>
+
             </ul>
           </div>
 
@@ -62,8 +62,7 @@ export default function Footer() {
           <div className="flex items-center gap-4 text-xs text-slate-500">
             <Link to="/about" className="hover:text-slate-300 transition">About</Link>
             <span>·</span>
-            <Link to="/farmers" className="hover:text-slate-300 transition">Farmers</Link>
-            <span>·</span>
+
             <Link to="/products" className="hover:text-slate-300 transition">Products</Link>
           </div>
         </div>

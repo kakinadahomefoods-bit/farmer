@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom'
+import SeoHead from '../components/SeoHead'
 
 const WHATSAPP_NUMBER = '9709704563'
 
 export default function About() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+      <SeoHead title="About" description="HAiFarmer connects tribal farmers directly with customers for fresh, 100% natural products. Rainwater-fed farming, no middlemen, direct from farmers to your doorstep." />
       <section className="mx-auto max-w-3xl text-center">
         <h1 className="heading-font text-4xl font-extrabold text-slate-900">About HAiFarmer</h1>
         <p className="mt-4 text-lg text-slate-600">We connect tribal farmers directly with customers, ensuring fresh, 100% natural products reach your doorstep.</p>

@@ -12,6 +12,8 @@ const farmerSchema = new mongoose.Schema({
   pickupDetails: String,
   images: [String],
   cloudinaryPublicIds: [String],
+  qrImage: String,
+  qrPublicId: String,
   bio: String,
   isActive: { type: Boolean, default: true },
   isApproved: { type: Boolean, default: false },

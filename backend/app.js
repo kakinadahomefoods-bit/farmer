@@ -9,6 +9,7 @@ import orderRoutes from './routes/orders.js'
 import couponRoutes from './routes/coupons.js'
 import bannerRoutes from './routes/banners.js'
 import farmerRoutes from './routes/farmers.js'
+import bundleRoutes from './routes/bundles.js'
 import settingsRoutes from './routes/settings.js'
 import uploadRoutes from './routes/upload.js'
 import seedRoutes from './routes/seed.js'
@@ -38,6 +39,7 @@ app.use('/api/orders', orderRoutes)
 app.use('/api/coupons', couponRoutes)
 app.use('/api/banners', bannerRoutes)
 app.use('/api/farmers', farmerRoutes)
+app.use('/api/bundles', bundleRoutes)
 app.use('/api/settings', settingsRoutes)
 app.use('/api/upload', uploadRoutes)
 app.use('/api', seedRoutes)

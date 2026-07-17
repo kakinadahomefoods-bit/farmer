@@ -19,8 +19,8 @@ export default function Header() {
     (async () => {
       try {
         const s = await fetchSiteSettings()
-        setLogo(s?.logo_url || '')
-        setHeaderText(s?.header_text_1 || 'Free delivery over ₹1499')
+        setLogo(s?.logo || s?.logo_url || '')
+        setHeaderText(s?.headerText1 || s?.header_text_1 || 'Free delivery over ₹1499')
       } catch {
         setLogo('')
         setHeaderText('Free delivery over ₹1499')

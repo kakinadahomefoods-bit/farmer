@@ -36,7 +36,7 @@ export default function AdminProductForm() {
               tagline: product.tagline || '',
               nutrition: product.nutrition || '',
               basePrice: product.basePrice || '',
-              discountPercent: product.discountPercent || 0,
+              discountPercent: Math.round(product.discountPercent || 0),
               category: product.category?._id || '',
               isActive: product.isActive ?? true,
               isFeatured: product.isFeatured || false,
@@ -104,7 +104,7 @@ export default function AdminProductForm() {
       const payload = {
         ...form,
         basePrice: Number(form.basePrice) || 0,
-        discountPercent: Number(form.discountPercent) || 0,
+        discountPercent: Math.round(Number(form.discountPercent) || 0),
         variants: form.variants.map(v => ({
           ...v,
           price: Number(v.price) || 0,

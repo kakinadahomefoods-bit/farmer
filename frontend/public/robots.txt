@@ -1,11 +1,15 @@
 User-agent: *
 Allow: /
+Allow: /products
+Allow: /combos
+Allow: /about
 
 Sitemap: https://haifarmer.com/sitemap.xml
 
-# Disallow admin routes
 Disallow: /admin/
-Disallow: /admin-login
-
-# Disallow farmer portal from search engines
+Disallow: /checkout
+Disallow: /payment
+Disallow: /orders
+Disallow: /account
+Disallow: /forgot-password
 Disallow: /farmers/

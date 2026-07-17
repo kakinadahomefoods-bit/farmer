@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useCart } from '../contexts/CartContext'
 import { formatPrice, getImageUrl } from '../lib/utils'
@@ -6,13 +6,13 @@ import { useSiteSettings } from '../contexts/SiteSettingsContext'
 import { toast } from 'react-toastify'
 
 function calculateBundlePrice(bundle) {
-  const total = (Array.isArray(bundle?.bundle_items) ? bundle.bundle_items : [])
-    .reduce((sum, item) => sum + Number(item.variant?.price ?? item.variant_price ?? item.price ?? item.unit_price ?? 0) * Number(item.quantity || 1), 0)
+  const items = bundle?.items || bundle?.bundle_items || []
+  const total = items.reduce((sum, item) => sum + Number(item.price || item.variant?.price || item.variant_price || 0) * Number(item.quantity || 1), 0)
   if (total > 0) {
-    const discountPct = Number(bundle?.bundle_discount_percent || 0)
+    const discountPct = Number(bundle?.discountPercent || bundle?.bundle_discount_percent || 0)
     return Number((total - total * discountPct / 100).toFixed(2))
   }
-  return Number(bundle?.bundle_price || 0)
+  return Number(bundle?.price || bundle?.bundle_price || 0)
 }
 
 export default function BundleCard({ bundle }) {
@@ -20,23 +20,27 @@ export default function BundleCard({ bundle }) {
   const { settings } = useSiteSettings()
   const [showFullDesc, setShowFullDesc] = useState(false)
 
-  const { description, contains } = (() => {
-    const idx = (bundle.bundle_description || 'Complete combo offer').indexOf('[CONTAINS]')
-    if (idx === -1) return { description: bundle.bundle_description || 'Complete combo offer', contains: '' }
-    return {
-      description: (bundle.bundle_description || '').substring(0, idx).trim(),
-      contains: (bundle.bundle_description || '').substring(idx + 10).trim()
-    }
+  const id = bundle._id || bundle.id
+  const name = bundle.name || bundle.bundle_name
+  const image = bundle.image || bundle.bundle_image_url || bundle.image_url
+  const description = bundle.description || bundle.bundle_description || 'Complete combo offer'
+  const discountPct = Math.round(bundle.discountPercent || bundle.bundle_discount_percent || 0)
+  const items = bundle?.items || bundle?.bundle_items || []
+  const slug = bundle.slug || id
+
+  const { displayDesc, contains } = (() => {
+    const idx = description.indexOf('[CONTAINS]')
+    if (idx === -1) return { displayDesc: description, contains: '' }
+    return { displayDesc: description.substring(0, idx).trim(), contains: description.substring(idx + 10).trim() }
   })()
 
-  const originalTotal = (bundle.bundle_items?.reduce((sum, item) => sum + (item.variant?.price || 0) * item.quantity, 0)) || 0
+  const originalTotal = items.reduce((sum, item) => sum + (item.price || item.variant?.price || 0) * item.quantity, 0) || 0
   const bundlePrice = calculateBundlePrice(bundle)
-  const cartItem = cartItems?.find(item => item.bundle_id === bundle.id)
+  const cartItem = cartItems?.find(item => item.bundle_id === id || item.bundle?._id === id)
   const isInCart = Boolean(cartItem)
-  const quantity = cartItem?.quantity || bundleSelections?.[bundle.id]?.quantity || 1
-  const productCount = bundle.bundle_items?.length || 0
-  const savings = bundle.bundle_discount_percent > 0 && originalTotal > 0 ? Math.round(originalTotal - bundlePrice) : 0
-  const discountPct = bundle.bundle_discount_percent > 0 ? Math.round(bundle.bundle_discount_percent) : 0
+  const quantity = cartItem?.quantity || bundleSelections?.[id]?.quantity || 1
+  const productCount = items.length
+  const savings = discountPct > 0 && originalTotal > 0 ? Math.round(originalTotal - bundlePrice) : 0
 
   const handleQuantityChange = async (newQty) => {
     if (newQty < 1) return
@@ -54,10 +58,10 @@ export default function BundleCard({ bundle }) {
             </span>
             <span className="text-sm font-semibold text-slate-600">{productCount} Products</span>
           </div>
-          <Link to={`/combos/${bundle.id}`} className="relative block overflow-hidden rounded-lg border border-slate-200">
+          <Link to={`/combos/${slug}`} className="relative block overflow-hidden rounded-lg border border-slate-200">
             <img
-              src={getImageUrl(bundle.bundle_image_url || bundle.image_url, settings?.placeholder_image)}
-              alt={bundle.bundle_name || bundle.name}
+              src={getImageUrl(image, settings?.placeholder_image)}
+              alt={name}
               className="h-64 w-full object-cover transition-transform hover:scale-105"
               onError={(e) => { e.target.src = settings?.placeholder_image || 'https://placehold.co/600x400?text=Combo' }}
             />
@@ -69,13 +73,13 @@ export default function BundleCard({ bundle }) {
 
         <div className="flex flex-col gap-4">
           <div>
-            <Link to={`/combos/${bundle.id}`} className="hover:text-brand-700">
-              <h2 className="text-2xl font-bold text-slate-900">{bundle.bundle_name || bundle.name}</h2>
+            <Link to={`/combos/${slug}`} className="hover:text-brand-700">
+              <h2 className="text-2xl font-bold text-slate-900">{name}</h2>
             </Link>
             <div className="mt-1 text-sm text-slate-600">
               <div className="relative">
-                <p className={showFullDesc ? '' : 'line-clamp-2'}>{description}</p>
-                {!showFullDesc && description.length > 50 && (
+                <p className={showFullDesc ? '' : 'line-clamp-2'}>{displayDesc}</p>
+                {!showFullDesc && displayDesc.length > 50 && (
                   <button onClick={(e) => { e.preventDefault(); setShowFullDesc(true) }} className="inline-block font-bold text-slate-500 hover:text-green-700 focus:outline-none" style={{ cursor: 'pointer' }}>...</button>
                 )}
                 {showFullDesc && (
@@ -118,15 +122,16 @@ export default function BundleCard({ bundle }) {
                     await removeFromCart(cartItem.id)
                   } else {
                     await addToCart({
-                      bundle_id: bundle.id,
+                      bundle_id: id,
                       quantity: quantity,
                       bundle: {
-                        id: bundle.id,
-                        bundle_name: bundle.bundle_name || bundle.name,
-                        bundle_price: bundlePrice,
-                        bundle_discount_percent: bundle.bundle_discount_percent,
-                        bundle_image_url: bundle.bundle_image_url || bundle.image_url,
-                        bundle_items: bundle.bundle_items || []
+                        _id: id,
+                        name: name,
+                        price: bundlePrice,
+                        discountPercent: discountPct,
+                        image: image,
+                        items: items,
+                        ...bundle,
                       }
                     })
                   }
@@ -135,7 +140,7 @@ export default function BundleCard({ bundle }) {
               >{isInCart ? '🗑 Remove' : '🛒 Add to cart'}</button>
             </div>
 
-            <Link to={`/combos/${bundle.id}`} className="block text-center text-sm font-medium text-brand-600 hover:text-brand-700 transition">
+            <Link to={`/combos/${slug}`} className="block text-center text-sm font-medium text-brand-600 hover:text-brand-700 transition">
               View all {productCount} products →
             </Link>
           </div>

@@ -4,7 +4,7 @@ import { useCart } from '../contexts/CartContext'
 import { useAuth } from '../contexts/AuthContext'
 import { useSiteSettings } from '../contexts/SiteSettingsContext'
 import { formatPrice } from '../lib/utils'
-import { createOrder } from '../lib/orderService'
+import { api } from '../lib/api'
 import { toast } from 'react-toastify'
 
 function getItemName(item) {
@@ -43,22 +43,17 @@ export default function Payment() {
         description: 'Order Payment',
         handler: async (response) => {
           try {
-            await createOrder({
-              user_id: user?.id || null,
+            await api.createOrder({
               items: cartItems.map(i => ({
-                product_id: i.product_id,
-                variant_id: i.variant_id,
-                bundle_id: i.bundle_id,
                 name: getItemName(i),
-                variant_name: getItemVariantName(i),
+                variantName: getItemVariantName(i),
                 price: getItemPrice(i),
                 quantity: i.quantity
               })),
               total: totalWithShipping,
-              shipping_cost: shippingCost,
-              payment_id: response.razorpay_payment_id,
-              status: 'paid',
-              payment_method: 'razorpay',
+              shippingCost,
+              paymentId: response.razorpay_payment_id,
+              paymentMethod: 'razorpay',
             })
             toast.success('Payment successful! Order placed.')
             navigate('/')

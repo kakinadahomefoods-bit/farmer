@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { getProducts, getCategories } from '../lib/productService'
+import SeoHead from '../components/SeoHead'
 import ProductCard from '../components/ProductCard'
 
 export default function Products() {
@@ -36,6 +37,7 @@ export default function Products() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <SeoHead title="Products" description="Browse our wide selection of organic groceries including vegetables, fruits, spices like pasupu (turmeric), karam (red chili), and more. All naturally grown from tribal villages." />
       <h1 className="heading-font text-3xl font-extrabold text-slate-900">Products</h1>
 
       <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

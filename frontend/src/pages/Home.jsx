@@ -2,8 +2,10 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useCart } from '../contexts/CartContext'
 import { useSiteSettings } from '../contexts/SiteSettingsContext'
+import SeoHead from '../components/SeoHead'
 import ProductCard from '../components/ProductCard'
 import BundleCard from '../components/BundleCard'
+import { api } from '../lib/api'
 import { getImageUrl } from '../lib/utils'
 import { CartIcon } from '../components/Icons'
 
@@ -29,20 +31,18 @@ export default function Home() {
   const [loading, setLoading] = useState(true)
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < 640)
 
-  const [homeAssets, setHomeAssets] = useState({
-    legacyHomeBannerUrl: '',
-    homeMainBanner1Url: '',
-    homeMainBanner2Url: '',
-    homeMainBanner3Url: '',
-    homeMainBanner4Url: '',
-    homeMiddleTopBannerUrl: '',
-    homeMiddleBottomBannerUrl: '',
-    homeRightStoryBannerUrl: '',
-    adBannerLeftUrl: '',
-    adBannerRightUrl: ''
+  // Banners from API
+  const [heroBanners, setHeroBanners] = useState([])
+  const [promoBanners, setPromoBanners] = useState([])
+  const [sideBanners, setSideBanners] = useState([])
+
+  // Fallback banner URLs from settings
+  const [fallbackBannerUrls, setFallbackBannerUrls] = useState([])
+  const [fallbackPromoUrls, setFallbackPromoUrls] = useState([])
+  const [fallbackSideUrls, setFallbackSideUrls] = useState({
+    middleTop: '', middleBottom: '', rightStory: ''
   })
 
-  const [bannerLinksMap, setBannerLinksMap] = useState({})
   const [carouselIdx, setCarouselIdx] = useState(0)
   const [transition, setTransition] = useState(true)
   const [paused, setPaused] = useState(false)
@@ -51,37 +51,21 @@ export default function Home() {
   const carouselRef = useRef(null)
   const cartCount = (cartItems || []).reduce((sum, item) => sum + (item.quantity || 0), 0)
 
-  const handleBannerClick = (key) => {
-    const url = bannerLinksMap[key]
-    if (url) {
-      if (url.startsWith('/')) navigate(url)
-      else window.open(url, '_blank')
-    }
+  const handleBannerClick = (link) => {
+    if (!link) return
+    if (link.startsWith('/')) navigate(link)
+    else window.open(link, '_blank')
   }
 
-  const bannerUrls = [
-    homeAssets.homeMainBanner1Url || homeAssets.legacyHomeBannerUrl || '',
-    homeAssets.homeMainBanner2Url || '',
-    homeAssets.homeMainBanner3Url || '',
-    homeAssets.homeMainBanner4Url || ''
-  ].filter(u => u !== '')
+  const bannerUrls = heroBanners.length > 0
+    ? heroBanners.map(b => b.image)
+    : fallbackBannerUrls
 
-  const sideBanners = {
-    middleTop: homeAssets.homeMiddleTopBannerUrl || '',
-    middleBottom: homeAssets.homeMiddleBottomBannerUrl || '',
-    rightStory: homeAssets.homeRightStoryBannerUrl || ''
-  }
+  const promoList = promoBanners.length > 0
+    ? promoBanners.map(b => ({ url: b.image, link: b.redirectLink || '' }))
+    : fallbackPromoUrls
 
-  const promoBanners = [
-    { url: homeAssets.promoBanner1Url || '', link: homeAssets.promoBanner1Link || '' },
-    { url: homeAssets.promoBanner2Url || '', link: homeAssets.promoBanner2Link || '' },
-    { url: homeAssets.promoBanner3Url || '', link: homeAssets.promoBanner3Link || '' },
-  ].filter(b => b.url)
-
-  const adBanners = {
-    left: homeAssets.adBannerLeftUrl || '',
-    right: homeAssets.adBannerRightUrl || ''
-  }
+  const sideList = sideBanners.length > 0 ? sideBanners : []
 
   const goPrev = () => {
     setCarouselIdx(prev => prev > 0 ? prev - 1 : bannerUrls.length - 1)
@@ -107,51 +91,44 @@ export default function Home() {
     async function load() {
       setLoading(true)
       try {
-        const [supabaseMod, settingsMod] = await Promise.all([
-          import('../lib/supabase'),
-          import('../lib/productService')
+        const [productsData, bundlesData, heroData, promoData, sideData] = await Promise.all([
+          api.getNewArrivals().catch(() => []),
+          api.getBundles({ combo: 'true' }).catch(() => []),
+          api.getBanners({ position: 'hero' }).catch(() => []),
+          api.getBanners({ position: 'promotional' }).catch(() => []),
+          api.getBanners({ position: 'side' }).catch(() => []),
         ])
-        const { supabase } = supabaseMod
-        const { getNewArrivals, getComboBundles, getBannerLinks } = await import('../lib/productService')
-
-        const [productsData, bundlesData, bannerLinksData] = await Promise.all([
-          getNewArrivals().catch(() => []),
-          getComboBundles().catch(() => []),
-          getBannerLinks().catch(() => [])
-        ])
-
         if (cancelled) return
+
         setProducts(productsData || [])
         setBundles(bundlesData || [])
-
-        const bannerLinksMapNew = {}
-        ;(bannerLinksData || []).forEach(bl => {
-          if (bl.is_active) bannerLinksMapNew[bl.banner_key] = bl.link_url
-        })
-        setBannerLinksMap(bannerLinksMapNew)
+        setHeroBanners(heroData || [])
+        setPromoBanners(promoData || [])
+        setSideBanners(sideData || [])
 
         const s = settings || {}
-        const assets = {
-          legacyHomeBannerUrl: s.home_banner_url || '',
-          homeMainBanner1Url: s.home_main_banner_1_url || s.home_left_banner_url || '',
-          homeMainBanner2Url: s.home_main_banner_2_url || '',
-          homeMainBanner3Url: s.home_main_banner_3_url || '',
-          homeMainBanner4Url: s.home_main_banner_4_url || '',
-          homeMiddleTopBannerUrl: s.home_middle_top_banner_url || '',
-          homeMiddleBottomBannerUrl: s.home_middle_bottom_banner_url || '',
-          homeRightStoryBannerUrl: s.home_right_story_banner_url || '',
-          adBannerLeftUrl: s.ad_banner_left_url || '',
-          adBannerRightUrl: s.ad_banner_right_url || '',
-          promoBanner1Url: s.promo_banner_1_url || '',
-          promoBanner1Link: s.promo_banner_1_link || '',
-          promoBanner2Url: s.promo_banner_2_url || '',
-          promoBanner2Link: s.promo_banner_2_link || '',
-          promoBanner3Url: s.promo_banner_3_url || '',
-          promoBanner3Link: s.promo_banner_3_link || ''
-        }
-        setHomeAssets(assets)
+        const fallbackBanners = [
+          s.home_banner_url || '',
+          s.home_main_banner_1_url || s.home_left_banner_url || '',
+          s.home_main_banner_2_url || '',
+          s.home_main_banner_3_url || '',
+          s.home_main_banner_4_url || '',
+        ].filter(u => u !== '')
+        setFallbackBannerUrls(fallbackBanners)
 
-        Object.values(assets).forEach(prefetchImage)
+        setFallbackPromoUrls([
+          { url: s.promo_banner_1_url || '', link: s.promo_banner_1_link || '' },
+          { url: s.promo_banner_2_url || '', link: s.promo_banner_2_link || '' },
+          { url: s.promo_banner_3_url || '', link: s.promo_banner_3_link || '' },
+        ].filter(b => b.url))
+
+        setFallbackSideUrls({
+          middleTop: s.home_middle_top_banner_url || '',
+          middleBottom: s.home_middle_bottom_banner_url || '',
+          rightStory: s.home_right_story_banner_url || '',
+        })
+
+        ;[fallbackBanners, (s.home_middle_top_banner_url || ''), (s.home_middle_bottom_banner_url || ''), (s.home_right_story_banner_url || '')].filter(Boolean).forEach(prefetchImage)
       } catch (err) {
         console.error('Error loading homepage data:', err)
       } finally {
@@ -178,6 +155,18 @@ export default function Home() {
 
   const displayProducts = products.length > 5 ? [...products, ...products, ...products] : products
 
+  const orgSchema = {
+    '@context': 'https://schema.org',
+    '@type': ['LocalBusiness', 'OnlineStore'],
+    name: 'HAiFarmer',
+    url: 'https://haifarmer.com',
+    image: 'https://haifarmer.com/og-image.png',
+    telephone: '+91-9709704563',
+    description: 'Natural & organic groceries, organic food, and vegetables from tribal villages with rainwater-fed crops',
+    areaServed: 'IN',
+    priceRange: '₹100 - ₹5000',
+  }
+
   if (loading) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
@@ -188,8 +177,10 @@ export default function Home() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 pb-8 pt-2 sm:px-6 sm:py-8 lg:px-8">
+      <SeoHead schema={orgSchema} />
+
       {/* BANNER GRID SECTION */}
-      {(bannerUrls.length > 0) && (
+      {bannerUrls.length > 0 && (
         <section className="grid gap-3 md:grid-cols-[2fr,1fr] lg:grid-cols-[2.2fr,0.85fr,0.6fr]">
           <div
             className="relative overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
@@ -207,16 +198,16 @@ export default function Home() {
               }}
             >
               {bannerUrls.map((url, idx) => {
-                const bannerKey = ['home_main_banner_1', 'home_main_banner_2', 'home_main_banner_3', 'home_main_banner_4'][idx]
-                const hasLink = !!bannerLinksMap[bannerKey]
+                const banner = heroBanners[idx]
+                const hasLink = !!(banner?.redirectLink)
                 return (
                   <img
                     key={`main-banner-${idx}`}
                     src={url}
-                    alt={`Main offer banner ${idx + 1}`}
+                    alt={banner?.title || `Main offer banner ${idx + 1}`}
                     loading={idx === 0 ? 'eager' : 'lazy'}
                     fetchPriority={idx === 0 ? 'high' : 'auto'}
-                    onClick={() => handleBannerClick(bannerKey)}
+                    onClick={() => handleBannerClick(banner?.redirectLink)}
                     className={`h-48 w-full flex-shrink-0 object-cover sm:h-64 lg:h-[330px]${hasLink ? ' cursor-pointer hover:opacity-90' : ''}`}
                     style={{ width: `${100 / bannerUrls.length}%` }}
                   />
@@ -241,37 +232,53 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-2 gap-3 md:grid-cols-1">
-            <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-              <img
-                src={sideBanners.middleTop}
-                alt="Top side offer banner"
-                loading="eager"
-                fetchPriority="high"
-                onClick={() => handleBannerClick('home_middle_top_banner')}
-                className={`w-full object-contain sm:h-[158px] sm:object-cover lg:h-[159px] ${bannerLinksMap.home_middle_top_banner ? 'cursor-pointer hover:opacity-90' : ''}`}
-              />
-            </div>
-            <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-              <img
-                src={sideBanners.middleBottom}
-                alt="Bottom side offer banner"
-                loading="eager"
-                fetchPriority="high"
-                onClick={() => handleBannerClick('home_middle_bottom_banner')}
-                className={`w-full object-contain sm:h-[158px] sm:object-cover lg:h-[159px] ${bannerLinksMap.home_middle_bottom_banner ? 'cursor-pointer hover:opacity-90' : ''}`}
-              />
-            </div>
+            {sideList.length >= 1 ? (
+              <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                <img
+                  src={sideList[0].image}
+                  alt={sideList[0].title || 'Side offer banner'}
+                  loading="eager"
+                  fetchPriority="high"
+                  onClick={() => handleBannerClick(sideList[0].redirectLink)}
+                  className={`w-full object-contain sm:h-[158px] sm:object-cover lg:h-[159px] ${sideList[0].redirectLink ? 'cursor-pointer hover:opacity-90' : ''}`}
+                />
+              </div>
+            ) : fallbackSideUrls.middleTop ? (
+              <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                <img src={fallbackSideUrls.middleTop} alt="Top side offer banner" loading="eager" fetchPriority="high" className="w-full object-contain sm:h-[158px] sm:object-cover lg:h-[159px]" />
+              </div>
+            ) : null}
+            {sideList.length >= 2 ? (
+              <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                <img
+                  src={sideList[1].image}
+                  alt={sideList[1].title || 'Side offer banner'}
+                  loading="eager"
+                  fetchPriority="high"
+                  onClick={() => handleBannerClick(sideList[1].redirectLink)}
+                  className={`w-full object-contain sm:h-[158px] sm:object-cover lg:h-[159px] ${sideList[1].redirectLink ? 'cursor-pointer hover:opacity-90' : ''}`}
+                />
+              </div>
+            ) : fallbackSideUrls.middleBottom ? (
+              <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                <img src={fallbackSideUrls.middleBottom} alt="Bottom side offer banner" loading="eager" fetchPriority="high" className="w-full object-contain sm:h-[158px] sm:object-cover lg:h-[159px]" />
+              </div>
+            ) : null}
           </div>
 
           <div className="hidden overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm lg:block">
-            <img
-              src={sideBanners.rightStory}
-              alt="Farmer story banner"
-              loading="eager"
-              fetchPriority="high"
-              onClick={() => handleBannerClick('home_right_story_banner')}
-              className={`h-48 w-full object-cover sm:h-64 lg:h-[330px] ${bannerLinksMap.home_right_story_banner ? 'cursor-pointer hover:opacity-90' : ''}`}
-            />
+            {sideList.length >= 3 ? (
+              <img
+                src={sideList[2].image}
+                alt={sideList[2].title || 'Side story banner'}
+                loading="eager"
+                fetchPriority="high"
+                onClick={() => handleBannerClick(sideList[2].redirectLink)}
+                className={`h-48 w-full object-cover sm:h-64 lg:h-[330px] ${sideList[2].redirectLink ? 'cursor-pointer hover:opacity-90' : ''}`}
+              />
+            ) : fallbackSideUrls.rightStory ? (
+              <img src={fallbackSideUrls.rightStory} alt="Farmer story banner" loading="eager" fetchPriority="high" className="h-48 w-full object-cover sm:h-64 lg:h-[330px]" />
+            ) : null}
           </div>
         </section>
       )}
@@ -294,7 +301,7 @@ export default function Home() {
                   style={isMobile ? { paddingLeft: 'calc(50% - 100px)', paddingRight: 'calc(50% - 100px)' } : undefined}
                 >
                   {displayProducts.map((product, idx) => (
-                    <div key={`${product.id}-${idx}`} data-new-arrival-card="true" className="w-[170px] flex-none">
+                    <div key={`${product._id || product.id}-${idx}`} data-new-arrival-card="true" className="w-[170px] flex-none">
                       <ProductCard product={product} compact />
                     </div>
                   ))}
@@ -306,12 +313,12 @@ export default function Home() {
       </section>
 
       {/* 3 MIDDLE PROMO BANNERS */}
-      {promoBanners.length > 0 && (
+      {promoList.length > 0 && (
         <section className="mt-10 grid gap-3 sm:grid-cols-3">
-          {promoBanners.map((b, i) => (
+          {promoList.map((b, i) => (
             <div key={i} className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
               {b.link ? (
-                <a href={b.link.startsWith('/') ? b.link : undefined} onClick={b.link.startsWith('/') ? undefined : () => window.open(b.link, '_blank')} target={b.link.startsWith('/') ? undefined : '_blank'} rel={b.link.startsWith('/') ? undefined : 'noopener noreferrer'}>
+                <a href={b.link.startsWith('/') ? undefined : b.link} onClick={b.link.startsWith('/') ? () => navigate(b.link) : undefined} target={b.link.startsWith('/') ? undefined : '_blank'} rel={b.link.startsWith('/') ? undefined : 'noopener noreferrer'}>
                   <img src={b.url} alt={`Promotional banner ${i + 1}`} loading="lazy" className="aspect-[4/3] w-full object-cover transition hover:opacity-90 sm:aspect-[3/2]" />
                 </a>
               ) : (
@@ -319,32 +326,6 @@ export default function Home() {
               )}
             </div>
           ))}
-        </section>
-      )}
-
-      {/* AD BANNERS */}
-      {(adBanners.left || adBanners.right) && (
-        <section className="mt-10 grid gap-4 md:grid-cols-2">
-          {adBanners.left && (
-            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-              <img
-                src={adBanners.left}
-                alt="Advertisement banner for dry fruits"
-                onClick={() => handleBannerClick('ad_banner_left')}
-                className={`aspect-[16/5] w-full object-cover ${bannerLinksMap.ad_banner_left ? 'cursor-pointer hover:opacity-90' : ''}`}
-              />
-            </div>
-          )}
-          {adBanners.right && (
-            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-              <img
-                src={adBanners.right}
-                alt="Advertisement banner for spices and masalas"
-                onClick={() => handleBannerClick('ad_banner_right')}
-                className={`aspect-[16/5] w-full object-cover ${bannerLinksMap.ad_banner_right ? 'cursor-pointer hover:opacity-90' : ''}`}
-              />
-            </div>
-          )}
         </section>
       )}
 
@@ -358,7 +339,7 @@ export default function Home() {
         <div className="mt-6 grid grid-cols-1 gap-6">
           {bundles.length === 0
             ? <div className="rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-slate-600">No combos selected yet.</div>
-            : bundles.map(b => <BundleCard key={b.id} bundle={b} />)
+            : bundles.map(b => <BundleCard key={b._id || b.id} bundle={b} />)
           }
         </div>
       </section>

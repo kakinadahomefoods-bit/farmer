@@ -1,35 +1,38 @@
 import { useState, useEffect } from 'react'
-import { supabase } from '../lib/supabase'
+import { api } from '../lib/api'
 
 const defaultSettings = {
-  store_name: 'HAiFarmer',
+  storeName: 'HAiFarmer',
   tagline: 'Fresh & Natural Products',
-  primary_color: '#16a34a',
-  secondary_color: '#059669',
-  accent_color: '#10b981',
-  whatsapp_number: '9709704563',
-  shipping_cost: 0,
-  min_order_amount: 0,
-  header_text_1: 'Free delivery over ₹1499',
-  logo_url: '',
-  placeholder_image: '',
-  footer_text: '',
-  contact_email: '',
-  contact_phone: '',
+  phone: '9709704563',
+  whatsapp: '9709704563',
+  email: '',
   address: '',
-  home_banner_url: '',
-  home_main_banner_1_url: '',
-  home_main_banner_2_url: '',
-  home_main_banner_3_url: '',
-  home_main_banner_4_url: '',
-  home_left_banner_url: '',
-  home_middle_top_banner_url: '',
-  home_middle_bottom_banner_url: '',
-  home_right_story_banner_url: '',
-  ad_banner_left_url: '',
-  ad_banner_right_url: '',
-  delivery_charge_amount: 99,
-  free_delivery_threshold: 2599,
+  headerText1: 'Free delivery over ₹1499',
+  logo: '',
+  favicon: '',
+  deliveryCharge: 0,
+  freeDeliveryMin: 1499,
+  razorpayEnabled: true,
+  razorpayKeyId: 'rzp_live_SeagFUXcQMCgdT',
+  placeholder_image: '',
+}
+
+function aliasSettings(raw) {
+  if (!raw) return { ...defaultSettings }
+  return {
+    ...defaultSettings,
+    ...raw,
+    store_name: raw.storeName || raw.store_name || defaultSettings.storeName,
+    header_text_1: raw.headerText1 || raw.header_text_1 || defaultSettings.headerText1,
+    logo_url: raw.logo || raw.logo_url || '',
+    whatsapp_number: raw.whatsapp || raw.whatsapp_number || defaultSettings.whatsapp,
+    contact_phone: raw.phone || raw.contact_phone || defaultSettings.phone,
+    contact_email: raw.email || raw.contact_email || '',
+    shipping_cost: raw.deliveryCharge ?? raw.shipping_cost ?? defaultSettings.deliveryCharge,
+    delivery_charge_amount: raw.deliveryCharge ?? raw.delivery_charge_amount ?? defaultSettings.deliveryCharge,
+    placeholder_image: raw.placeholder_image || '',
+  }
 }
 
 let cachedSettings = null
@@ -38,10 +41,13 @@ let settingsPromise = null
 export async function fetchSiteSettings() {
   if (cachedSettings) return cachedSettings
   if (!settingsPromise) {
-    settingsPromise = supabase.from('site_settings').select('*').eq('id', 1).single()
-      .then(({ data, error }) => {
-        if (error) throw error
-        cachedSettings = data || { ...defaultSettings }
+    settingsPromise = api.getSettings()
+      .then(data => {
+        cachedSettings = aliasSettings(data)
+        return cachedSettings
+      })
+      .catch(() => {
+        cachedSettings = aliasSettings(null)
         return cachedSettings
       })
       .finally(() => { settingsPromise = null })

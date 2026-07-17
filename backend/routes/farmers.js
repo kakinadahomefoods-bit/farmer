@@ -77,6 +77,18 @@ router.delete('/:id', protect, adminOnly, async (req, res) => {
   }
 })
 
+router.patch('/:id/toggle-active', protect, adminOnly, async (req, res) => {
+  try {
+    const farmer = await Farmer.findById(req.params.id)
+    if (!farmer) return res.status(404).json({ error: 'Farmer not found' })
+    farmer.isActive = !farmer.isActive
+    await farmer.save()
+    res.json(farmer)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
 router.patch('/:id/status', protect, adminOnly, async (req, res) => {
   try {
     const farmer = await Farmer.findByIdAndUpdate(
@@ -116,6 +128,17 @@ router.post('/:id/qr/regenerate', protect, adminOnly, async (req, res) => {
     const qrImage = await QRCodeLib.toDataURL(url)
     const qr = await QRCode.create({ farmer: req.params.id, code, url, qrImage })
     res.json(qr)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
+router.get('/qr/:code', async (req, res) => {
+  try {
+    const qr = await QRCode.findOne({ code: req.params.code, isActive: true }).populate('farmer')
+    if (!qr) return res.status(404).json({ error: 'QR code not found' })
+    if (!qr.farmer || !qr.farmer.isActive) return res.status(404).json({ error: 'Farmer not found' })
+    res.json({ qr, farmer: qr.farmer })
   } catch (err) {
     res.status(500).json({ error: err.message })
   }

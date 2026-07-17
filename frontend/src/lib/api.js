@@ -85,7 +85,7 @@ export const api = {
   getOrders: (params = {}) => request(`/orders/all?${new URLSearchParams(params)}`),
   getUserOrders: () => request('/orders'),
   getOrder: (id) => request(`/orders/${id}`),
-  createOrder: (data) => request('/orders', { method: 'POST', body: JSON.stringify(data) }),
+  createOrder: (data) => request('/orders/direct', { method: 'POST', body: JSON.stringify(data) }),
   updateOrderStatus: (id, status) => request(`/orders/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }),
   getOrderStats: () => request('/orders/stats'),
   getRecentOrders: () => request('/orders/recent'),
@@ -111,13 +111,24 @@ export const api = {
   getFarmers: (params = {}) => request(`/farmers?${new URLSearchParams(params)}`),
   getAllFarmers: (params = {}) => request(`/farmers/all?${new URLSearchParams(params)}`),
   getFarmer: (id) => request(`/farmers/${id}`),
+  getFarmerByQRCode: (code) => request(`/farmers/qr/${code}`),
   createFarmer: (data) => request('/farmers', { method: 'POST', body: JSON.stringify(data) }),
   updateFarmer: (id, data) => request(`/farmers/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   deleteFarmer: (id) => request(`/farmers/${id}`, { method: 'DELETE' }),
+  toggleFarmerActive: (id) => request(`/farmers/${id}/toggle-active`, { method: 'PATCH' }),
   updateFarmerStatus: (id, status) => request(`/farmers/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }),
   getFarmerQR: (id) => request(`/farmers/${id}/qr`),
   regenerateFarmerQR: (id) => request(`/farmers/${id}/qr/regenerate`, { method: 'POST' }),
   toggleFarmerQR: (id) => request(`/farmers/${id}/qr/toggle`, { method: 'PATCH' }),
+
+  // Bundles
+  getBundles: (params = {}) => request(`/bundles?${new URLSearchParams(params)}`),
+  getAllBundles: () => request('/bundles/all'),
+  getBundle: (slug) => request(`/bundles/${slug}`),
+  createBundle: (data) => request('/bundles', { method: 'POST', body: JSON.stringify(data) }),
+  updateBundle: (id, data) => request(`/bundles/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteBundle: (id) => request(`/bundles/${id}`, { method: 'DELETE' }),
+  toggleBundleActive: (id) => request(`/bundles/${id}/toggle-active`, { method: 'PATCH' }),
 
   // Settings
   getSettings: () => request('/settings'),
