@@ -9,12 +9,12 @@ const seed = async () => {
   const adminExists = await User.findOne({ role: 'admin' })
   if (!adminExists) {
     await User.create({
-      email: 'admin@haifarmer.com',
-      password: 'Admin@123',
+      email: 'kakinadahomefoods@gmail.com',
+      password: 'admin123',
       fullName: 'HAiFarmer Admin',
       role: 'admin',
     })
-    console.log('Admin user created: admin@haifarmer.com / Admin@123')
+    console.log('Admin user created: kakinadahomefoods@gmail.com / admin123')
   } else {
     console.log('Admin user already exists')
   }

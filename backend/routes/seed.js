@@ -12,8 +12,8 @@ router.post('/seed', async (req, res) => {
     const results = []
     const adminExists = await User.findOne({ role: 'admin' })
     if (!adminExists) {
-      await User.create({ email: 'admin@haifarmer.com', password: 'Admin@123', fullName: 'HAiFarmer Admin', role: 'admin' })
-      results.push('Admin user created: admin@haifarmer.com / Admin@123')
+      await User.create({ email: 'kakinadahomefoods@gmail.com', password: 'admin123', fullName: 'HAiFarmer Admin', role: 'admin' })
+      results.push('Admin user created: kakinadahomefoods@gmail.com / admin123')
     } else {
       results.push('Admin user already exists')
     }
