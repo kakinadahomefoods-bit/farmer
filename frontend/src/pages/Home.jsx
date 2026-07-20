@@ -191,6 +191,7 @@ export default function Home() {
           </div>
           <div className="relative z-10 mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-10 text-center">
             <div className="max-w-3xl mx-auto animate-fade-up">
+              <p className="font-heading text-sm font-semibold tracking-[0.25em] uppercase text-gold-500/60 mb-3">HI</p>
               <div className="inline-flex items-center gap-2 rounded-full border border-gold-500/20 bg-gold-500/10 px-5 py-1.5 text-[10px] font-semibold tracking-[0.15em] uppercase text-gold-500 mb-6">From Tribal Villages</div>
               <p className="font-heading text-sm font-semibold tracking-[0.25em] uppercase text-cream-50/40 mb-4">Real Food. Real Farmers. Real Health.</p>
               <h1 className="font-heading text-5xl font-bold leading-tight text-cream-50 sm:text-6xl lg:text-7xl tracking-tight">
