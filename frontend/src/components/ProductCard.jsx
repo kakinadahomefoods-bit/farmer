@@ -44,7 +44,7 @@ export default function ProductCard({ product, compact = false }) {
   return (
     <div className={`group flex h-full flex-col rounded-2xl border border-border-warm bg-white shadow-sm transition hover:shadow-lg ${compact ? '' : 'p-3'}`}>
       <Link
-        to={`/product/${slugify(product.name)}`}
+        to={`/products/${slugify(product.name)}`}
         className={`relative block overflow-hidden rounded-xl bg-gradient-to-br from-sage-300/20 via-cream-50 to-sage-300/10 ${compact ? 'h-[150px]' : 'h-[280px]'}`}
       >
         {product.discount_percent > 0 && (
@@ -67,7 +67,7 @@ export default function ProductCard({ product, compact = false }) {
       </Link>
 
       <div className={`flex flex-1 flex-col ${compact ? 'px-2 pt-3 pb-2' : 'px-1 pt-3 pb-1'}`}>
-        <Link to={`/product/${slugify(product.name)}`}>
+        <Link to={`/products/${slugify(product.name)}`}>
           <h3 className={`line-clamp-2 font-medium text-text-dark ${compact ? 'text-sm' : 'text-base'} leading-tight`}>
             {product.name}
           </h3>
