@@ -463,7 +463,7 @@ export default function Home() {
       </section>
 
       {/* Testimonials */}
-      <section className="relative bg-cream-100 py-4">
+      <section className="relative bg-cream-100 py-4 pb-0">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-terracotta-500/20 bg-terracotta-500/10 px-4 py-1.5 text-[10px] font-semibold tracking-[0.15em] uppercase text-terracotta-500">Testimonials</span>
           <h2 className="mt-3 font-heading text-3xl font-bold text-forest-900 sm:text-4xl tracking-tight">What Our <span className="text-terracotta-500 italic">Customers</span> Say</h2>
@@ -490,11 +490,11 @@ export default function Home() {
       </section>
 
       {/* Combos */}
-      <section className="relative bg-cream-100 py-4" ref={el => sectionRef.current[4] = el} data-section="combos">
+      <section className="relative bg-cream-100 pt-1 pb-4" ref={el => sectionRef.current[4] = el} data-section="combos">
         <div className={`mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 reveal ${visibleSections.combos ? 'visible' : ''}`}>
           <div className="text-center">
             <span className="inline-flex items-center gap-2 rounded-full border border-terracotta-500/20 bg-terracotta-500/10 px-4 py-1.5 text-[10px] font-semibold tracking-[0.15em] uppercase text-terracotta-500">Farm to Home</span>
-            <h2 className="mt-3 font-heading text-4xl font-bold text-forest-900 sm:text-5xl tracking-tight">Family Combos</h2>
+            <h2 className="mt-1 font-heading text-4xl font-bold text-forest-900 sm:text-5xl tracking-tight">Family Combos</h2>
             <p className="mt-2 text-sm text-forest-900/50">Thoughtfully curated bundles from tribal farms. Best value, pure quality. Free shipping on orders above ₹2,599.</p>
           </div>
           <div className="mt-3 space-y-2">
