@@ -1,12 +1,10 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useCart } from '../contexts/CartContext'
 import { useSiteSettings } from '../contexts/SiteSettingsContext'
 import SeoHead from '../components/SeoHead'
-import ProductCard from '../components/ProductCard'
-import BundleCard from '../components/BundleCard'
 import { api } from '../lib/api'
-import { getImageUrl, optimizeImage } from '../lib/utils'
+import { optimizeImage } from '../lib/utils'
 import { CartIcon } from '../components/Icons'
 import { getNewArrivals as getSupabaseNewArrivals, getComboBundles as getSupabaseComboBundles, getActiveBanners as getSupabaseBanners, getCategories as getSupabaseCategories } from '../lib/productService'
 
@@ -31,40 +29,6 @@ export default function Home() {
   const [transition, setTransition] = useState(true)
   const [paused, setPaused] = useState(false)
   const [touchStart, setTouchStart] = useState(null)
-  const sectionRef = useRef([])
-  const [visibleSections, setVisibleSections] = useState({})
-
-  const catList = categories.filter(c => c.name && c.isActive !== false).sort((a, b) => (a.order || 0) - (b.order || 0))
-  const groupedProducts = {}
-  const uncategorized = []
-  allProducts.forEach(p => {
-    const catName = p.category?.name || p.categoryName
-    if (catName) {
-      if (!groupedProducts[catName]) groupedProducts[catName] = []
-      groupedProducts[catName].push(p)
-    } else {
-      uncategorized.push(p)
-    }
-  })
-  let sectionIdx = 5
-  const categorySections = catList.map(cat => {
-    const catProducts = groupedProducts[cat.name] || []
-    if (catProducts.length === 0) return null
-    return {
-      key: cat._id || cat.name,
-      name: cat.name,
-      slug: cat.slug || cat.name.toLowerCase().replace(/\s+/g, '-'),
-      desc: cat.description || `Organic ${cat.name}`,
-      link: `/products?category=${cat.slug || cat.name}`,
-      products: catProducts,
-      idx: sectionIdx++,
-    }
-  }).filter(Boolean)
-  const hasCategoryProducts = categorySections.length > 0
-  const allProductsPool = allProducts.length > 0 ? allProducts : products
-  const fallbackPool = uncategorized.length > 0 ? uncategorized : allProductsPool
-  const showFallbackGrid = !hasCategoryProducts && fallbackPool.length > 0
-
   const cartCount = (cartItems || []).reduce((sum, item) => sum + (item.quantity || 0), 0)
   const handleBannerClick = (link) => { if (!link) return; if (link.startsWith('/')) navigate(link); else window.open(link, '_blank') }
   const bannerUrls = heroBanners.length > 0 ? heroBanners.map(b => b.image) : fallbackBannerUrls
@@ -81,18 +45,6 @@ export default function Home() {
     if (Math.abs(diff) > 50) diff > 0 ? goNext() : goPrev()
     setTouchStart(null)
   }
-
-  useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          setVisibleSections(prev => ({ ...prev, [entry.target.dataset.section]: true }))
-        }
-      })
-    }, { threshold: 0.15 })
-    sectionRef.current.forEach(el => { if (el) observer.observe(el) })
-    return () => observer.disconnect()
-  }, [])
 
   useEffect(() => {
     let cancelled = false
@@ -153,8 +105,6 @@ export default function Home() {
     const id = window.setInterval(() => setCarouselIdx(prev => (prev + 1) % bannerUrls.length), 5000)
     return () => window.clearInterval(id)
   }, [paused, bannerUrls.length])
-
-  const displayProducts = products.length > 5 ? [...products, ...products, ...products] : products
 
   const orgSchema = {
     '@context': 'https://schema.org', '@type': ['LocalBusiness', 'OnlineStore'],
@@ -248,44 +198,45 @@ export default function Home() {
         </section>
       )}
 
+      {/* Trust strip */}
+      <section className="bg-cream-50 py-8 lg:py-10">
+        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 text-center">
+          <h2 className="font-heading text-2xl font-bold text-forest-900 sm:text-3xl tracking-tight">Trusted by Families Who Choose Pure Food</h2>
+          <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-4">
+            {[
+              { icon: '🌾', title: '20+ Traditional Foods', desc: 'Authentic pantry essentials sourced from trusted farmers.' },
+              { icon: '👨‍🌾', title: '100+ Partner Farmers', desc: 'Supporting local farming communities across India.' },
+              { icon: '🚚', title: 'Fresh Delivery', desc: 'Carefully packed and delivered across India.' },
+              { icon: '⭐', title: '100% Natural Ingredients', desc: 'No artificial colors, preservatives, or harmful additives.' },
+            ].map(item => (
+              <div key={item.title} className="rounded-2xl border border-forest-900/10 bg-white p-5 text-center shadow-sm hover:border-terracotta-500/30 hover:shadow-md transition-all">
+                <span className="text-3xl">{item.icon}</span>
+                <h3 className="mt-2 font-heading text-base font-semibold text-forest-900">{item.title}</h3>
+                <p className="mt-1 text-xs text-forest-900/50">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+          <p className="mt-6 text-sm text-forest-900/50 italic">Bringing farm-fresh goodness directly to your home.</p>
+        </div>
+      </section>
+
       {/* Story section */}
-      <section className="relative bg-cream-100 py-6 lg:py-10 overflow-hidden" ref={el => sectionRef.current[1] = el} data-section="story">
-        <div className={`mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 reveal ${visibleSections.story ? 'visible' : ''}`}>
-          <div className="grid items-start gap-6 lg:grid-cols-3">
-            <div className="lg:col-span-1">
-              <span className="inline-flex items-center gap-2 rounded-full border border-terracotta-500/20 bg-terracotta-500/10 px-4 py-1.5 text-[10px] font-semibold tracking-[0.15em] uppercase text-terracotta-500 mb-3">Our Story</span>
-              <h2 className="font-heading text-3xl font-bold text-forest-900 sm:text-4xl tracking-tight mt-1">From <span className="text-terracotta-500 italic">the Tribes</span></h2>
-              <p className="mt-2 text-sm leading-relaxed text-forest-900/60">For generations, tribal farmers have cultivated the land using traditional methods — rainwater-fed, pesticide-free, and in perfect harmony with nature. HaiFarmer brings this ancient wisdom directly to your home.</p>
-              <p className="mt-3 text-sm leading-relaxed text-forest-900/60">We work directly with indigenous farming communities, ensuring fair prices and respecting their traditional knowledge.</p>
-              <Link to="/about" className="mt-4 inline-flex items-center gap-1 text-terracotta-500 text-xs font-semibold tracking-[0.08em] uppercase hover:text-terracotta-600 transition-colors">
-                Read Our Story
+      <section className="relative bg-cream-100 py-8 lg:py-10 overflow-hidden">
+        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+          <div className="text-center max-w-3xl mx-auto">
+            <span className="inline-flex items-center gap-2 rounded-full border border-terracotta-500/20 bg-terracotta-500/10 px-4 py-1.5 text-[10px] font-semibold tracking-[0.15em] uppercase text-terracotta-500">Our Story</span>
+            <h2 className="mt-3 font-heading text-3xl font-bold text-forest-900 sm:text-4xl tracking-tight">From <span className="text-terracotta-500 italic">Our Farmers</span> to Your Family</h2>
+            <p className="mt-4 text-sm leading-relaxed text-forest-900/60 max-w-2xl mx-auto">
+              We started with one simple mission&mdash;to bring authentic, naturally grown foods from Indian farms directly to every household. By working closely with local farmers and traditional producers, we preserve age-old methods while ensuring freshness, purity, and quality in every product.
+            </p>
+            <p className="mt-3 text-sm leading-relaxed text-forest-900/60 max-w-2xl mx-auto">
+              Whether it&rsquo;s nutrient-rich millets, raw honey, hand-ground spices, cold-pressed oils, or wholesome grocery essentials, every product is carefully selected to deliver the taste of tradition with the trust of modern quality standards.
+            </p>
+            <div className="mt-6">
+              <Link to="/products" className="btn-font inline-flex items-center gap-2 rounded-xl bg-terracotta-500 px-9 py-3.5 text-sm font-semibold tracking-[0.08em] uppercase text-cream-50 transition-all hover:bg-terracotta-600 hover:-translate-y-1 shadow-xl shadow-terracotta-500/25 btn-lift">
+                Explore Our Products
                 <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
               </Link>
-            </div>
-            <div className="lg:col-span-1 flex justify-center">
-              <div className="relative">
-                <div className="h-64 w-64 rounded-[40%_60%_50%_50%_/50%_40%_60%_50%_] bg-gradient-to-br from-terracotta-500/30 via-forest-900/20 to-forest-900/50 overflow-hidden border-2 border-terracotta-500/20">
-                  <div className="flex h-full items-center justify-center">
-                    <span className="text-6xl opacity-40">🌾</span>
-                  </div>
-                </div>
-                <div className="absolute -bottom-4 -right-4 h-32 w-32 rounded-[50%_40%_60%_50%_/40%_50%_50%_60%_] bg-terracotta-500/10 -z-10" />
-              </div>
-            </div>
-            <div className="lg:col-span-1 space-y-4">
-              {[
-                { icon: '🤝', title: 'Direct from Tribes', desc: 'No middlemen. Just honest relationships and fair trade.', bg: 'bg-terracotta-500/10 text-terracotta-600' },
-                { icon: '🌿', title: '100% Natural', desc: 'Wild-harvested and chemical-free, as nature intended.', bg: 'bg-forest-900/10 text-forest-900' },
-                { icon: '💚', title: 'Creating Impact', desc: 'Empowering tribal communities and preserving their traditions.', bg: 'bg-terracotta-500/10 text-terracotta-600' },
-              ].map(item => (
-                <div key={item.title} className="flex gap-3">
-                  <div className={`flex h-10 w-10 flex-none items-center justify-center rounded-full ${item.bg} text-base`}>{item.icon}</div>
-                  <div>
-                    <h3 className="font-heading text-sm font-semibold text-forest-900">{item.title}</h3>
-                    <p className="text-[11px] text-forest-900/50 mt-0.5">{item.desc}</p>
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
         </div>
@@ -315,88 +266,37 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Category sections */}
-      {hasCategoryProducts ? categorySections.map((section, ci) => (
-        <div key={section.key}>
-          <section className={`relative bg-forest-900 py-4 ${ci % 2 === 0 ? '' : 'bg-forest-950'}`} ref={el => sectionRef.current[section.idx] = el} data-section={`cat-${section.slug}`}>
-            <div className={`mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 reveal ${visibleSections[`cat-${section.slug}`] ? 'visible' : ''}`}>
-              <div className="flex items-end justify-between">
-                <div>
-                  <span className="inline-flex items-center gap-2 rounded-full border border-gold-500/20 bg-gold-500/10 px-4 py-1.5 text-[10px] font-semibold tracking-[0.15em] uppercase text-gold-500">{section.name}</span>
-                  <h2 className="mt-3 font-heading text-3xl font-bold text-cream-50 sm:text-4xl tracking-tight">{section.desc}</h2>
-                </div>
-                <Link to={section.link} className="hidden sm:inline-flex btn-font items-center gap-2 rounded-xl border border-cream-50/20 px-6 py-3 text-xs font-semibold tracking-[0.08em] uppercase text-cream-50/60 transition-all hover:bg-cream-50/10 hover:text-cream-50 hover:-translate-y-0.5">
-                  View All
-                </Link>
-              </div>
-              <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {section.products.slice(0, 4).map(product => (
-                  <ProductCard key={product._id || product.id} product={product} />
-                ))}
-              </div>
-              <div className="mt-4 text-center sm:hidden">
-                <Link to={section.link} className="btn-font inline-flex items-center gap-2 rounded-xl border border-cream-50/20 px-6 py-3 text-xs font-semibold tracking-[0.08em] uppercase text-cream-50/60 transition-all hover:bg-cream-50/10 hover:text-cream-50">
-                  View All {section.name}
-                </Link>
-              </div>
-            </div>
-          </section>
-        </div>
-      )) : showFallbackGrid ? (
-        <div>
-          <section className="relative bg-forest-900 py-4" ref={el => sectionRef.current[5] = el} data-section="all-products">
-            <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-              <div className="text-center">
-                <span className="inline-flex items-center gap-2 rounded-full border border-gold-500/20 bg-gold-500/10 px-4 py-1.5 text-[10px] font-semibold tracking-[0.15em] uppercase text-gold-500">Our Collection</span>
-                <h2 className="mt-3 font-heading text-3xl font-bold text-cream-50 sm:text-4xl tracking-tight">Premium <span className="text-gold-500 italic">Produce</span></h2>
-                <p className="mt-2 text-sm text-cream-50/50 max-w-md mx-auto">Pure forest-grown produce direct from tribal farms</p>
-              </div>
-              <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {fallbackPool.slice(0, 8).map(product => (
-                  <ProductCard key={product._id || product.id} product={product} />
-                ))}
-              </div>
-            </div>
-          </section>
-        </div>
-      ) : (
-        <div>
-          {[
-            { name: 'Natural Sweeteners', slug: 'natural-sweeteners', desc: 'Pure raw forest honey & natural sugars', icon: '🍯', products: [] },
-            { name: 'Millets', slug: 'millets', desc: 'Traditional ancient grains, chemical-free', icon: '🌾', products: [] },
-            { name: 'Spices', slug: 'spices', desc: 'Wild-harvested forest spices', icon: '🌶️', products: [] },
-          ].map((cat, ci) => (
-            <section key={cat.slug} className={`relative bg-forest-900 py-4 ${ci % 2 === 0 ? '' : 'bg-forest-950'}`}>
-              <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-                <div className="flex items-end justify-between">
-                  <div>
-                    <span className="inline-flex items-center gap-2 rounded-full border border-gold-500/20 bg-gold-500/10 px-4 py-1.5 text-[10px] font-semibold tracking-[0.15em] uppercase text-gold-500">{cat.icon} {cat.name}</span>
-                    <h2 className="mt-3 font-heading text-3xl font-bold text-cream-50 sm:text-4xl tracking-tight">{cat.desc}</h2>
+      {/* Shop by Category */}
+      <section className="relative bg-forest-900 py-8 lg:py-10">
+        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 text-center">
+          <span className="inline-flex items-center gap-2 rounded-full border border-gold-500/20 bg-gold-500/10 px-4 py-1.5 text-[10px] font-semibold tracking-[0.15em] uppercase text-gold-500">Categories</span>
+          <h2 className="mt-3 font-heading text-3xl font-bold text-cream-50 sm:text-4xl tracking-tight">Shop by Category</h2>
+          <p className="mt-2 text-sm text-cream-50/50 max-w-md mx-auto">Discover wholesome foods for a healthier lifestyle.</p>
+          <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+            {[
+              { icon: '🌾', name: 'Millets', slug: 'millets', desc: 'Traditional super grains packed with nutrition.' },
+              { icon: '🍯', name: 'Honey', slug: 'honey', desc: 'Pure, raw, unprocessed honey directly from beekeepers.' },
+              { icon: '🌶', name: 'Spices', slug: 'spices', desc: 'Freshly sourced aromatic spices for authentic cooking.' },
+              { icon: '🥜', name: 'Dry Fruits', slug: 'dry-fruits', desc: 'Premium quality nuts and dried fruits.' },
+              { icon: '🌾', name: 'Rice & Grains', slug: 'rice-grains', desc: 'Farm-fresh rice and healthy grains.' },
+              { icon: '🛒', name: 'Grocery Essentials', slug: 'grocery', desc: 'Daily essentials sourced with care.' },
+            ].map(cat => (
+              <Link key={cat.slug} to={`/products?category=${cat.slug}`} className="group block">
+                <div className="rounded-2xl border border-gold-500/10 bg-forest-950/60 p-5 text-center transition-all hover:border-gold-500/30 hover:-translate-y-1 hover:shadow-xl hover:shadow-gold-500/5">
+                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gold-500/10 text-3xl transition-all group-hover:bg-gold-500/20 group-hover:scale-105">
+                    {cat.icon}
                   </div>
-                  <Link to={`/products?category=${cat.slug}`} className="hidden sm:inline-flex btn-font items-center gap-2 rounded-xl border border-cream-50/20 px-6 py-3 text-xs font-semibold tracking-[0.08em] uppercase text-cream-50/60 transition-all hover:bg-cream-50/10 hover:text-cream-50 hover:-translate-y-0.5">
-                    View All
-                  </Link>
+                  <h3 className="mt-3 font-heading text-sm font-semibold text-cream-50">{cat.name}</h3>
+                  <p className="mt-1 text-[10px] text-cream-50/40">{cat.desc}</p>
+                  <span className="mt-3 inline-flex items-center gap-1 rounded-full border border-gold-500/20 px-3 py-1 text-[9px] font-semibold tracking-[0.1em] uppercase text-gold-500/80 transition-all group-hover:bg-gold-500/10">
+                    Shop {cat.name}
+                  </span>
                 </div>
-                <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-                  {[
-                    { id: 1, name: 'Wild Forest Honey', tagline: 'Pure raw honey from tribal forests', image_url: '', category_name: cat.name, base_price: 499 },
-                    { id: 2, name: 'Organic Ragi (Finger Millet)', tagline: 'Rainfed, pesticide-free', image_url: '', category_name: cat.name, base_price: 299 },
-                    { id: 3, name: 'Turmeric Powder', tagline: 'Wild forest turmeric, high curcumin', image_url: '', category_name: cat.name, base_price: 199 },
-                    { id: 4, name: 'Natural Jaggery', tagline: 'Unrefined, chemical-free', image_url: '', category_name: cat.name, base_price: 249 },
-                  ].map(p => (
-                    <ProductCard key={p.id} product={{ ...p, product_variants: [{ id: 1, price: p.base_price, weight_label: '500g' }] }} />
-                  ))}
-                </div>
-                <div className="mt-4 text-center sm:hidden">
-                  <Link to={`/products?category=${cat.slug}`} className="btn-font inline-flex items-center gap-2 rounded-xl border border-cream-50/20 px-6 py-3 text-xs font-semibold tracking-[0.08em] uppercase text-cream-50/60 transition-all hover:bg-cream-50/10 hover:text-cream-50">
-                    View All {cat.name}
-                  </Link>
-                </div>
-              </div>
-            </section>
-          ))}
+              </Link>
+            ))}
+          </div>
         </div>
-      )}
+      </section>
 
       {/* Promo banners */}
       {promoList.length > 0 && (
@@ -444,25 +344,29 @@ export default function Home() {
       </section>
 
       {/* Impact section */}
-      <section className="relative bg-forest-900 py-6 lg:py-8 overflow-hidden" ref={el => sectionRef.current[3] = el} data-section="impact">
-        <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'radial-gradient(circle at 25% 50%, #C8A96A 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
-        <div className={`mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 text-center reveal ${visibleSections.impact ? 'visible' : ''}`}>
+      <section className="relative bg-forest-900 py-8 lg:py-10 overflow-hidden">
+        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-gold-500/20 bg-gold-500/10 px-4 py-1.5 text-[10px] font-semibold tracking-[0.15em] uppercase text-gold-500">Our Impact</span>
-          <h2 className="mt-2 font-heading text-2xl font-bold text-cream-50 sm:text-3xl tracking-tight">Empowering <span className="text-gold-500 italic">Lives,</span> Naturally</h2>
-          <p className="mx-auto mt-1 max-w-md text-xs text-cream-50/50">Every purchase creates meaningful change for tribal communities and the environment.</p>
-          <div className="mt-4 grid gap-3 sm:grid-cols-4">
+          <h2 className="mt-3 font-heading text-3xl font-bold text-cream-50 sm:text-4xl tracking-tight">Our <span className="text-gold-500 italic">Impact</span></h2>
+          <p className="mt-2 text-sm text-cream-50/50 max-w-md mx-auto">Every purchase creates a positive impact.</p>
+          <div className="mt-6 grid gap-3 sm:grid-cols-4">
             {[
-              { number: '12,500+', label: 'Tribal Lives Supported', icon: '👨‍👩‍👧‍👦' },
-              { number: '250+', label: 'Tribal Farmers Empowered', icon: '👨‍🌾' },
-              { number: '50+', label: 'Forest Produce Sourced', icon: '🌳' },
-              { number: '100%', label: 'Natural & Sustainable', icon: '🌿' },
+              { icon: '❤️', title: 'Supporting Local Farmers', desc: 'Every order helps strengthen farming communities.' },
+              { icon: '🌱', title: 'Sustainable Farming', desc: 'Encouraging eco-friendly and traditional farming practices.' },
+              { icon: '🥣', title: 'Healthy Families', desc: 'Nutritious foods that promote healthier lifestyles.' },
+              { icon: '🇮🇳', title: 'Made in India', desc: 'Proudly supporting Indian agriculture and local businesses.' },
             ].map(item => (
-              <div key={item.label} className="rounded-xl border border-gold-500/10 bg-forest-950/60 p-4 text-center">
-                <span className="text-xl">{item.icon}</span>
-                <p className="mt-2 font-heading text-2xl font-bold text-gold-500">{item.number}</p>
-                <p className="mt-0.5 text-[10px] text-cream-50/70">{item.label}</p>
+              <div key={item.title} className="rounded-xl border border-gold-500/10 bg-forest-950/60 p-5 text-center hover:border-gold-500/30 hover:-translate-y-0.5 transition-all">
+                <span className="text-2xl">{item.icon}</span>
+                <h3 className="mt-2 font-heading text-sm font-semibold text-cream-50">{item.title}</h3>
+                <p className="mt-1 text-[11px] text-cream-50/50">{item.desc}</p>
               </div>
             ))}
+          </div>
+          <div className="mt-6 max-w-2xl mx-auto">
+            <p className="text-sm text-cream-50/50 leading-relaxed italic border-l-2 border-gold-500/30 pl-4 text-left">
+              &ldquo;When you choose us, you&rsquo;re not just buying food&mdash;you are supporting farmers, protecting traditions, and bringing healthier choices to your family.&rdquo;
+            </p>
           </div>
         </div>
       </section>
@@ -487,6 +391,45 @@ export default function Home() {
                     <p className="text-sm font-semibold text-forest-900">{item.name}</p>
                     <p className="text-xs text-forest-900/40">{item.location}</p>
                   </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Combos */}
+      <section className="relative bg-cream-100 py-8 lg:py-10">
+        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 text-center">
+          <span className="inline-flex items-center gap-2 rounded-full border border-terracotta-500/20 bg-terracotta-500/10 px-4 py-1.5 text-[10px] font-semibold tracking-[0.15em] uppercase text-terracotta-500">Farm to Home</span>
+          <h2 className="mt-3 font-heading text-3xl font-bold text-forest-900 sm:text-4xl tracking-tight">Value Combos You&rsquo;ll Love</h2>
+          <p className="mt-2 text-sm text-forest-900/50 max-w-md mx-auto">Handpicked combinations that bring freshness, nutrition, and savings together.</p>
+          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              { icon: '🥣', name: 'Healthy Breakfast Combo', items: 'Millets + Honey + Dry Fruits', save: '15%', original: '₹1,299', discounted: '₹1,099', badge: 'Save 15%', popular: false },
+              { icon: '🌶', name: 'Kitchen Essentials Combo', items: 'Spices + Rice + Grocery Staples', save: '10%', original: '₹1,999', discounted: '₹1,799', badge: 'Save 10%', popular: false },
+              { icon: '🌾', name: 'Wellness Combo', items: 'Millets + Cold Pressed Oil + Honey', save: '20%', original: '₹1,599', discounted: '₹1,279', badge: 'Best Seller', popular: false },
+              { icon: '🎁', name: 'Family Combo Pack', items: 'Everyday groceries for the whole family.', save: '12%', original: '₹2,499', discounted: '₹2,199', badge: 'Most Popular', popular: true },
+            ].map((combo, i) => (
+              <div key={i} className={`rounded-2xl border ${combo.popular ? 'border-terracotta-500/30 bg-white shadow-lg ring-1 ring-terracotta-500/10' : 'border-forest-900/10 bg-white shadow-sm'} p-5 text-center transition-all hover:shadow-xl hover:-translate-y-1`}>
+                {combo.popular && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-terracotta-500/10 px-3 py-1 text-[9px] font-semibold tracking-[0.1em] uppercase text-terracotta-600 mb-2">Most Popular</span>
+                )}
+                <span className="text-3xl">{combo.icon}</span>
+                <h3 className="mt-2 font-heading text-sm font-semibold text-forest-900">{combo.name}</h3>
+                <p className="mt-1 text-[11px] text-forest-900/50">{combo.items}</p>
+                <div className="mt-3 flex items-center justify-center gap-2">
+                  <span className="text-xs text-forest-900/30 line-through">{combo.original}</span>
+                  <span className="font-heading text-lg font-bold text-terracotta-500">{combo.discounted}</span>
+                </div>
+                <span className="inline-block mt-1 rounded-full bg-green-600/10 px-2 py-0.5 text-[10px] font-semibold text-green-600">Save {combo.save}</span>
+                <div className="mt-3 flex gap-2">
+                  <button type="button" className="flex-1 rounded-xl bg-terracotta-500 py-2.5 text-[11px] font-semibold tracking-[0.08em] uppercase text-cream-50 transition-all hover:bg-terracotta-600">
+                    Add to Cart
+                  </button>
+                  <button type="button" className="flex h-10 w-10 items-center justify-center rounded-xl border border-forest-900/10 text-forest-900/30 transition-all hover:border-terracotta-500/30 hover:text-terracotta-500">
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
+                  </button>
                 </div>
               </div>
             ))}
