@@ -281,8 +281,8 @@ export default function Home() {
         <div className={`mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 reveal ${visibleSections.arrivals ? 'visible' : ''}`}>
           <div className="flex items-end justify-between">
             <div>
-              <span className="inline-flex items-center gap-2 rounded-full border border-terracotta-500/20 bg-terracotta-500/10 px-4 py-1.5 text-[10px] font-semibold tracking-[0.15em] uppercase text-terracotta-500">Fresh Harvest</span>
-              <h2 className="mt-3 font-heading text-4xl font-bold text-forest-900 sm:text-5xl tracking-tight">Best Sellers</h2>
+              <span className="inline-flex items-center gap-2 rounded-full border border-terracotta-500/20 bg-terracotta-500/10 px-4 py-1.5 text-[10px] font-semibold tracking-[0.15em] uppercase text-terracotta-500">Fresh from the farm</span>
+              <h2 className="mt-3 font-heading text-4xl font-bold text-forest-900 sm:text-5xl tracking-tight">New Arrivals</h2>
               <p className="mt-2 text-sm text-forest-900/50 max-w-md">Handpicked organic produce from tribal farmers. Fresh harvest, direct to your door.</p>
             </div>
             <Link to="/products" className="hidden sm:inline-flex btn-font items-center gap-2 rounded-xl border border-forest-900/20 px-6 py-3 text-xs font-semibold tracking-[0.08em] uppercase text-forest-900 transition-all hover:bg-forest-900 hover:text-cream-50 hover:-translate-y-0.5">
