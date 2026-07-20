@@ -372,7 +372,7 @@ export default function Home() {
           <div className="text-center">
             <span className="inline-flex items-center gap-2 rounded-full border border-terracotta-500/20 bg-terracotta-500/10 px-4 py-1.5 text-[10px] font-semibold tracking-[0.15em] uppercase text-terracotta-500">Farm to Home</span>
             <h2 className="mt-3 font-heading text-4xl font-bold text-forest-900 sm:text-5xl tracking-tight">Family Combos</h2>
-            <p className="mt-2 text-sm text-forest-900/50">Curated bundles from tribal farms. Best value, pure quality. Free shipping above ₹2,599.</p>
+            <p className="mt-2 text-sm text-forest-900/50">Thoughtfully curated bundles from tribal farms. Best value, pure quality. Free shipping on orders above ₹2,599.</p>
           </div>
           <div className="mt-10 space-y-6">
             {bundles.length === 0 ? (
