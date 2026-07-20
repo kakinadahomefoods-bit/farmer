@@ -181,7 +181,7 @@ export default function Home() {
 
       {/* Hero */}
       {bannerUrls.length > 0 && (
-        <section className="relative min-h-[55vh] sm:min-h-[65vh] flex items-center justify-center bg-forest-900 overflow-hidden"
+        <section className="relative min-h-[55vh] sm:min-h-[65vh] flex items-center justify-center bg-forest-900 overflow-hidden border-2 border-blue-400"
           onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
           <div className="absolute inset-0">
             <div className="flex h-full" style={{ width: `${100 * bannerUrls.length}%`, transform: `translateX(-${100 / bannerUrls.length * carouselIdx}%)`, transition: transition ? 'transform 1200ms cubic-bezier(0.22, 0.61, 0.36, 1)' : 'none' }}>
@@ -249,7 +249,7 @@ export default function Home() {
       )}
 
       {/* Trust strip */}
-      <section className="bg-cream-50 py-3" ref={el => sectionRef.current[0] = el} data-section="trust">
+      <section className="bg-cream-50 py-3 border-2 border-blue-400" ref={el => sectionRef.current[0] = el} data-section="trust">
         <div className={`mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 reveal ${visibleSections.trust ? 'visible' : ''}`}>
           <div className="grid grid-cols-2 gap-2 text-center md:grid-cols-4">
             {[
@@ -271,7 +271,7 @@ export default function Home() {
       </section>
 
       {/* Story section */}
-      <section className="relative bg-cream-100 py-6 lg:py-10 overflow-hidden" ref={el => sectionRef.current[1] = el} data-section="story">
+      <section className="relative bg-cream-100 py-6 lg:py-10 overflow-hidden border-2 border-blue-400" ref={el => sectionRef.current[1] = el} data-section="story">
         <div className={`mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 reveal ${visibleSections.story ? 'visible' : ''}`}>
           <div className="grid items-start gap-6 lg:grid-cols-3">
             <div className="lg:col-span-1">
@@ -314,7 +314,7 @@ export default function Home() {
       </section>
 
       {/* Why Choose Us */}
-      <section className="relative bg-cream-100 py-8 lg:py-10">
+      <section className="relative bg-cream-100 py-8 lg:py-10 border-2 border-blue-400">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
           <div className="text-center">
             <span className="inline-flex items-center gap-2 rounded-full border border-terracotta-500/20 bg-terracotta-500/10 px-4 py-1.5 text-[10px] font-semibold tracking-[0.15em] uppercase text-terracotta-500">Why Choose Us</span>
@@ -340,7 +340,7 @@ export default function Home() {
       {/* Category sections */}
       {hasCategoryProducts ? categorySections.map((section, ci) => (
         <div key={section.key}>
-          <section className={`relative bg-forest-900 py-4 ${ci % 2 === 0 ? '' : 'bg-forest-950'}`} ref={el => sectionRef.current[section.idx] = el} data-section={`cat-${section.slug}`}>
+          <section className={`relative bg-forest-900 py-4 border-2 border-blue-400 ${ci % 2 === 0 ? '' : 'bg-forest-950'}`} ref={el => sectionRef.current[section.idx] = el} data-section={`cat-${section.slug}`}>
             <div className={`mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 reveal ${visibleSections[`cat-${section.slug}`] ? 'visible' : ''}`}>
               <div className="flex items-end justify-between">
                 <div>
@@ -366,7 +366,7 @@ export default function Home() {
         </div>
       )) : showFallbackGrid && (
         <div>
-          <section className="relative bg-forest-900 py-4" ref={el => sectionRef.current[5] = el} data-section="all-products">
+          <section className="relative bg-forest-900 py-4 border-2 border-blue-400" ref={el => sectionRef.current[5] = el} data-section="all-products">
             <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
               <div className="text-center">
                 <span className="inline-flex items-center gap-2 rounded-full border border-gold-500/20 bg-gold-500/10 px-4 py-1.5 text-[10px] font-semibold tracking-[0.15em] uppercase text-gold-500">Our Collection</span>
@@ -384,7 +384,7 @@ export default function Home() {
       )}
 
       {/* Best Sellers */}
-      <section className="relative bg-forest-900 py-6 lg:py-8" ref={el => sectionRef.current[2] = el} data-section="bestsellers">
+      <section className="relative bg-forest-900 py-6 lg:py-8 border-2 border-blue-400" ref={el => sectionRef.current[2] = el} data-section="bestsellers">
         <div className={`mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 reveal ${visibleSections.bestsellers ? 'visible' : ''}`}>
           <div className="flex items-end justify-between">
             <div>
@@ -405,7 +405,7 @@ export default function Home() {
 
       {/* Promo banners */}
       {promoList.length > 0 && (
-        <section className="relative bg-forest-900 py-4">
+        <section className="relative bg-forest-900 py-4 border-2 border-blue-400">
             <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 text-center">
               <span className="inline-flex items-center gap-2 rounded-full border border-gold-500/20 bg-gold-500/10 px-4 py-1.5 text-[10px] font-semibold tracking-[0.15em] uppercase text-gold-500">Special Offers</span>
               <h2 className="mt-3 font-heading text-3xl font-bold text-cream-50 sm:text-4xl tracking-tight">Farm Fresh Deals</h2>
@@ -427,7 +427,7 @@ export default function Home() {
       )}
 
       {/* How It Works */}
-      <section className="relative bg-forest-900 py-8 lg:py-10">
+      <section className="relative bg-forest-900 py-8 lg:py-10 border-2 border-blue-400">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-gold-500/20 bg-gold-500/10 px-4 py-1.5 text-[10px] font-semibold tracking-[0.15em] uppercase text-gold-500">How It Works</span>
           <h2 className="mt-3 font-heading text-3xl font-bold text-cream-50 sm:text-4xl tracking-tight">From <span className="text-gold-500 italic">Farm</span> to Home</h2>
@@ -449,7 +449,7 @@ export default function Home() {
       </section>
 
       {/* Impact section */}
-      <section className="relative bg-forest-900 py-6 lg:py-8 overflow-hidden" ref={el => sectionRef.current[3] = el} data-section="impact">
+      <section className="relative bg-forest-900 py-6 lg:py-8 overflow-hidden border-2 border-blue-400" ref={el => sectionRef.current[3] = el} data-section="impact">
         <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'radial-gradient(circle at 25% 50%, #C8A96A 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
         <div className={`mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 text-center reveal ${visibleSections.impact ? 'visible' : ''}`}>
           <span className="inline-flex items-center gap-2 rounded-full border border-gold-500/20 bg-gold-500/10 px-4 py-1.5 text-[10px] font-semibold tracking-[0.15em] uppercase text-gold-500">Our Impact</span>
@@ -473,7 +473,7 @@ export default function Home() {
       </section>
 
       {/* Testimonials */}
-      <section className="relative bg-cream-100 py-8 lg:py-10">
+      <section className="relative bg-cream-100 py-8 lg:py-10 border-2 border-blue-400">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-terracotta-500/20 bg-terracotta-500/10 px-4 py-1.5 text-[10px] font-semibold tracking-[0.15em] uppercase text-terracotta-500">Testimonials</span>
           <h2 className="mt-3 font-heading text-3xl font-bold text-forest-900 sm:text-4xl tracking-tight">What Our <span className="text-terracotta-500 italic">Customers</span> Say</h2>
@@ -500,7 +500,7 @@ export default function Home() {
       </section>
 
       {/* Combos */}
-      <section className="relative bg-cream-100 pt-1 pb-4" ref={el => sectionRef.current[4] = el} data-section="combos">
+      <section className="relative bg-cream-100 pt-1 pb-4 border-2 border-blue-400" ref={el => sectionRef.current[4] = el} data-section="combos">
         <div className={`mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 reveal ${visibleSections.combos ? 'visible' : ''}`}>
           <div className="text-center">
             <span className="inline-flex items-center gap-2 rounded-full border border-terracotta-500/20 bg-terracotta-500/10 px-4 py-1.5 text-[10px] font-semibold tracking-[0.15em] uppercase text-terracotta-500">Farm to Home</span>
@@ -523,7 +523,7 @@ export default function Home() {
       </section>
 
       {/* Farm to Home closing */}
-      <section className="bg-forest-950 py-6 text-center border-t border-gold-500/10">
+      <section className="bg-forest-950 py-6 text-center border-t border-gold-500/10 border-2 border-blue-400">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
           <p className="font-heading text-2xl font-bold text-gold-500 sm:text-3xl italic">Farm to Home</p>
           <p className="mt-2 text-xs text-cream-50/40">Pure forest-grown produce from tribal farms. Delivered to your doorstep.</p>
