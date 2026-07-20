@@ -86,6 +86,9 @@ img, video, canvas, svg { max-width: 100%; }
 }
 
 /* Leaf floating decoration */
+@keyframes spinSlow { to { transform: rotate(360deg); } }
+.animate-spin-slow { animation: spinSlow 12s linear infinite; }
+
 @keyframes leafFloat {
   0% { transform: translateY(0) rotate(0deg); opacity: 0.15; }
   50% { transform: translateY(-15px) rotate(5deg); opacity: 0.25; }
@@ -126,3 +129,43 @@ img, video, canvas, svg { max-width: 100%; }
 .header-marquee:hover { animation-play-state: paused; }
 .header-marquee:active { animation-play-state: paused; }
 @media (prefers-reduced-motion: reduce) { .header-marquee { animation: none; } }
+
+/* Squiggle underline decoration */
+.squiggle-underline {
+  position: relative;
+  display: inline-block;
+}
+.squiggle-underline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 6px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 8'%3E%3Cpath d='M0,4 C15,0 25,8 40,4 C55,0 65,8 80,4 C95,0 105,8 120,4' fill='none' stroke='%23B65A34' stroke-width='1.5' opacity='0.4'/%3E%3C/svg%3E") repeat-x;
+  background-size: 120px 6px;
+}
+
+/* Tribal geometric border */
+.tribal-border {
+  position: relative;
+}
+.tribal-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid transparent;
+  border-image: repeating-linear-gradient(
+    90deg,
+    #C8A96A 0px, #C8A96A 6px,
+    transparent 6px, transparent 8px,
+    #B65A34 8px, #B65A34 14px,
+    transparent 14px, transparent 16px
+  ) 12;
+  pointer-events: none;
+}
+
+/* Blob shape clip */
+.blob-clip {
+  clip-path: path('M60,10 C90,5 115,25 120,55 C125,85 110,115 80,125 C50,135 15,130 5,100 C-5,70 5,30 30,15 Z');
+}

@@ -199,28 +199,34 @@ export default function Home() {
           </div>
           <div className="relative z-10 mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-10 text-center">
             <div className="max-w-3xl mx-auto animate-fade-up">
-              <p className="font-heading text-sm font-semibold tracking-[0.25em] uppercase text-gold-500/60 mb-3">HI</p>
-              <div className="inline-flex items-center gap-2 rounded-full border border-gold-500/20 bg-gold-500/10 px-5 py-1.5 text-[10px] font-semibold tracking-[0.15em] uppercase text-gold-500 mb-6">From Tribal Villages</div>
-              <p className="font-heading text-sm font-semibold tracking-[0.25em] uppercase text-cream-50/40 mb-4">Real Food. Real Farmers. Real Health.</p>
+              <p className="font-heading text-[11px] font-semibold tracking-[0.15em] uppercase text-gold-500/70 mb-4">Rooted in Tradition. Shared with Love.</p>
               <h1 className="font-heading text-5xl font-bold leading-tight text-cream-50 sm:text-6xl lg:text-7xl tracking-tight">
-                Naturally Grown,<br />
-                <span className="text-gold-500 italic">Tribal Cultivated</span>
+                Real Food.<br />
+                <span className="text-gold-500 italic">Real Farmers.</span>
               </h1>
-              <p className="mt-3 max-w-xl mx-auto text-sm leading-relaxed text-cream-50/60 sm:text-base">
-                Pure forest-grown produce direct from tribal farms. No middlemen. No chemicals. Farm to home.
+              <p className="mt-4 max-w-xl mx-auto text-sm leading-relaxed text-cream-50/60 sm:text-base">
+                Discover wild-harvested and natural products sourced directly from tribal communities. Pure. Honest. Sustainable.
               </p>
-              <div className="mt-4 flex flex-wrap justify-center gap-3">
+              <div className="mt-6 flex flex-wrap justify-center gap-3">
                 <Link to="/products" className="btn-font inline-flex items-center gap-2 rounded-xl bg-terracotta-500 px-9 py-3.5 text-sm font-semibold tracking-[0.08em] uppercase text-cream-50 transition-all duration-300 hover:bg-terracotta-600 hover:-translate-y-1 shadow-xl shadow-terracotta-500/25 btn-lift">
-                  Explore Products
-                </Link>
-                <Link to="/about" className="btn-font inline-flex items-center gap-2 rounded-xl border border-cream-50/25 px-9 py-3.5 text-sm font-semibold tracking-[0.08em] uppercase text-cream-50 transition-all duration-300 hover:bg-cream-50/10 hover:-translate-y-1">
-                  Our Story
+                  Explore Our Products
+                  <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
                 </Link>
               </div>
-              <div className="mt-3 flex items-center justify-center gap-4 text-cream-50/40">
+              <div className="mt-5 flex items-center justify-center gap-4 text-cream-50/40">
                 <div className="flex items-center gap-2 text-[11px] font-medium tracking-wider uppercase"><span className="text-gold-500">✦</span> 100% Natural</div>
                 <div className="flex items-center gap-2 text-[11px] font-medium tracking-wider uppercase"><span className="text-gold-500">✦</span> Ethically Sourced</div>
                 <div className="flex items-center gap-2 text-[11px] font-medium tracking-wider uppercase"><span className="text-gold-500">✦</span> Farm to Home</div>
+              </div>
+            </div>
+            {/* Seal stamp */}
+            <div className="absolute top-8 right-8 hidden lg:block">
+              <div className="relative flex h-28 w-28 items-center justify-center">
+                <svg className="absolute inset-0 h-full w-full animate-spin-slow" viewBox="0 0 100 100">
+                  <defs><path id="sealPath" d="M50 5a45 45 0 1 1 0 90 45 45 0 0 1 0-90" fill="none" /></defs>
+                  <text fontSize="7" fontWeight="600" letterSpacing="4" fill="#C8A96A"><textPath href="#sealPath" startOffset="3%">WILD · NATURAL · ETHICAL ·</textPath></text>
+                </svg>
+                <span className="font-heading text-2xl font-bold text-gold-500">100%</span>
               </div>
             </div>
           </div>
@@ -265,25 +271,47 @@ export default function Home() {
       </section>
 
       {/* Story section */}
-      <section className="relative bg-forest-900 py-6 overflow-hidden text-center" ref={el => sectionRef.current[1] = el} data-section="story">
-        <div className={`mx-auto max-w-3xl px-5 sm:px-8 lg:px-10 reveal ${visibleSections.story ? 'visible' : ''}`}>
-          <span className="inline-flex items-center gap-2 rounded-full border border-gold-500/20 bg-gold-500/10 px-4 py-1.5 text-[10px] font-semibold tracking-[0.15em] uppercase text-gold-500 mb-4">Our Story</span>
-          <h2 className="font-heading text-3xl font-bold text-cream-50 sm:text-4xl tracking-tight">From the <span className="text-gold-500 italic">Tribes</span></h2>
-          <p className="mt-2 text-xs leading-relaxed text-cream-50/60 max-w-2xl mx-auto">
-            For generations, tribal farmers have cultivated the land using traditional methods — rainwater-fed, pesticide-free, 
-            and in perfect harmony with nature. We bring this ancient wisdom directly to your home.
-          </p>
-          <div className="mt-3 flex justify-center gap-3 text-center">
-            {[
-              { icon: '🌿', title: 'Direct from Tribes' },
-              { icon: '🌱', title: '100% Natural' },
-              { icon: '💚', title: 'Supporting Communities' },
-            ].map(item => (
-              <div key={item.title} className="flex items-center gap-2 text-cream-50/70">
-                <span className="text-lg">{item.icon}</span>
-                <span className="text-xs font-medium tracking-wider uppercase">{item.title}</span>
+      <section className="relative bg-cream-100 py-14 lg:py-20 overflow-hidden" ref={el => sectionRef.current[1] = el} data-section="story">
+        <div className="absolute top-0 right-0 w-48 h-48 opacity-[0.03]">
+          <svg viewBox="0 0 200 200" fill="currentColor" color="#1B3326"><path d="M40 30Q70 10 100 30t40 40q10 20-10 30t-40 10q-20-10-30-30t-10-40q0-30 40-40z"/><path d="M160 140q20-10 30 10t10 30q0 20-20 30t-30 0q-10-20 0-40t10-30z"/></svg>
+        </div>
+        <div className={`mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 reveal ${visibleSections.story ? 'visible' : ''}`}>
+          <div className="grid items-start gap-10 lg:grid-cols-3">
+            <div className="lg:col-span-1">
+              <span className="inline-flex items-center gap-2 rounded-full border border-terracotta-500/20 bg-terracotta-500/10 px-4 py-1.5 text-[10px] font-semibold tracking-[0.15em] uppercase text-terracotta-500 mb-4">Our Story</span>
+              <h2 className="font-heading text-4xl font-bold text-forest-900 sm:text-5xl tracking-tight mt-2">From <span className="text-terracotta-500 italic">the Tribes</span></h2>
+              <p className="mt-4 text-sm leading-relaxed text-forest-900/60">For generations, tribal farmers have cultivated the land using traditional methods — rainwater-fed, pesticide-free, and in perfect harmony with nature. HaiFarmer brings this ancient wisdom directly to your home.</p>
+              <p className="mt-3 text-sm leading-relaxed text-forest-900/60">We work directly with indigenous farming communities, ensuring fair prices and respecting their traditional knowledge.</p>
+              <Link to="/about" className="mt-4 inline-flex items-center gap-1 text-terracotta-500 text-xs font-semibold tracking-[0.08em] uppercase hover:text-terracotta-600 transition-colors">
+                Read Our Story
+                <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+              </Link>
+            </div>
+            <div className="lg:col-span-1 flex justify-center">
+              <div className="relative">
+                <div className="h-64 w-64 rounded-[40%_60%_50%_50%_/50%_40%_60%_50%_] bg-gradient-to-br from-terracotta-500/30 via-forest-900/20 to-forest-900/50 overflow-hidden border-2 border-terracotta-500/20">
+                  <div className="flex h-full items-center justify-center">
+                    <span className="text-6xl opacity-40">🌾</span>
+                  </div>
+                </div>
+                <div className="absolute -bottom-4 -right-4 h-32 w-32 rounded-[50%_40%_60%_50%_/40%_50%_50%_60%_] bg-terracotta-500/10 -z-10" />
               </div>
-            ))}
+            </div>
+            <div className="lg:col-span-1 space-y-6">
+              {[
+                { icon: '🤝', title: 'Direct from Tribes', desc: 'No middlemen. Just honest relationships and fair trade.', bg: 'bg-terracotta-500/10 text-terracotta-600' },
+                { icon: '🌿', title: '100% Natural', desc: 'Wild-harvested and chemical-free, as nature intended.', bg: 'bg-forest-900/10 text-forest-900' },
+                { icon: '💚', title: 'Creating Impact', desc: 'Empowering tribal communities and preserving their traditions.', bg: 'bg-terracotta-500/10 text-terracotta-600' },
+              ].map(item => (
+                <div key={item.title} className="flex gap-4">
+                  <div className={`flex h-12 w-12 flex-none items-center justify-center rounded-full ${item.bg} text-xl`}>{item.icon}</div>
+                  <div>
+                    <h3 className="font-heading text-base font-semibold text-forest-900">{item.title}</h3>
+                    <p className="text-xs text-forest-900/50 mt-0.5">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -358,38 +386,22 @@ export default function Home() {
         </div>
       )}
 
-      {/* New arrivals */}
-      <section className="relative bg-cream-100 py-4" ref={el => sectionRef.current[2] = el} data-section="arrivals">
-        <div className={`mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 reveal ${visibleSections.arrivals ? 'visible' : ''}`}>
+      {/* Best Sellers */}
+      <section className="relative bg-forest-900 py-12 lg:py-16" ref={el => sectionRef.current[2] = el} data-section="bestsellers">
+        <div className={`mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 reveal ${visibleSections.bestsellers ? 'visible' : ''}`}>
           <div className="flex items-end justify-between">
             <div>
-              <span className="inline-flex items-center gap-2 rounded-full border border-terracotta-500/20 bg-terracotta-500/10 px-4 py-1.5 text-[10px] font-semibold tracking-[0.15em] uppercase text-terracotta-500">Fresh from the farm</span>
-              <h2 className="mt-3 font-heading text-4xl font-bold text-forest-900 sm:text-5xl tracking-tight">New Arrivals</h2>
-              <p className="mt-2 text-sm text-forest-900/50 max-w-md">Handpicked organic produce from tribal farmers. Fresh harvest, direct to your door.</p>
+              <span className="inline-flex items-center gap-2 rounded-full border border-gold-500/20 bg-gold-500/10 px-4 py-1.5 text-[10px] font-semibold tracking-[0.15em] uppercase text-gold-500">Our Collection</span>
+              <h2 className="mt-2 font-heading text-3xl font-bold text-cream-50 sm:text-4xl tracking-tight">Best Sellers</h2>
             </div>
-            <Link to="/products" className="hidden sm:inline-flex btn-font items-center gap-2 rounded-xl border border-forest-900/20 px-6 py-3 text-xs font-semibold tracking-[0.08em] uppercase text-forest-900 transition-all hover:bg-forest-900 hover:text-cream-50 hover:-translate-y-0.5">
-              View All
-            </Link>
-          </div>
-          <div className="mt-3">
-            {products.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-forest-900/10 bg-cream-50 p-6 text-center">
-                <p className="font-heading text-base text-forest-900/40 italic">No products yet</p>
-              </div>
-            ) : (
-              <div className="flex gap-2 overflow-x-auto pb-1 hide-scrollbar snap-x" style={{ scrollPaddingLeft: 'calc(50% - 140px)' }}>
-                {displayProducts.map((product, idx) => (
-                  <div key={`${product._id || product.id}-${idx}`} className="w-[180px] flex-none snap-start">
-                    <ProductCard product={product} compact />
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-          <div className="mt-3 text-center sm:hidden">
-            <Link to="/products" className="btn-font inline-flex items-center gap-2 rounded-xl bg-terracotta-500 px-8 py-3 text-xs font-semibold tracking-[0.08em] uppercase text-cream-50 transition-all hover:bg-terracotta-600 hover:-translate-y-0.5 shadow-lg shadow-terracotta-500/20">
+            <Link to="/products" className="hidden sm:inline-flex btn-font items-center gap-2 rounded-xl border border-cream-50/20 px-6 py-3 text-xs font-semibold tracking-[0.08em] uppercase text-cream-50/60 transition-all hover:bg-cream-50/10 hover:text-cream-50">
               View All Products
             </Link>
+          </div>
+          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {products.slice(0, 4).map(product => (
+              <ProductCard key={product._id || product.id} product={product} compact />
+            ))}
           </div>
         </div>
       </section>
@@ -440,23 +452,29 @@ export default function Home() {
       </section>
 
       {/* Impact section */}
-      <section className="relative bg-forest-900 py-4 overflow-hidden" ref={el => sectionRef.current[3] = el} data-section="impact">
+      <section className="relative bg-forest-900 py-12 lg:py-16 overflow-hidden" ref={el => sectionRef.current[3] = el} data-section="impact">
         <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'radial-gradient(circle at 25% 50%, #C8A96A 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
         <div className={`mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 text-center reveal ${visibleSections.impact ? 'visible' : ''}`}>
           <span className="inline-flex items-center gap-2 rounded-full border border-gold-500/20 bg-gold-500/10 px-4 py-1.5 text-[10px] font-semibold tracking-[0.15em] uppercase text-gold-500">Our Impact</span>
-          <h2 className="mt-2 font-heading text-2xl font-bold text-cream-50 sm:text-3xl tracking-tight">Making a <span className="text-gold-500 italic">Difference</span></h2>
-          <p className="mx-auto mt-1 text-xs text-cream-50/50">Every purchase supports indigenous communities.</p>
-          <div className="mt-3 grid gap-2 sm:grid-cols-3">
+          <h2 className="mt-3 font-heading text-3xl font-bold text-cream-50 sm:text-4xl tracking-tight">Empowering <span className="text-gold-500 italic">Lives,</span> Naturally</h2>
+          <p className="mx-auto mt-2 max-w-md text-sm text-cream-50/50">Every purchase creates meaningful change for tribal communities and the environment.</p>
+          <div className="mt-8 grid gap-4 sm:grid-cols-4">
             {[
-              { number: '20+', label: 'Farmers Empowered', icon: '👨‍🌾' },
-              { number: '100%', label: 'Chemical Free', icon: '🌿' },
-              { number: '946+', label: 'Community Members', icon: '🤝' },
+              { number: '12,500+', label: 'Tribal Lives Supported', icon: '👨‍👩‍👧‍👦' },
+              { number: '250+', label: 'Tribal Farmers Empowered', icon: '👨‍🌾' },
+              { number: '50+', label: 'Forest Produce Sourced', icon: '🌳' },
+              { number: '100%', label: 'Natural & Sustainable', icon: '🌿' },
             ].map(item => (
-              <div key={item.label} className="rounded-xl border border-gold-500/10 bg-forest-950/60 p-3 text-center">
-                <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-lg bg-gold-500/10 text-xl">{item.icon}</div>
-                <p className="font-heading text-3xl font-bold text-gold-500">{item.number}</p>
-                <p className="mt-1 font-heading text-sm font-semibold text-cream-50">{item.label}</p>
+              <div key={item.label} className="rounded-xl border border-gold-500/10 bg-forest-950/60 p-5 text-center">
+                <span className="text-2xl">{item.icon}</span>
+                <p className="mt-3 font-heading text-3xl font-bold text-gold-500">{item.number}</p>
+                <p className="mt-1 text-xs text-cream-50/70">{item.label}</p>
               </div>
+            ))}
+          </div>
+          <div className="mt-6 flex justify-center gap-2 text-gold-500/30">
+            {Array.from({ length: 20 }).map((_, i) => (
+              <span key={i} className="text-lg" style={{ transform: `rotate(${i % 2 === 0 ? 0 : 180}deg)` }}>◆</span>
             ))}
           </div>
         </div>
