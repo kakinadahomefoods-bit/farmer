@@ -124,3 +124,5 @@ img, video, canvas, svg { max-width: 100%; }
   min-width: 200%;
 }
 .header-marquee:hover { animation-play-state: paused; }
+.header-marquee:active { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .header-marquee { animation: none; } }
