@@ -197,23 +197,23 @@ export default function Home() {
               <svg width="120" height="120" viewBox="0 0 100 100" fill="currentColor"><path d="M50 10C30 30 15 55 15 75c0 10 5 15 15 15 20 0 55-30 55-55C85 20 70 10 50 10z"/></svg>
             </div>
           </div>
-          <div className="relative z-10 mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-10 text-center">
-            <div className="max-w-3xl mx-auto animate-fade-up">
-              <p className="font-heading text-[11px] font-semibold tracking-[0.15em] uppercase text-gold-500/70 mb-4">Rooted in Tradition. Shared with Love.</p>
+          <div className="relative z-10 mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-10 text-center lg:text-left">
+            <div className="max-w-3xl lg:max-w-2xl animate-fade-up">
+              <p className="font-heading text-[11px] font-semibold tracking-[0.2em] uppercase text-gold-500/70 mb-4 sm:mb-5">Rooted in Tradition. Shared with Love.</p>
               <h1 className="font-heading text-5xl font-bold leading-tight text-cream-50 sm:text-6xl lg:text-7xl tracking-tight">
                 Real Food.<br />
                 <span className="text-gold-500 italic">Real Farmers.</span>
               </h1>
-              <p className="mt-4 max-w-xl mx-auto text-sm leading-relaxed text-cream-50/60 sm:text-base">
+              <p className="mt-4 max-w-xl text-sm leading-relaxed text-cream-50/60 sm:text-base lg:mx-0">
                 Discover wild-harvested and natural products sourced directly from tribal communities. Pure. Honest. Sustainable.
               </p>
-              <div className="mt-6 flex flex-wrap justify-center gap-3">
+              <div className="mt-6 flex flex-wrap justify-center lg:justify-start gap-3">
                 <Link to="/products" className="btn-font inline-flex items-center gap-2 rounded-xl bg-terracotta-500 px-9 py-3.5 text-sm font-semibold tracking-[0.08em] uppercase text-cream-50 transition-all duration-300 hover:bg-terracotta-600 hover:-translate-y-1 shadow-xl shadow-terracotta-500/25 btn-lift">
                   Explore Our Products
                   <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
                 </Link>
               </div>
-              <div className="mt-5 flex items-center justify-center gap-4 text-cream-50/40">
+              <div className="mt-5 flex items-center justify-center lg:justify-start gap-4 text-cream-50/40">
                 <div className="flex items-center gap-2 text-[11px] font-medium tracking-wider uppercase"><span className="text-gold-500">✦</span> 100% Natural</div>
                 <div className="flex items-center gap-2 text-[11px] font-medium tracking-wider uppercase"><span className="text-gold-500">✦</span> Ethically Sourced</div>
                 <div className="flex items-center gap-2 text-[11px] font-medium tracking-wider uppercase"><span className="text-gold-500">✦</span> Farm to Home</div>

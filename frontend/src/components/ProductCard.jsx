@@ -28,6 +28,9 @@ export default function ProductCard({ product, compact = false }) {
   const cartQuantity = cartItem?.quantity || selection.quantity || 1
   const imageUrl = getImageUrl(product.image_url || product.images?.[0], settings?.placeholder_image)
 
+  const harvestTag = product.harvest_type || product.badge || (product.tags?.[0] === 'wild' ? 'WILD CRAFTED' : product.category_name || product.category || '')
+  const descriptor = product.tagline || (product.description ? product.description.slice(0, 60) + (product.description.length > 60 ? '…' : '') : '')
+
   useEffect(() => {
     if (selectedVariant && !selection.variantId) {
       setProductSelection(product.id, { variantId: selectedVariant.id })
@@ -41,68 +44,66 @@ export default function ProductCard({ product, compact = false }) {
     }
   }
 
+  const handleQuickAdd = async (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (isInCart) return
+    await addToCart({ product_id: product.id, variant_id: selectedVariantId, quantity: 1, product, variant: selectedVariant })
+  }
+
   return (
-    <div className={`group flex h-full flex-col rounded-2xl bg-white shadow-sm transition-all duration-300 ${compact ? '' : 'p-3'} hover:shadow-xl hover:-translate-y-0.5`}>
-      <Link to={`/products/${slugify(product.name)}`}
-        className={`relative block overflow-hidden rounded-xl bg-gradient-to-br from-sage-300/20 via-cream-50 to-sage-300/10 img-zoom ${compact ? 'h-[160px]' : 'h-[280px]'}`}>
+    <Link to={`/products/${slugify(product.name)}`} className="group relative flex h-full flex-col rounded-2xl bg-[#FBF8F1] shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 overflow-hidden">
+      {/* Image */}
+      <div className="relative h-[180px] overflow-hidden bg-gradient-to-br from-sage-300/20 via-cream-50 to-sage-300/10">
         {product.discount_percent > 0 && (
-          <span className="absolute left-3 top-3 z-10 rounded-full bg-terracotta-500 px-3 py-1 text-[9px] font-bold uppercase tracking-[0.1em] text-cream-50 shadow-sm">{product.discount_percent}% off</span>
+          <span className="absolute left-2 top-2 z-10 rounded-full bg-terracotta-500 px-2.5 py-0.5 text-[8px] font-bold uppercase tracking-[0.1em] text-cream-50 shadow-sm">{product.discount_percent}% off</span>
         )}
-        <img src={imageUrl} alt={product.name} loading="lazy" className="block h-full w-full object-cover"
+        <img src={imageUrl} alt={product.name} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           onError={(e) => { if (e.currentTarget.dataset.fallbackApplied !== 'true') { e.currentTarget.dataset.fallbackApplied = 'true'; e.currentTarget.src = settings?.placeholder_image || '/placeholder.jpg' } }} />
-        {!compact && (
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      </div>
+
+      {/* Content */}
+      <div className="flex flex-1 flex-col px-3 pt-2.5 pb-3">
+        {/* Harvest tag */}
+        {harvestTag && (
+          <span className="inline-block w-fit rounded-full bg-terracotta-500/10 px-2.5 py-0.5 text-[9px] font-semibold tracking-[0.12em] uppercase text-terracotta-600">{harvestTag}</span>
         )}
-      </Link>
 
-      <div className={`flex flex-1 flex-col ${compact ? 'px-2 pt-3 pb-2' : 'px-1 pt-3 pb-1'}`}>
-        <Link to={`/products/${slugify(product.name)}`}>
-          <h3 className={`line-clamp-2 font-medium text-text-dark ${compact ? 'text-sm' : 'text-base'} leading-tight hover:text-terracotta-500 transition-colors`}>{product.name}</h3>
-        </Link>
+        {/* Product name */}
+        <h3 className="mt-1.5 font-heading text-base font-bold text-forest-900 leading-tight group-hover:text-terracotta-500 transition-colors">{product.name}</h3>
 
-        <div className="mt-1.5 flex items-end justify-between gap-2">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className={`font-semibold text-text-dark ${compact ? 'text-base' : 'text-xl'}`}>{formatPrice(discountedPrice)}</span>
-            <span className="text-[8px] font-medium text-forest-900/40">+ shipping</span>
-            {product.discount_percent > 0
-              ? <span className="text-[9px] font-medium text-forest-900/40 line-through">{formatPrice(price)}</span>
-              : <span className="text-[9px] font-medium text-forest-900/50">Farm fresh</span>
-            }
+        {/* Descriptor */}
+        {descriptor && (
+          <p className="mt-0.5 text-[11px] text-forest-900/50 line-clamp-1">{descriptor}</p>
+        )}
+
+        {/* Price + quick add */}
+        <div className="mt-auto flex items-end justify-between pt-2.5">
+          <div>
+            <span className="font-heading text-lg font-bold text-forest-900">{formatPrice(discountedPrice)}</span>
+            {product.discount_percent > 0 && (
+              <span className="ml-1.5 text-[10px] text-forest-900/40 line-through">{formatPrice(price)}</span>
+            )}
           </div>
-        </div>
 
-        <div className="mt-2 min-h-[28px]">
-          {product.product_variants && product.product_variants.length > 1 && (
-            <div className="flex flex-wrap gap-1.5">
-              {product.product_variants.map(variant => (
-                <button key={variant.id} type="button"
-                  onClick={() => { const existingCartItem = cartItems?.find(item => item.product_id === product.id && item.variant_id === variant.id); setProductSelection(product.id, { variantId: variant.id, quantity: existingCartItem?.quantity || 1 }) }}
-                  className={`rounded-full px-3 py-1 text-[9px] font-semibold transition-all ${selectedVariantId === variant.id ? 'bg-forest-900 text-cream-50 shadow-sm' : 'bg-cream-100 text-forest-900/60 hover:bg-cream-200'}`}>
-                  {variant.weight_label || variant.name}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="mt-auto pt-2">
           {isInCart ? (
-            <div className="flex items-center gap-2">
-              <div className="flex items-center rounded-xl border border-border-warm bg-white">
-                <button type="button" onClick={() => handleQuantityChange(cartQuantity - 1)} className="px-3 py-1.5 text-forest-900/60 hover:bg-cream-100 disabled:opacity-50 text-sm" disabled={cartQuantity <= 1}>−</button>
-                <span className="min-w-[2rem] text-center text-sm font-semibold text-text-dark">{cartQuantity}</span>
-                <button type="button" onClick={() => handleQuantityChange(cartQuantity + 1)} className="px-3 py-1.5 text-forest-900/60 hover:bg-cream-100 text-sm">+</button>
+            <div className="flex items-center gap-1.5">
+              <div className="flex items-center rounded-lg border border-forest-900/10 bg-white">
+                <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleQuantityChange(cartQuantity - 1) }} className="px-2 py-1 text-forest-900/60 hover:bg-cream-100 text-xs disabled:opacity-50" disabled={cartQuantity <= 1}>−</button>
+                <span className="min-w-[1.5rem] text-center text-xs font-semibold text-forest-900">{cartQuantity}</span>
+                <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleQuantityChange(cartQuantity + 1) }} className="px-2 py-1 text-forest-900/60 hover:bg-cream-100 text-xs">+</button>
               </div>
-              <button onClick={() => removeFromCart(cartItem.id)} className="flex-1 rounded-xl bg-forest-900/10 px-3 py-1.5 text-xs font-semibold text-forest-900 hover:bg-forest-900 hover:text-cream-50 transition-all">Remove</button>
+              <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); removeFromCart(cartItem.id) }} className="btn-font rounded-lg border border-forest-900/10 bg-white px-2 py-1 text-[9px] font-semibold text-forest-900 hover:bg-forest-900 hover:text-cream-50 transition-all">✕</button>
             </div>
           ) : (
-            <button onClick={async () => { await addToCart({ product_id: product.id, variant_id: selectedVariantId, quantity: 1, product: product, variant: selectedVariant }) }}
-              className="w-full rounded-xl bg-forest-900 px-3 py-2 text-xs font-semibold tracking-[0.06em] uppercase text-cream-50 transition-all hover:bg-forest-950 hover:-translate-y-0.5 shadow-lg shadow-forest-900/10">
-              Add to cart
+            <button onClick={handleQuickAdd}
+              className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-dashed border-terracotta-500/40 text-terracotta-500 transition-all hover:bg-terracotta-500 hover:text-cream-50 hover:border-terracotta-500 active:scale-90"
+              aria-label="Quick add">
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
             </button>
           )}
         </div>
       </div>
-    </div>
+    </Link>
   )
 }
