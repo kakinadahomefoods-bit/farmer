@@ -463,24 +463,24 @@ export default function Home() {
       </section>
 
       {/* Testimonials */}
-      <section className="relative bg-cream-100 py-2 pb-0">
+      <section className="relative bg-cream-100 py-4 pb-0">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-terracotta-500/20 bg-terracotta-500/10 px-4 py-1.5 text-[10px] font-semibold tracking-[0.15em] uppercase text-terracotta-500">Testimonials</span>
-          <h2 className="mt-1 font-heading text-xl font-bold text-forest-900 sm:text-2xl tracking-tight">What Our <span className="text-terracotta-500 italic">Customers</span> Say</h2>
-          <div className="mt-2 grid gap-1 sm:grid-cols-3">
+          <h2 className="mt-3 font-heading text-3xl font-bold text-forest-900 sm:text-4xl tracking-tight">What Our <span className="text-terracotta-500 italic">Customers</span> Say</h2>
+          <div className="mt-4 grid gap-2 sm:grid-cols-3">
             {[
               { quote: 'The millets taste just like home. So fresh and authentic — reminds me of my grandmother\'s cooking.', name: 'Priya S.', location: 'Hyderabad' },
               { quote: 'Finally, real chemical-free produce. My family loves the natural sweetness of the forest honey.', name: 'Rajesh K.', location: 'Bangalore' },
               { quote: 'Direct from tribal farmers with no middlemen. This is the future of food in India.', name: 'Ananya M.', location: 'Chennai' },
             ].map(item => (
-              <div key={item.name} className="rounded-lg border border-forest-900/10 bg-cream-50 p-3 text-left hover:border-terracotta-500/30 transition-all">
-                <div className="flex gap-0.5 text-terracotta-500/60 text-[10px] mb-1">★★★★★</div>
-                <p className="text-xs text-forest-900/70 leading-relaxed italic">&ldquo;{item.quote}&rdquo;</p>
-                <div className="mt-1 flex items-center gap-1.5 border-t border-forest-900/5 pt-1.5">
-                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-terracotta-500/20 text-[9px] font-bold text-terracotta-600">{item.name[0]}</div>
+              <div key={item.name} className="rounded-xl border border-forest-900/10 bg-cream-50 p-5 text-left hover:border-terracotta-500/30 transition-all">
+                <div className="flex gap-1 text-terracotta-500/60 text-xs mb-3">★★★★★</div>
+                <p className="text-sm text-forest-900/70 leading-relaxed italic">&ldquo;{item.quote}&rdquo;</p>
+                <div className="mt-4 flex items-center gap-2 border-t border-forest-900/5 pt-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-terracotta-500/20 text-xs font-bold text-terracotta-600">{item.name[0]}</div>
                   <div>
-                    <p className="text-[10px] font-semibold text-forest-900">{item.name}</p>
-                    <p className="text-[8px] text-forest-900/40">{item.location}</p>
+                    <p className="text-xs font-semibold text-forest-900">{item.name}</p>
+                    <p className="text-[10px] text-forest-900/40">{item.location}</p>
                   </div>
                 </div>
               </div>
