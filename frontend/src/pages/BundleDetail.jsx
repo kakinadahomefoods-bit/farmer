@@ -35,8 +35,8 @@ export default function BundleDetail() {
     load()
   }, [slug])
 
-  if (loading) return <div className="flex min-h-[40vh] items-center justify-center"><div className="h-12 w-12 animate-spin rounded-full border-4 border-brand-600 border-t-transparent" /></div>
-  if (!bundle) return <div className="flex min-h-[60vh] items-center justify-center text-slate-500">Bundle not found</div>
+  if (loading) return <div className="flex min-h-screen items-center justify-center bg-cream-50"><div className="h-12 w-12 animate-spin rounded-full border-2 border-forest-900/20 border-t-terracotta-500" /></div>
+  if (!bundle) return <div className="flex min-h-[60vh] items-center justify-center bg-cream-50 text-forest-900/50 font-heading text-xl">Bundle not found</div>
 
   const imgSrc = getImageUrl(bundle.image, settings?.placeholder_image)
   const bundlePrice = calculateBundlePrice(bundle)
@@ -50,57 +50,54 @@ export default function BundleDetail() {
     name: bundle.name,
     description: bundle.description || 'Combo bundle',
     image: bundle.image,
-    offers: {
-      '@type': 'Offer',
-      price: bundlePrice,
-      priceCurrency: 'INR',
-      availability: 'https://schema.org/InStock',
-    },
+    offers: { '@type': 'Offer', price: bundlePrice, priceCurrency: 'INR', availability: 'https://schema.org/InStock' },
   } : null
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-cream-50">
       <SeoHead title={bundle?.name} description={bundle?.description} ogImage={bundle?.image} schema={bundleSchema} canonical={`https://haifarmer.com/combos/${slug}`} />
-      <Link to="/combos" className="mb-6 inline-flex items-center gap-1 text-sm font-semibold text-brand-600 hover:text-brand-700">← Back to Combos</Link>
-      <div className="grid gap-8 lg:grid-cols-2">
-        <div className="overflow-hidden rounded-2xl bg-slate-50">
-          <img src={imgSrc} alt={bundle.name} className="h-full w-full object-cover" />
-        </div>
-        <div>
-          <div className="mb-2 inline-block rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-800">⭐ BEST VALUE</div>
-          <h1 className="heading-font text-3xl font-extrabold text-slate-900">{bundle.name}</h1>
-          {bundle.description && <p className="mt-4 leading-relaxed text-slate-600">{bundle.description}</p>}
-          <div className="mt-4 flex items-end gap-3">
-            {originalTotal > bundlePrice && <span className="heading-font text-lg text-slate-400 line-through">{formatPrice(originalTotal)}</span>}
-            <span className="heading-font text-3xl font-extrabold text-green-700">{formatPrice(bundlePrice)}</span>
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <Link to="/combos" className="mb-6 inline-flex items-center gap-1 text-sm font-semibold text-terracotta-500 hover:text-terracotta-600 transition">← Back to Combos</Link>
+        <div className="grid gap-8 lg:grid-cols-2">
+          <div className="overflow-hidden rounded-3xl border border-border-warm bg-cream-50 shadow-sm">
+            <img src={imgSrc} alt={bundle.name} className="h-full w-full object-cover" />
           </div>
-          <p className="mt-2 text-sm text-slate-500">🚚 + shipping cost</p>
+          <div>
+            <span className="inline-block rounded-full bg-terracotta-500/10 px-4 py-1.5 text-xs font-semibold tracking-[0.08em] uppercase text-terracotta-500">Best Value</span>
+            <h1 className="mt-3 font-heading text-3xl font-bold text-text-dark sm:text-4xl tracking-tight">{bundle.name}</h1>
+            {bundle.description && <p className="mt-4 leading-relaxed text-forest-900/70">{bundle.description}</p>}
+            <div className="mt-4 flex items-end gap-3">
+              {originalTotal > bundlePrice && <span className="font-heading text-lg text-forest-900/40 line-through">{formatPrice(originalTotal)}</span>}
+              <span className="font-heading text-3xl font-bold text-text-dark">{formatPrice(bundlePrice)}</span>
+            </div>
+            <p className="mt-1 text-sm text-forest-900/50">+ shipping cost</p>
 
-          <div className="mt-6">
-            <h3 className="text-sm font-semibold text-slate-700 mb-2">Includes:</h3>
-            <ul className="space-y-1">
-              {bundle.items?.map((item, i) => (
-                <li key={i} className="flex items-center gap-2 text-sm text-slate-600">
-                  <span className="text-green-600">✓</span>
-                  {item.variantName || item.product?.name || 'Product'} × {item.quantity}
-                </li>
-              ))}
-            </ul>
+            <div className="mt-6">
+              <h3 className="text-sm font-semibold text-text-dark mb-3">Includes:</h3>
+              <ul className="space-y-2">
+                {bundle.items?.map((item, i) => (
+                  <li key={i} className="flex items-center gap-2 text-sm text-forest-900/70">
+                    <span className="text-terracotta-500">✓</span>
+                    {item.variantName || item.product?.name || 'Product'} × {item.quantity}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="mt-4 flex flex-wrap gap-2">
+              <div className="rounded-lg bg-sage-300/20 px-3 py-2 text-xs font-medium text-forest-900">100% Natural</div>
+              <div className="rounded-lg bg-sage-300/20 px-3 py-2 text-xs font-medium text-forest-900">Chemical Free</div>
+              <div className="rounded-lg bg-sage-300/20 px-3 py-2 text-xs font-medium text-forest-900">Direct from Farmers</div>
+            </div>
+
+            <button
+              onClick={async () => {
+                if (isInCart) await removeFromCart(cartItem.id)
+                else await addToCart({ bundle_id: bundle._id, quantity: 1, bundle })
+              }}
+              className={`mt-6 w-full rounded-full py-3.5 text-sm font-semibold tracking-[0.05em] uppercase text-cream-50 shadow-lg transition hover:-translate-y-0.5 ${isInCart ? 'bg-forest-900/80 hover:bg-forest-900' : 'bg-terracotta-500 hover:bg-terracotta-600'}`}
+            >{isInCart ? 'Remove from cart' : 'Add to cart'}</button>
           </div>
-
-          <div className="mt-4 flex flex-wrap gap-2">
-            <div className="rounded-lg bg-green-50 px-3 py-2 text-xs font-medium text-green-700">🌿 100% Natural</div>
-            <div className="rounded-lg bg-green-50 px-3 py-2 text-xs font-medium text-green-700">🚫 Chemical Free</div>
-            <div className="rounded-lg bg-green-50 px-3 py-2 text-xs font-medium text-green-700">👨‍🌾 Direct from Farmers</div>
-          </div>
-
-          <button
-            onClick={async () => {
-              if (isInCart) await removeFromCart(cartItem.id)
-              else await addToCart({ bundle_id: bundle._id, quantity: 1, bundle })
-            }}
-            className={`mt-6 w-full rounded-xl py-3.5 text-sm font-bold text-white shadow-lg transition hover:-translate-y-0.5 ${isInCart ? 'bg-red-600 hover:bg-red-700' : 'bg-green-700 hover:bg-green-800'}`}
-          >{isInCart ? '🗑 Remove from cart' : '🛒 Add to cart'}</button>
         </div>
       </div>
     </div>

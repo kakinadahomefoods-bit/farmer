@@ -42,13 +42,13 @@ export default function ProductCard({ product, compact = false }) {
   }
 
   return (
-    <div className={`group flex h-full flex-col ${compact ? 'h-[380px]' : 'h-[580px]'}`}>
+    <div className={`group flex h-full flex-col rounded-2xl border border-border-warm bg-white shadow-sm transition hover:shadow-lg ${compact ? '' : 'p-3'}`}>
       <Link
         to={`/product/${slugify(product.name)}`}
-        className={`relative block overflow-hidden rounded-[20px] bg-gradient-to-br from-lime-50 via-white to-amber-50 ${compact ? 'h-[146px]' : 'h-[312px]'}`}
+        className={`relative block overflow-hidden rounded-xl bg-gradient-to-br from-sage-300/20 via-cream-50 to-sage-300/10 ${compact ? 'h-[150px]' : 'h-[280px]'}`}
       >
         {product.discount_percent > 0 && (
-          <span className="absolute left-2 top-2 z-10 rounded-full bg-amber-100 px-2 py-1 text-[9px] font-semibold uppercase tracking-[0.12em] text-amber-800 shadow-sm">
+          <span className="absolute left-3 top-3 z-10 rounded-full bg-terracotta-500 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.1em] text-cream-50 shadow-sm">
             {product.discount_percent}% off
           </span>
         )}
@@ -56,7 +56,7 @@ export default function ProductCard({ product, compact = false }) {
           src={imageUrl}
           alt={product.name}
           loading="lazy"
-          className="block h-full w-full object-cover transition duration-300 group-hover:scale-105"
+          className="block h-full w-full object-cover transition duration-500 group-hover:scale-105"
           onError={(e) => {
             if (e.currentTarget.dataset.fallbackApplied !== 'true') {
               e.currentTarget.dataset.fallbackApplied = 'true'
@@ -66,44 +66,39 @@ export default function ProductCard({ product, compact = false }) {
         />
       </Link>
 
-      <div className={`flex flex-1 flex-col ${compact ? 'px-0.5 pt-2' : 'px-2 pt-4'}`}>
+      <div className={`flex flex-1 flex-col ${compact ? 'px-2 pt-3 pb-2' : 'px-1 pt-3 pb-1'}`}>
         <Link to={`/product/${slugify(product.name)}`}>
-          <h3 className={`line-clamp-2 font-sans text-slate-900 ${compact ? 'min-h-[2.1rem] text-[12px]' : 'min-h-[3.2rem] text-lg'} font-medium leading-tight tracking-[0.01em]`} title={product.name}>
+          <h3 className={`line-clamp-2 font-medium text-text-dark ${compact ? 'text-sm' : 'text-base'} leading-tight`}>
             {product.name}
           </h3>
         </Link>
 
-        <div className="-mt-[27px]">
-          <div className={`mt-2 flex items-end justify-between gap-2 ${compact ? 'min-h-[40px]' : 'min-h-[60px]'}`}>
-            <div className="flex flex-wrap items-center gap-1.5">
-              <div className={`${compact ? 'text-[15px]' : 'text-2xl'} font-semibold text-slate-900`}>{formatPrice(discountedPrice)}</div>
-              <div className="text-[10px] font-medium text-slate-500">+ shipping cost</div>
-              {product.discount_percent > 0
-                ? <div className="text-[10px] font-medium text-slate-400 line-through">{formatPrice(price)}</div>
-                : <div className="text-[10px] font-medium text-lime-700">Farm fresh</div>
-              }
-            </div>
-            {product.category && (
-              <div className="text-[9px] font-semibold uppercase tracking-[0.12em] text-lime-700">{product.category}</div>
-            )}
+        <div className="mt-1.5 flex items-end justify-between gap-2">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className={`font-semibold text-text-dark ${compact ? 'text-base' : 'text-xl'}`}>{formatPrice(discountedPrice)}</span>
+            <span className="text-[9px] font-medium text-forest-900/50">+ shipping</span>
+            {product.discount_percent > 0
+              ? <span className="text-[10px] font-medium text-forest-900/40 line-through">{formatPrice(price)}</span>
+              : <span className="text-[10px] font-medium text-forest-900/60">Farm fresh</span>
+            }
           </div>
+          {product.category && (
+            <span className="text-[9px] font-semibold uppercase tracking-[0.1em] text-terracotta-500">{product.category}</span>
+          )}
         </div>
 
-        <div className={`${compact ? 'mt-2 min-h-[32px]' : 'mt-4 min-h-[46px]'}`}>
+        <div className="mt-2 min-h-[28px]">
           {product.product_variants && product.product_variants.length > 1 && (
-            <div className={`flex flex-wrap ${compact ? 'gap-1.5' : 'gap-2'}`}>
+            <div className="flex flex-wrap gap-1.5">
               {product.product_variants.map(variant => (
                 <button
                   key={variant.id}
                   type="button"
                   onClick={() => {
                     const existingCartItem = cartItems?.find(item => item.product_id === product.id && item.variant_id === variant.id)
-                    setProductSelection(product.id, {
-                      variantId: variant.id,
-                      quantity: existingCartItem?.quantity || 1
-                    })
+                    setProductSelection(product.id, { variantId: variant.id, quantity: existingCartItem?.quantity || 1 })
                   }}
-                  className={`rounded-full px-3 py-1 text-xs font-semibold transition ${selectedVariantId === variant.id ? 'bg-green-700 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                  className={`rounded-full px-3 py-1 text-[10px] font-semibold transition ${selectedVariantId === variant.id ? 'bg-forest-900 text-cream-50' : 'bg-cream-100 text-forest-900/60 hover:bg-cream-200'}`}
                 >
                   {variant.weight_label || variant.name}
                 </button>
@@ -112,18 +107,15 @@ export default function ProductCard({ product, compact = false }) {
           )}
         </div>
 
-        <div className={`${compact ? 'mt-2 min-h-[32px]' : 'mt-4 min-h-[46px]'}`}>
+        <div className="mt-auto pt-2">
           {isInCart ? (
             <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1 rounded-lg border border-slate-300 bg-white">
-                <button type="button" onClick={() => handleQuantityChange(cartQuantity - 1)} className="px-3 py-2 text-slate-600 hover:bg-slate-100 disabled:opacity-50" disabled={cartQuantity <= 1}>−</button>
-                <span className="min-w-[2rem] text-center font-semibold text-slate-900">{cartQuantity}</span>
-                <button type="button" onClick={() => handleQuantityChange(cartQuantity + 1)} className="px-3 py-2 text-slate-600 hover:bg-slate-100">+</button>
+              <div className="flex items-center rounded-lg border border-border-warm bg-white">
+                <button type="button" onClick={() => handleQuantityChange(cartQuantity - 1)} className="px-3 py-1.5 text-forest-900/60 hover:bg-cream-100 disabled:opacity-50 text-sm" disabled={cartQuantity <= 1}>−</button>
+                <span className="min-w-[2rem] text-center text-sm font-semibold text-text-dark">{cartQuantity}</span>
+                <button type="button" onClick={() => handleQuantityChange(cartQuantity + 1)} className="px-3 py-1.5 text-forest-900/60 hover:bg-cream-100 text-sm">+</button>
               </div>
-              <button
-                onClick={() => removeFromCart(cartItem.id)}
-                className="flex-1 rounded-lg bg-red-600 px-3 py-2 text-xs font-semibold text-white hover:bg-red-700 transition"
-              >Remove</button>
+              <button onClick={() => removeFromCart(cartItem.id)} className="flex-1 rounded-lg bg-forest-900/10 px-3 py-1.5 text-xs font-semibold text-forest-900 hover:bg-forest-900 hover:text-cream-50 transition">Remove</button>
             </div>
           ) : (
             <button
@@ -136,7 +128,7 @@ export default function ProductCard({ product, compact = false }) {
                   variant: selectedVariant
                 })
               }}
-              className="w-full rounded-lg bg-green-700 px-3 py-2 text-xs font-semibold text-white hover:bg-green-800 transition"
+              className="w-full rounded-lg bg-forest-900 px-3 py-2 text-xs font-semibold tracking-[0.05em] uppercase text-cream-50 transition hover:bg-forest-950"
             >Add to cart</button>
           )}
         </div>

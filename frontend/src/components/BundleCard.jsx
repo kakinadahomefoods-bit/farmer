@@ -49,72 +49,72 @@ export default function BundleCard({ bundle }) {
   }
 
   return (
-    <div className="w-full rounded-2xl border border-slate-200 bg-white shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
-        <div className="flex flex-col gap-3">
+    <div className="w-full rounded-3xl border border-border-warm bg-white shadow-md overflow-hidden hover:shadow-xl transition">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 sm:p-8">
+        <div className="flex flex-col gap-4">
           <div className="flex items-start justify-between gap-2">
-            <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-800">
-              <span>⭐</span> BEST VALUE
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-terracotta-500/10 px-4 py-1.5 text-xs font-semibold tracking-[0.08em] uppercase text-terracotta-500">
+              Best Value
             </span>
-            <span className="text-sm font-semibold text-slate-600">{productCount} Products</span>
+            <span className="text-sm font-medium text-forest-900/60">{productCount} Products</span>
           </div>
-          <Link to={`/combos/${slug}`} className="relative block overflow-hidden rounded-lg border border-slate-200">
+          <Link to={`/combos/${slug}`} className="relative block overflow-hidden rounded-2xl border border-border-warm bg-cream-50">
             <img
               src={getImageUrl(image, settings?.placeholder_image)}
               alt={name}
-              className="h-64 w-full object-cover transition-transform hover:scale-105"
+              className="h-72 w-full object-cover transition duration-500 hover:scale-105"
               onError={(e) => { e.target.src = settings?.placeholder_image || 'https://placehold.co/600x400?text=Combo' }}
             />
-            <span className="absolute top-2 left-2 inline-flex items-center gap-1.5 rounded-full bg-green-700 px-4 py-1.5 text-sm font-bold text-white shadow-md">
-              🛒 {productCount} Products
+            <span className="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-forest-900/90 px-4 py-1.5 text-sm font-semibold text-cream-50 backdrop-blur-sm">
+              {productCount} Products
             </span>
           </Link>
         </div>
 
         <div className="flex flex-col gap-4">
           <div>
-            <Link to={`/combos/${slug}`} className="hover:text-brand-700">
-              <h2 className="text-2xl font-bold text-slate-900">{name}</h2>
+            <Link to={`/combos/${slug}`} className="hover:text-terracotta-500 transition">
+              <h2 className="font-heading text-2xl font-bold text-text-dark">{name}</h2>
             </Link>
-            <div className="mt-1 text-sm text-slate-600">
+            <div className="mt-2 text-sm text-forest-900/60">
               <div className="relative">
                 <p className={showFullDesc ? '' : 'line-clamp-2'}>{displayDesc}</p>
                 {!showFullDesc && displayDesc.length > 50 && (
-                  <button onClick={(e) => { e.preventDefault(); setShowFullDesc(true) }} className="inline-block font-bold text-slate-500 hover:text-green-700 focus:outline-none" style={{ cursor: 'pointer' }}>...</button>
+                  <button onClick={(e) => { e.preventDefault(); setShowFullDesc(true) }} className="inline-block font-semibold text-terracotta-500 hover:text-terracotta-600">...</button>
                 )}
                 {showFullDesc && (
-                  <button onClick={(e) => { e.preventDefault(); setShowFullDesc(false) }} className="text-xs text-green-700 hover:underline font-semibold block mt-1">Show less</button>
+                  <button onClick={(e) => { e.preventDefault(); setShowFullDesc(false) }} className="text-xs text-terracotta-500 hover:underline font-semibold block mt-1">Show less</button>
                 )}
               </div>
               {contains && (
-                <div className="mt-2 text-xs font-semibold text-slate-700 bg-slate-50 p-2 rounded-lg border border-slate-100">
-                  <span className="text-green-700 font-bold">Contains: </span>{contains}
+                <div className="mt-2 text-xs font-medium text-forest-900/70 bg-cream-50 p-3 rounded-xl border border-border-warm">
+                  <span className="font-semibold text-forest-900">Contains: </span>{contains}
                 </div>
               )}
             </div>
           </div>
 
-          <div className="flex flex-nowrap gap-1.5 sm:gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            <div className="flex items-center gap-1 sm:gap-2 rounded-lg bg-green-50 px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-green-700 whitespace-nowrap"><span>🌿</span> 100% Natural</div>
-            <div className="flex items-center gap-1 sm:gap-2 rounded-lg bg-green-50 px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-green-700 whitespace-nowrap"><span>🚫</span> Chemical Free</div>
-            <div className="flex items-center gap-1 sm:gap-2 rounded-lg bg-green-50 px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-green-700 whitespace-nowrap"><span>👨‍🌾</span> Direct from Farmers</div>
+          <div className="flex flex-nowrap gap-2 overflow-x-auto hide-scrollbar">
+            <div className="flex items-center gap-1 rounded-lg bg-sage-300/20 px-3 py-1.5 text-[10px] font-medium text-forest-900 whitespace-nowrap">100% Natural</div>
+            <div className="flex items-center gap-1 rounded-lg bg-sage-300/20 px-3 py-1.5 text-[10px] font-medium text-forest-900 whitespace-nowrap">Chemical Free</div>
+            <div className="flex items-center gap-1 rounded-lg bg-sage-300/20 px-3 py-1.5 text-[10px] font-medium text-forest-900 whitespace-nowrap">Direct from Farmers</div>
           </div>
 
-          <div className="space-y-3 border-t border-slate-200 pt-4 mt-auto">
+          <div className="space-y-3 border-t border-border-warm pt-4 mt-auto">
             <div className="space-y-1">
-              {originalTotal > bundlePrice && <span className="block text-lg text-slate-500 line-through">{formatPrice(originalTotal)}</span>}
+              {originalTotal > bundlePrice && <span className="block text-base text-forest-900/40 line-through">{formatPrice(originalTotal)}</span>}
               <div className="flex items-center gap-2 flex-nowrap">
-                <span className="text-3xl font-bold text-green-700">{formatPrice(bundlePrice)}</span>
-                <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700 border border-blue-100">🚚 + shipping cost</span>
+                <span className="font-heading text-3xl font-bold text-forest-900">{formatPrice(bundlePrice)}</span>
+                <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-sage-300/20 px-3 py-0.5 text-[10px] font-semibold text-forest-900/70">+ shipping</span>
               </div>
-              {savings > 0 && <p className="text-sm font-medium text-slate-600">Save {formatPrice(savings)} ({discountPct}%)</p>}
+              {savings > 0 && <p className="text-sm font-medium text-terracotta-500">Save {formatPrice(savings)} ({discountPct}%)</p>}
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1 rounded-lg border border-slate-300 bg-white">
-                <button type="button" onClick={() => handleQuantityChange(quantity - 1)} className="px-3 py-2 text-slate-600 hover:bg-slate-100 disabled:opacity-50" disabled={quantity <= 1}>−</button>
-                <span className="min-w-[2rem] text-center font-semibold text-slate-900">{quantity}</span>
-                <button type="button" onClick={() => handleQuantityChange(quantity + 1)} className="px-3 py-2 text-slate-600 hover:bg-slate-100">+</button>
+              <div className="flex items-center rounded-lg border border-border-warm bg-white">
+                <button type="button" onClick={() => handleQuantityChange(quantity - 1)} className="px-3 py-2 text-forest-900/60 hover:bg-cream-100 disabled:opacity-50 text-sm" disabled={quantity <= 1}>−</button>
+                <span className="min-w-[2rem] text-center text-sm font-semibold text-text-dark">{quantity}</span>
+                <button type="button" onClick={() => handleQuantityChange(quantity + 1)} className="px-3 py-2 text-forest-900/60 hover:bg-cream-100 text-sm">+</button>
               </div>
               <button
                 onClick={async () => {
@@ -124,23 +124,15 @@ export default function BundleCard({ bundle }) {
                     await addToCart({
                       bundle_id: id,
                       quantity: quantity,
-                      bundle: {
-                        _id: id,
-                        name: name,
-                        price: bundlePrice,
-                        discountPercent: discountPct,
-                        image: image,
-                        items: items,
-                        ...bundle,
-                      }
+                      bundle: { _id: id, name, price: bundlePrice, discountPercent: discountPct, image, items, ...bundle }
                     })
                   }
                 }}
-                className={`flex-1 rounded-lg py-2.5 font-semibold text-white transition ${isInCart ? 'bg-red-600 hover:bg-red-700' : 'bg-green-700 hover:bg-green-800'}`}
-              >{isInCart ? '🗑 Remove' : '🛒 Add to cart'}</button>
+                className={`flex-1 rounded-xl py-2.5 text-sm font-semibold tracking-[0.05em] uppercase transition ${isInCart ? 'bg-forest-900/10 text-forest-900 hover:bg-forest-900 hover:text-cream-50' : 'bg-terracotta-500 text-cream-50 hover:bg-terracotta-600'}`}
+              >{isInCart ? 'Remove' : 'Add to cart'}</button>
             </div>
 
-            <Link to={`/combos/${slug}`} className="block text-center text-sm font-medium text-brand-600 hover:text-brand-700 transition">
+            <Link to={`/combos/${slug}`} className="block text-center text-sm font-medium text-terracotta-500 hover:text-terracotta-600 transition">
               View all {productCount} products →
             </Link>
           </div>
