@@ -159,14 +159,14 @@ export default function Home() {
           </div>
           <div className="relative z-10 mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-10 text-center">
             <div className="max-w-3xl mx-auto animate-fade-up">
-              <div className="inline-flex items-center gap-2 rounded-full border border-gold-500/20 bg-gold-500/10 px-5 py-1.5 text-[10px] font-semibold tracking-[0.15em] uppercase text-gold-500 mb-6">From the Forests to Your Home</div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-gold-500/20 bg-gold-500/10 px-5 py-1.5 text-[10px] font-semibold tracking-[0.15em] uppercase text-gold-500 mb-6">From Tribal Villages</div>
               <p className="font-heading text-sm font-semibold tracking-[0.25em] uppercase text-cream-50/40 mb-4">Real Food. Real Farmers. Real Health.</p>
               <h1 className="font-heading text-5xl font-bold leading-tight text-cream-50 sm:text-6xl lg:text-7xl tracking-tight">
                 Naturally Grown,<br />
                 <span className="text-gold-500 italic">Tribal Cultivated</span>
               </h1>
               <p className="mt-6 max-w-xl mx-auto text-base leading-relaxed text-cream-50/60 sm:text-lg">
-                Pure forest-grown organic produce directly from indigenous farming communities. No middlemen, no chemicals — just nature&apos;s finest, from farm to home.
+                Pure forest-grown produce direct from tribal farms. No middlemen. No chemicals. Farm to home.
               </p>
               <div className="mt-10 flex flex-wrap justify-center gap-4">
                 <Link to="/products" className="btn-font inline-flex items-center gap-2 rounded-xl bg-terracotta-500 px-9 py-3.5 text-sm font-semibold tracking-[0.08em] uppercase text-cream-50 transition-all duration-300 hover:bg-terracotta-600 hover:-translate-y-1 shadow-xl shadow-terracotta-500/25 btn-lift">
