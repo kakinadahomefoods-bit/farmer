@@ -12,43 +12,6 @@ const ANNOUNCEMENTS = [
   'Monsoon Sale is Live — FLAT 25% OFF on select items',
 ]
 
-const CATEGORY_MENU = [
-  {
-    title: 'Shop by Category',
-    links: [
-      { label: 'Millets', to: '/products?category=millets' },
-      { label: 'Foxtail Millet', to: '/products?category=millets' },
-      { label: 'Kodo Millet', to: '/products?category=millets' },
-      { label: 'Little Millet', to: '/products?category=millets' },
-      { label: 'Pearl Millet', to: '/products?category=millets' },
-      { label: 'Finger Millet', to: '/products?category=millets' },
-      { label: 'Honey', to: '/products?category=honey' },
-      { label: 'Wild Forest Honey', to: '/products?category=honey' },
-      { label: 'Multifloral Honey', to: '/products?category=honey' },
-      { label: 'Spices', to: '/products?category=spices' },
-      { label: 'Turmeric', to: '/products?category=spices' },
-      { label: 'Black Pepper', to: '/products?category=spices' },
-      { label: 'Chilli', to: '/products?category=spices' },
-      { label: 'Pulses & Grains', to: '/products' },
-      { label: 'Cold-Pressed Oils', to: '/products' },
-      { label: 'Gift Boxes / Combos', to: '/combos' },
-    ],
-  },
-  {
-    title: 'Shop by Benefit',
-    links: [
-      { label: 'Immunity', to: '/products' },
-      { label: 'Gut Health', to: '/products' },
-      { label: 'Diabetes Friendly', to: '/products' },
-      { label: 'Heart Health', to: '/products' },
-      { label: 'Energy & Stamina', to: '/products' },
-      { label: 'Sleep', to: '/products' },
-      { label: "Women's Health", to: '/products' },
-      { label: "Men's Health", to: '/products' },
-    ],
-  },
-]
-
 export default function Header() {
   const { cartItems } = useCart()
   const navigate = useNavigate()
@@ -118,27 +81,7 @@ export default function Header() {
           {/* Desktop nav */}
           <nav className="hidden lg:flex items-center gap-1">
             <NavLink to="/" end className={({ isActive }) => `px-3 py-2 text-[12px] font-medium transition-colors ${isActive ? 'text-green-600' : 'text-ink hover:text-green-600'}`}>Home</NavLink>
-            <div className="relative" onMouseEnter={() => setMegaOpen('shop')} onMouseLeave={() => setMegaOpen(false)}>
-              <Link to="/products" className={`px-3 py-2 text-[12px] font-medium transition-colors ${megaOpen === 'shop' ? 'text-green-600' : 'text-ink hover:text-green-600'}`}>
-                Shop <span className="text-[9px] ml-0.5">▼</span>
-              </Link>
-              {megaOpen === 'shop' && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[640px] bg-white border border-border rounded-xl shadow-lg py-6 px-8 z-50" onMouseEnter={() => setMegaOpen('shop')} onMouseLeave={() => setMegaOpen(false)}>
-                  <div className="grid grid-cols-2 gap-10">
-                    {CATEGORY_MENU.map(panel => (
-                      <div key={panel.title}>
-                        <h3 className="text-[11px] font-semibold tracking-[0.12em] uppercase text-green-600 mb-3">{panel.title}</h3>
-                        <div className="space-y-1.5">
-                          {panel.links.map(link => (
-                            <Link key={link.label} to={link.to} onClick={closeAll} className="block text-sm text-muted hover:text-green-600 transition-colors">{link.label}</Link>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
+            <NavLink to="/products" className={({ isActive }) => `px-3 py-2 text-[12px] font-medium transition-colors ${isActive ? 'text-green-600' : 'text-ink hover:text-green-600'}`}>Products</NavLink>
             <NavLink to="/combos" className={({ isActive }) => `px-3 py-2 text-[12px] font-medium transition-colors ${isActive ? 'text-green-600' : 'text-ink hover:text-green-600'}`}>Combos</NavLink>
             <div className="relative" onMouseEnter={() => setMegaOpen('story')} onMouseLeave={() => setMegaOpen(false)}>
               <Link to="/about" className={`px-3 py-2 text-[12px] font-medium transition-colors ${megaOpen === 'story' ? 'text-green-600' : 'text-ink hover:text-green-600'}`}>
@@ -211,35 +154,8 @@ export default function Header() {
           </div>
           <div className="flex-1 overflow-y-auto p-5 space-y-1">
             <NavLink to="/" end onClick={closeAll} className={({ isActive }) => `block rounded-lg px-4 py-3 text-sm font-semibold ${isActive ? 'bg-green-50 text-green-600' : 'text-ink hover:bg-green-50 hover:text-green-600'}`}>Home</NavLink>
-            <div>
-              <div className="flex items-center justify-between rounded-lg px-4 py-3">
-                <Link to="/products" onClick={closeAll} className="flex-1 text-sm font-semibold text-ink hover:text-green-600">Shop</Link>
-                <button onClick={() => setMegaOpen(megaOpen === 'shop-mobile' ? false : 'shop-mobile')} className="p-1 text-muted hover:text-ink">
-                  <span className={`text-[10px] transition-transform ${megaOpen === 'shop-mobile' ? 'rotate-180' : ''}`}>▼</span>
-                </button>
-              </div>
-              {megaOpen === 'shop-mobile' && (
-                <div className="ml-4 pl-4 border-l-2 border-green-200 space-y-1 py-2">
-                  <h3 className="text-[10px] font-semibold tracking-[0.12em] uppercase text-green-600 px-4 pt-2 pb-1">Category</h3>
-                  {[
-                    { label: 'All Products', to: '/products' },
-                    { label: 'Millets', to: '/products?category=millets' },
-                    { label: 'Honey', to: '/products?category=honey' },
-                    { label: 'Spices', to: '/products?category=spices' },
-                    { label: 'Pulses & Grains', to: '/products' },
-                    { label: 'Cold-Pressed Oils', to: '/products' },
-                    { label: 'Gift Boxes / Combos', to: '/combos' },
-                  ].map(link => (
-                    <Link key={link.label} to={link.to} onClick={closeAll} className="block rounded-lg px-4 py-2 text-sm text-muted hover:text-green-600 hover:bg-green-50">{link.label}</Link>
-                  ))}
-                  <h3 className="text-[10px] font-semibold tracking-[0.12em] uppercase text-green-600 px-4 pt-3 pb-1">Benefits</h3>
-                  {['Immunity', 'Gut Health', 'Diabetes Friendly', 'Heart Health', 'Energy & Stamina', 'Sleep', "Women's Health", "Men's Health"].map(item => (
-                    <Link key={item} to="/products" onClick={closeAll} className="block rounded-lg px-4 py-2 text-sm text-muted hover:text-green-600 hover:bg-green-50">{item}</Link>
-                  ))}
-                </div>
-              )}
-            </div>
-            <Link to="/combos" onClick={closeAll} className="block rounded-lg px-4 py-3 text-sm font-semibold text-ink hover:bg-green-50 hover:text-green-600">Combos</Link>
+            <NavLink to="/products" onClick={closeAll} className={({ isActive }) => `block rounded-lg px-4 py-3 text-sm font-semibold ${isActive ? 'bg-green-50 text-green-600' : 'text-ink hover:bg-green-50 hover:text-green-600'}`}>Products</NavLink>
+            <NavLink to="/combos" onClick={closeAll} className={({ isActive }) => `block rounded-lg px-4 py-3 text-sm font-semibold ${isActive ? 'bg-green-50 text-green-600' : 'text-ink hover:bg-green-50 hover:text-green-600'}`}>Combos</NavLink>
             <div>
               <div className="flex items-center justify-between rounded-lg px-4 py-3">
                 <Link to="/about" onClick={closeAll} className="flex-1 text-sm font-semibold text-ink hover:text-green-600">Our Story</Link>
