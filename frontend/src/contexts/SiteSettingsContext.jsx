@@ -15,6 +15,7 @@ const defaultSettings = {
   freeDeliveryMin: 1499,
   razorpayEnabled: true,
   razorpayKeyId: 'rzp_live_SeagFUXcQMCgdT',
+  paymentMethod: 'both',
   placeholder_image: '',
 }
 

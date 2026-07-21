@@ -48,7 +48,9 @@ export default function Checkout() {
     pincode: '',
   })
 
-  const razorpayEnabled = settings?.razorpayEnabled !== false
+  const paymentMethod = settings?.paymentMethod || (settings?.razorpayEnabled !== false ? 'both' : 'whatsapp')
+  const showRazorpay = paymentMethod === 'both' || paymentMethod === 'razorpay'
+  const showWhatsApp = paymentMethod === 'both' || paymentMethod === 'whatsapp'
   const total = totals?.finalTotal || 0
   const shippingCost = total >= 1499 ? 0 : (settings?.deliveryCharge || settings?.shipping_cost || settings?.delivery_charge_amount || 0)
   const totalWithShipping = total + shippingCost - (couponDiscount || 0)
@@ -244,7 +246,7 @@ export default function Checkout() {
               <div className="flex justify-between text-lg"><span className="font-bold text-text-dark">Total</span><span className="font-heading font-bold text-terracotta-500">{formatPrice(totalWithShipping)}</span></div>
             </div>
 
-            {razorpayEnabled ? (
+            {showRazorpay && showWhatsApp ? (
               <div className="mt-4 space-y-3">
                 <button onClick={handleRazorpayPayment} disabled={placing || cartItems.length === 0}
                   className="btn-font w-full rounded-2xl bg-terracotta-500 py-3.5 text-sm font-semibold tracking-[0.06em] uppercase text-cream-50 shadow-xl transition-all hover:bg-terracotta-600 hover:-translate-y-1 disabled:opacity-50 btn-lift flex items-center justify-center gap-2">
@@ -257,6 +259,12 @@ export default function Checkout() {
                   Pay via WhatsApp
                 </button>
               </div>
+            ) : showRazorpay ? (
+              <button onClick={handleRazorpayPayment} disabled={placing || cartItems.length === 0}
+                className="btn-font mt-6 w-full rounded-2xl bg-terracotta-500 py-3.5 text-sm font-semibold tracking-[0.06em] uppercase text-cream-50 shadow-xl transition-all hover:bg-terracotta-600 hover:-translate-y-1 disabled:opacity-50 btn-lift flex items-center justify-center gap-2">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4"><path d="M12 2l2.4 7.2H22l-6 4.8 2.4 7.2L12 16l-6.4 5.2L8 14l-6-4.8h7.6z"/></svg>
+                Pay with Razorpay
+              </button>
             ) : (
               <button onClick={sendWhatsAppOrder} disabled={placing || cartItems.length === 0}
                 className="btn-font mt-6 w-full rounded-2xl bg-forest-900 py-3.5 text-sm font-semibold tracking-[0.06em] uppercase text-cream-50 shadow-xl transition-all hover:bg-forest-950 hover:-translate-y-1 disabled:opacity-50 btn-lift">
@@ -265,7 +273,7 @@ export default function Checkout() {
             )}
 
             <p className="mt-3 text-center text-xs text-forest-900/30">
-              {razorpayEnabled ? 'Choose your preferred payment method' : 'You will be redirected to WhatsApp to confirm your order'}
+              {paymentMethod === 'razorpay' ? 'Secure payment via Razorpay' : paymentMethod === 'whatsapp' ? 'You will be redirected to WhatsApp to confirm your order' : 'Choose your preferred payment method'}
             </p>
 
             {/* Trust badges */}
