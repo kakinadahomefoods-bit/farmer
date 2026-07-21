@@ -24,7 +24,7 @@ export default function ProductCard({ product }) {
   const selectedVariant = variants.find(v => (v.id || v._id) === selectedVariantId) || variants?.[0] || null
 
   const price = selectedVariant?.price ?? product.base_price ?? product.price
-  const mrp = selectedVariant?.originalPrice ?? selectedVariant?.mrp ?? product.mrp ?? price
+  const mrp = selectedVariant?.original_price ?? selectedVariant?.originalPrice ?? selectedVariant?.mrp ?? product.mrp ?? price
   const savings = mrp - price
   const discountPercent = product.discount_percent || (mrp > price ? Math.round((savings / mrp) * 100) : 0)
 
@@ -116,7 +116,7 @@ export default function ProductCard({ product }) {
               return (
                 <button key={vid} type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleVariantChange(vid) }}
                   className={`px-3 py-1.5 rounded-md text-[12px] font-semibold transition-all border ${isSelected ? 'bg-green-600 text-white border-green-600' : 'bg-white text-muted border-border hover:border-green-300 hover:text-green-600'}`}>
-                  {v.name || v.weightLabel || v.unit}
+                  {v.weight_label || v.weightLabel || v.name || v.unit}
                 </button>
               )
             })}
