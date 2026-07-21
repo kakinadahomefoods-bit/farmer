@@ -49,7 +49,7 @@ export default function Footer() {
           <div>
             <h3 className="text-[11px] font-semibold tracking-[0.1em] uppercase text-ink mb-4">Company</h3>
             <ul className="space-y-2.5">
-              {[{ label: 'About Us', to: '/about' }, { label: 'Blog', to: '/#journal' }, { label: 'Certifications', to: '/about' }, { label: 'Meet the Farmers', to: '/farmers' }, { label: 'Store Locator', to: '/#contact' }, { label: 'Contact', to: '/#contact' }].map(item => (
+              {[{ label: 'About Us', to: '/about' }, { label: 'Blog', to: '/#journal' }, { label: 'Meet the Farmers', to: '/farmers' }, { label: 'Contact', to: '/#contact' }].map(item => (
                 <li key={item.label}><Link to={item.to} className="text-sm text-muted hover:text-green-600 transition-colors">{item.label}</Link></li>
               ))}
             </ul>
