@@ -1,9 +1,8 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import { useAuth } from '../contexts/AuthContext'
 import { useCart } from '../contexts/CartContext'
 import { fetchSiteSettings } from '../contexts/SiteSettingsContext'
-import { CartIcon, LogoutIcon, MenuIcon, CloseIcon } from './Icons'
+import { CartIcon, MenuIcon, CloseIcon } from './Icons'
 
 const ANNOUNCEMENTS = [
   'Free Delivery across all India',
@@ -51,7 +50,6 @@ const CATEGORY_MENU = [
 ]
 
 export default function Header() {
-  const { user, signOut } = useAuth()
   const { cartItems } = useCart()
   const navigate = useNavigate()
   const [logo, setLogo] = useState('')
@@ -152,8 +150,8 @@ export default function Header() {
                 </div>
               )}
             </div>
-            <a href="/#impact" className="px-3 py-2 text-[12px] font-medium text-ink hover:text-green-600 transition-colors">Impact <span className="text-[9px] ml-0.5">▼</span></a>
-            <a href="/#journal" className="px-3 py-2 text-[12px] font-medium text-ink hover:text-green-600 transition-colors">Journal <span className="text-[9px] ml-0.5">▼</span></a>
+            <Link to="/impact" className="px-3 py-2 text-[12px] font-medium text-ink hover:text-green-600 transition-colors">Impact <span className="text-[9px] ml-0.5">▼</span></Link>
+            <Link to="/journal" className="px-3 py-2 text-[12px] font-medium text-ink hover:text-green-600 transition-colors">Journal <span className="text-[9px] ml-0.5">▼</span></Link>
             <a href="/#contact" className="px-3 py-2 text-[12px] font-medium text-ink hover:text-green-600 transition-colors">Contact</a>
           </nav>
 
@@ -248,8 +246,8 @@ export default function Header() {
                 </div>
               )}
             </div>
-            <a href="/#impact" onClick={closeAll} className="block rounded-lg px-4 py-3 text-sm font-semibold text-ink hover:bg-green-50 hover:text-green-600">Impact</a>
-            <a href="/#journal" onClick={closeAll} className="block rounded-lg px-4 py-3 text-sm font-semibold text-ink hover:bg-green-50 hover:text-green-600">Journal</a>
+            <Link to="/impact" onClick={closeAll} className="block rounded-lg px-4 py-3 text-sm font-semibold text-ink hover:bg-green-50 hover:text-green-600">Impact</Link>
+            <Link to="/journal" onClick={closeAll} className="block rounded-lg px-4 py-3 text-sm font-semibold text-ink hover:bg-green-50 hover:text-green-600">Journal</Link>
             <a href="/#contact" onClick={closeAll} className="block rounded-lg px-4 py-3 text-sm font-semibold text-ink hover:bg-green-50 hover:text-green-600">Contact</a>
             <div className="pt-4 px-4">
               <a href="https://wa.me/919709704563?text=Hello%20HaiFarmer" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 bg-green-600 text-white rounded-lg px-4 py-3 text-sm font-semibold hover:bg-green-700 transition-colors">
@@ -257,9 +255,7 @@ export default function Header() {
                 Talk to Us
               </a>
             </div>
-            {user && (
-              <button onClick={() => { signOut(); closeAll() }} className="block w-full text-left rounded-lg px-4 py-3 text-sm font-semibold text-muted hover:bg-green-50 mt-2">Sign Out</button>
-            )}
+
           </div>
         </div>
       )}
