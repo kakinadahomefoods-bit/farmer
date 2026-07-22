@@ -8,17 +8,12 @@ import SeoHead from '../components/SeoHead'
 import { api } from '../lib/api'
 import { formatPrice, getImageUrl } from '../lib/utils'
 import { CartIcon } from '../components/Icons'
+import { HOME_ASSETS, getHeroAsset } from '../lib/homeAssets'
 
 const HERO_SLIDES = [
-  { title: 'Pure Food from the Heart of the Forest', sub: 'Wild-harvested millets, honey, and spices sourced directly from tribal communities.', cta: 'Shop Now', img: '' },
-  { title: 'Nature\'s Finest, Direct to Your Door', sub: 'Chemical-free produce grown with traditional wisdom. Taste the difference.', cta: 'Explore Products', img: '' },
-  { title: 'Support Tribal Farmers, Eat Pure', sub: 'Every purchase supports indigenous farming communities across India.', cta: 'Meet Our Farmers', img: '' },
-]
-
-const TESTIMONIALS = [
-  { quote: 'The millets taste just like home. So fresh and authentic!', name: 'Priya S.', rating: 5 },
-  { quote: 'Finally, real chemical-free produce. The forest honey is incredible.', name: 'Rajesh K.', rating: 5 },
-  { quote: 'Direct from tribal farmers with no middlemen. This is the future.', name: 'Ananya M.', rating: 5 },
+  { title: 'Pure Food from the Heart of the Forest', sub: 'Wild-harvested millets, honey, and spices sourced directly from tribal communities.', cta: 'Shop Now' },
+  { title: 'Nature\'s Finest, Direct to Your Door', sub: 'Chemical-free produce grown with traditional wisdom. Taste the difference.', cta: 'Explore Products' },
+  { title: 'Support Tribal Farmers, Eat Pure', sub: 'Every purchase supports indigenous farming communities across India.', cta: 'Meet Our Farmers' },
 ]
 
 const VALUES = [
@@ -36,6 +31,10 @@ export default function Home() {
   const navigate = useNavigate()
   const [products, setProducts] = useState([])
   const [bundles, setBundles] = useState([])
+  const [categories, setCategories] = useState([])
+  const [categoryProducts, setCategoryProducts] = useState({})
+  const [catLoading, setCatLoading] = useState({})
+  const [activeCategory, setActiveCategory] = useState(null)
   const [loading, setLoading] = useState(true)
   const [heroIdx, setHeroIdx] = useState(0)
   const cartCount = (cartItems || []).reduce((sum, item) => sum + (item.quantity || 0), 0)
@@ -45,7 +44,7 @@ export default function Home() {
     async function load() {
       try {
         const [productsData, bundlesData] = await Promise.all([
-          api.getProducts({ limit: 12 }).then(r => r.data || []).catch(() => []),
+          api.getProducts({ limit: 20 }).then(r => r.data || []).catch(() => []),
           api.getBundles({ limit: 6 }).then(r => r.data || r || []).catch(() => []),
         ])
         if (cancelled) return
@@ -59,9 +58,36 @@ export default function Home() {
     return () => { cancelled = true; clearInterval(id) }
   }, [])
 
+  // Fetch categories
+  useEffect(() => {
+    let cancelled = false
+    api.getCategories().then(data => {
+      if (cancelled) return
+      const cats = Array.isArray(data) ? data : data?.data || []
+      setCategories(cats)
+      if (cats.length > 0 && !activeCategory) setActiveCategory(cats[0].id || cats[0]._id)
+    }).catch(() => {})
+    return () => { cancelled = true }
+  }, [])
+
+  // Fetch products for active category
+  useEffect(() => {
+    if (!activeCategory) return
+    const cat = categories.find(c => (c.id || c._id) === activeCategory)
+    if (!cat) return
+    const catName = cat.slug || cat.name?.toLowerCase()
+    if (categoryProducts[catName]?.length) return
+
+    setCatLoading(prev => ({ ...prev, [catName]: true }))
+    api.getProducts({ category: catName, limit: 8 }).then(r => {
+      const data = r?.data || []
+      setCategoryProducts(prev => ({ ...prev, [catName]: data }))
+    }).catch(() => {}).finally(() => {
+      setCatLoading(prev => ({ ...prev, [catName]: false }))
+    })
+  }, [activeCategory, categories])
+
   const bestSellers = products.filter(p => p.is_best_seller || p.totalSold > 10 || p.isFeatured).slice(0, 6)
-  const section2Products = products.filter(p => !bestSellers.includes(p)).slice(0, 4)
-  const section7Products = products.slice(4, 8)
 
   return (
     <div className="bg-white">
@@ -70,11 +96,18 @@ export default function Home() {
       {/* 1. Hero slider */}
       <section className="relative bg-green-800 overflow-hidden">
         <div className="relative min-h-[70vh] flex items-center">
-          {HERO_SLIDES.map((slide, i) => (
-            <div key={i} className={`absolute inset-0 transition-opacity duration-700 ${i === heroIdx ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-              <div className="absolute inset-0 bg-gradient-to-r from-green-800/80 to-green-800/40" />
-            </div>
-          ))}
+          {HERO_SLIDES.map((slide, i) => {
+            const asset = getHeroAsset(i)
+            return (
+              <div key={i} className={`absolute inset-0 transition-opacity duration-700 ${i === heroIdx ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                <picture>
+                  <source srcSet={asset.desktop} media="(min-width: 768px)" />
+                  <img src={asset.mobile} alt={asset.alt} loading={i === 0 ? 'eager' : 'lazy'} className="absolute inset-0 h-full w-full object-cover" />
+                </picture>
+                <div className="absolute inset-0 bg-gradient-to-r from-green-800/80 to-green-800/40" />
+              </div>
+            )
+          })}
           <div className="relative z-10 mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 w-full">
             <div className="max-w-2xl">
               <p className="text-green-200 text-[11px] font-semibold tracking-[0.12em] uppercase mb-3">Rooted in Tradition</p>
@@ -94,43 +127,51 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 2. Advertisement banner */}
-      <section className="py-8 lg:py-10 bg-white">
+      {/* 2. Value Combos */}
+      <section className="py-14 lg:py-18 bg-white">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-          <Link to="/products" className="group relative block rounded-2xl overflow-hidden bg-gradient-to-r from-green-700 to-green-800 min-h-[200px] lg:min-h-[280px]">
-            <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 20% 50%, white 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
-            <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between p-8 lg:p-12 h-full">
-              <div className="text-center lg:text-left">
-                <p className="text-green-200 text-[10px] font-semibold tracking-[0.12em] uppercase">Special Offer</p>
-                <h2 className="mt-2 font-heading text-2xl sm:text-3xl lg:text-4xl font-bold text-white leading-tight">Free Delivery<br /><span className="text-green-200">on orders above ₹999</span></h2>
-
-              </div>
-              <div className="mt-4 lg:mt-0">
-                <span className="inline-flex items-center gap-2 bg-white text-green-700 px-6 py-3 rounded-lg text-sm font-semibold transition-all group-hover:bg-green-50 group-hover:-translate-y-0.5">
-                  Shop Now →
-                </span>
-              </div>
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="font-heading text-2xl sm:text-3xl font-bold text-ink">Super Saver Combos</h2>
+              <p className="text-sm text-muted mt-1">Curated bundles for the best value</p>
             </div>
-          </Link>
+            <Link to="/combos" className="text-sm font-semibold text-green-600 hover:text-green-700 transition-colors">View All →</Link>
+          </div>
+          {loading ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-5">
+              {Array.from({ length: 3 }).map((_, i) => <div key={i} className="rounded-xl bg-white border border-border h-64 animate-pulse" />)}
+            </div>
+          ) : bundles.length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-5">
+              {bundles.slice(0, 3).map(bundle => (
+                <BundleCard key={bundle._id || bundle.id} bundle={bundle} compact />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 bg-off-white rounded-xl border border-border">
+              <p className="text-sm text-muted">No combos available yet. Check back soon!</p>
+              <Link to="/products" className="mt-3 inline-flex text-sm font-semibold text-green-600 hover:text-green-700">Browse Products →</Link>
+            </div>
+          )}
         </div>
       </section>
 
-      {/* 3. Products #1 — Bestsellers */}
+      {/* 3. Our Best Sellers */}
       <section className="py-14 lg:py-18 bg-off-white">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="font-heading text-2xl sm:text-3xl font-bold text-ink">Best Sellers</h2>
+              <h2 className="font-heading text-2xl sm:text-3xl font-bold text-ink">Our Best Sellers</h2>
               <p className="text-sm text-muted mt-1">Most loved by our customers</p>
             </div>
             <Link to="/products" className="text-sm font-semibold text-green-600 hover:text-green-700 transition-colors">View All →</Link>
           </div>
           {loading ? (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {Array.from({ length: 4 }).map((_, i) => <div key={i} className="rounded-xl bg-white border border-border h-80 animate-pulse" />)}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-5">
+              {Array.from({ length: 6 }).map((_, i) => <div key={i} className="rounded-xl bg-white border border-border h-80 animate-pulse" />)}
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-5">
               {(bestSellers.length ? bestSellers : products.slice(0, 6)).map(product => (
                 <ProductCard key={product.id || product._id} product={product} />
               ))}
@@ -139,7 +180,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 4. Video section */}
+      {/* 4. Our Story video */}
       <section className="py-14 lg:py-18 bg-white">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
           <div className="grid lg:grid-cols-2 gap-10 items-center">
@@ -151,123 +192,119 @@ export default function Home() {
                 Learn More →
               </Link>
             </div>
-            <div className="aspect-video rounded-xl overflow-hidden bg-green-50 flex items-center justify-center">
-              <div className="text-center p-8">
-                <div className="w-16 h-16 mx-auto rounded-full bg-green-600 flex items-center justify-center">
-                  <svg className="h-6 w-6 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
-                </div>
-                <p className="mt-3 text-sm text-muted">Video placeholder — embed your brand film here</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 5. Products #2 — Combos */}
-      <section className="py-14 lg:py-18 bg-off-white">
-        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="font-heading text-2xl sm:text-3xl font-bold text-ink">Value Combos</h2>
-              <p className="text-sm text-muted mt-1">Curated bundles for the best value</p>
-            </div>
-            <Link to="/combos" className="text-sm font-semibold text-green-600 hover:text-green-700 transition-colors">View All →</Link>
-          </div>
-          {loading ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-              {Array.from({ length: 3 }).map((_, i) => <div key={i} className="rounded-xl bg-white border border-border h-64 animate-pulse" />)}
-            </div>
-          ) : bundles.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
-              {bundles.slice(0, 3).map(bundle => (
-                <BundleCard key={bundle._id || bundle.id} bundle={bundle} compact />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-sm text-muted">No combos available yet. Check back soon!</p>
-              <Link to="/products" className="mt-3 inline-flex text-sm font-semibold text-green-600 hover:text-green-700">Browse Products →</Link>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* 6. YouTube video section */}
-      <section className="py-14 lg:py-18 bg-white">
-        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-          <div className="text-center mb-8">
-            <span className="text-[10px] font-semibold tracking-[0.12em] uppercase text-green-600">Watch & Learn</span>
-            <h2 className="mt-2 font-heading text-2xl sm:text-3xl font-bold text-ink">From Farm to Table</h2>
-            <p className="text-sm text-muted mt-1 max-w-md mx-auto">See how traditional farming methods preserve nature and nourish communities.</p>
-          </div>
-          <div className="aspect-video rounded-xl overflow-hidden bg-green-50 max-w-4xl mx-auto flex items-center justify-center">
-            <div className="text-center p-8">
-              <div className="w-16 h-16 mx-auto rounded-full bg-sale flex items-center justify-center">
-                <svg className="h-6 w-6 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
-              </div>
-              <p className="mt-3 text-sm text-muted">YouTube embed placeholder — add your video URL here</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 7. Products #3 with left banner */}
-      <section className="py-14 lg:py-18 bg-off-white">
-        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-          <div className="grid lg:grid-cols-3 gap-6">
-            {/* Left banner */}
-            <Link to="/products?category=honey" className="group relative rounded-xl overflow-hidden bg-gradient-to-br from-green-700 to-green-900 min-h-[300px] lg:min-h-full flex flex-col justify-end p-6 lg:col-span-1">
-              <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 80% 20%, white 1px, transparent 1px)', backgroundSize: '25px 25px' }} />
-              <div className="relative z-10">
-                <p className="text-green-200 text-[10px] font-semibold tracking-[0.12em] uppercase">Featured Collection</p>
-                <h3 className="mt-2 font-heading text-2xl font-bold text-white">Pure Forest<br />Honey</h3>
-                <p className="mt-1 text-sm text-white/70">Raw, unfiltered, straight from tribal beekeepers.</p>
-                <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-white group-hover:underline">
-                  Explore →
-                </span>
-              </div>
-            </Link>
-
-            {/* Right product grid */}
-            <div className="lg:col-span-2">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="font-heading text-xl sm:text-2xl font-bold text-ink">More from Our Collection</h2>
-                <Link to="/products" className="text-sm font-semibold text-green-600 hover:text-green-700 transition-colors shrink-0">View All →</Link>
-              </div>
-              {loading ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                  {Array.from({ length: 3 }).map((_, i) => <div key={i} className="rounded-xl bg-white border border-border h-80 animate-pulse" />)}
-                </div>
+            <div className="aspect-video rounded-xl overflow-hidden bg-green-50 relative group cursor-pointer">
+              {HOME_ASSETS.videoSection.src ? (
+                <video controls poster={HOME_ASSETS.videoSection.poster} className="h-full w-full object-cover" preload="none">
+                  <source src={HOME_ASSETS.videoSection.src} type={HOME_ASSETS.videoSection.type} />
+                </video>
               ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
-                  {(section7Products.length ? section7Products : products.slice(4, 7)).map(product => (
-                    <ProductCard key={product.id || product._id} product={product} />
-                  ))}
-                </div>
+                <>
+                  <img src={HOME_ASSETS.videoSection.poster} alt={HOME_ASSETS.videoSection.alt} loading="lazy" className="h-full w-full object-cover" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-16 h-16 rounded-full bg-green-600/90 flex items-center justify-center transition-transform group-hover:scale-110">
+                      <svg className="h-6 w-6 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                    </div>
+                  </div>
+                  <p className="absolute bottom-4 left-1/2 -translate-x-1/2 text-xs text-white/80 bg-black/40 px-3 py-1 rounded-full">Brand film coming soon</p>
+                </>
               )}
             </div>
           </div>
         </div>
       </section>
 
-      {/* 8. Testimonials */}
-      <section className="py-14 lg:py-18 bg-white">
+      {/* 5. Shop by Category — pills */}
+      <section className="py-14 lg:py-18 bg-off-white">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-          <h2 className="font-heading text-2xl sm:text-3xl font-bold text-ink text-center">What Our Customers Say</h2>
-          <div className="mt-8 grid sm:grid-cols-3 gap-4">
-            {TESTIMONIALS.map(item => (
-              <div key={item.name} className="bg-off-white rounded-xl border border-border p-6">
-                <div className="flex text-green-600 text-sm mb-2">{'★'.repeat(item.rating)}</div>
-                <p className="text-sm text-muted leading-relaxed italic">"{item.quote}"</p>
-                <p className="mt-3 text-sm font-semibold text-ink">{item.name}</p>
-              </div>
-            ))}
+          <div className="text-center mb-10">
+            <span className="text-[10px] font-semibold tracking-[0.12em] uppercase text-green-600">Shop by</span>
+            <h2 className="mt-2 font-heading text-2xl sm:text-3xl font-bold text-ink">Category</h2>
+            <p className="text-sm text-muted mt-1 max-w-md mx-auto">Discover pure, wild-harvested goodness across our range</p>
           </div>
+
+          {/* Category pills */}
+          <div className="flex flex-wrap justify-center gap-2 mb-10">
+            {categories.length === 0 ? (
+              <div className="flex gap-2">
+                {Array.from({ length: 5 }).map((_, i) => <div key={i} className="h-10 w-24 rounded-full bg-border animate-pulse" />)}
+              </div>
+            ) : (
+              categories.map(cat => {
+                const cid = cat.id || cat._id
+                const isActive = cid === activeCategory
+                return (
+                  <button key={cid} onClick={() => setActiveCategory(cid)}
+                    className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all border ${
+                      isActive ? 'bg-green-600 text-white border-green-600 shadow-md' : 'bg-white text-muted border-border hover:border-green-300 hover:text-green-600'
+                    }`}>
+                    {cat.name}
+                  </button>
+                )
+              })
+            )}
+          </div>
+
+          {/* Active category product showcase */}
+          {categories.map(cat => {
+            const cid = cat.id || cat._id
+            if (cid !== activeCategory) return null
+            const catName = cat.slug || cat.name?.toLowerCase()
+            const catProducts = categoryProducts[catName]
+            const isLoading = catLoading[catName]
+
+            return (
+              <div key={cid}>
+                <div className="grid lg:grid-cols-3 gap-6">
+                  {/* Category banner */}
+                  <Link to={`/products?category=${catName}`} className="group relative rounded-xl overflow-hidden min-h-[280px] lg:min-h-full flex flex-col justify-end p-6 lg:col-span-1">
+                    <img src={cat.image_url ? getImageUrl(cat.image_url) : '/assets/left-banner.svg'} alt={cat.name} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-green-900/80 via-green-800/30 to-transparent" />
+                    <div className="relative z-10">
+                      <h3 className="font-heading text-2xl font-bold text-white">{cat.name}</h3>
+                      {cat.description && <p className="mt-1 text-sm text-white/70">{cat.description}</p>}
+                      <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-white group-hover:underline">
+                        Shop {cat.name} →
+                      </span>
+                    </div>
+                  </Link>
+
+                  {/* Product grid */}
+                  <div className="lg:col-span-2">
+                    {isLoading ? (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-5">
+                        {Array.from({ length: 6 }).map((_, i) => <div key={i} className="rounded-xl bg-white border border-border h-80 animate-pulse" />)}
+                      </div>
+                    ) : catProducts && catProducts.length > 0 ? (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-5">
+                        {catProducts.slice(0, 6).map(product => (
+                          <ProductCard key={product.id || product._id} product={product} />
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center h-full min-h-[200px] bg-white rounded-xl border border-border">
+                        <p className="text-sm text-muted">No products in this category yet.</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* View All link */}
+                {catProducts && catProducts.length > 6 && (
+                  <div className="mt-6 text-center">
+                    <Link to={`/products?category=${catName}`}
+                      className="inline-flex items-center gap-2 text-sm font-semibold text-green-600 hover:text-green-700 transition-colors">
+                      View All {cat.name} Products →
+                    </Link>
+                  </div>
+                )}
+              </div>
+            )
+          })}
         </div>
       </section>
 
-      {/* 9. Newsletter */}
-      <section className="py-14 lg:py-18 bg-off-white">
+      {/* 6. Newsletter */}
+      <section className="py-14 lg:py-18 bg-white border-t border-border">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 text-center">
           <h2 className="font-heading text-2xl sm:text-3xl font-bold text-ink">Sign Up To Get Updates</h2>
           <p className="text-sm text-muted mt-2 max-w-md mx-auto">Get 15% off your first order + updates on new products and exclusive offers.</p>
@@ -279,7 +316,7 @@ export default function Home() {
       </section>
 
       {/* Values strip */}
-      <section className="py-6 bg-white border-t border-border">
+      <section className="py-6 bg-off-white border-t border-border">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
           <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
             {VALUES.map(v => (
