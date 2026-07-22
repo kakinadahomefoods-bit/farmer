@@ -4,6 +4,7 @@ import SiteSetting from '../models/SiteSetting.js'
 import Category from '../models/Category.js'
 import Product from '../models/Product.js'
 import Bundle from '../models/Bundle.js'
+import { ORGANIC_CATEGORIES, ORGANIC_PRODUCTS, ORGANIC_COMBOS } from '../data/organic-products.js'
 
 const router = express.Router()
 
@@ -520,6 +521,67 @@ router.post('/seed', async (req, res) => {
       }
     }
     results.push(`${COMBOS.length} combo bundles ready`)
+
+    // ===== Organic India-style Products =====
+    for (const cat of ORGANIC_CATEGORIES) {
+      await Category.findOneAndUpdate(
+        { slug: cat.slug },
+        { $setOnInsert: cat },
+        { upsert: true, new: true }
+      )
+    }
+    results.push(`${ORGANIC_CATEGORIES.length} organic categories ready`)
+
+    for (const prod of ORGANIC_PRODUCTS) {
+      const catSlug = prod.categoryName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+      const cat = await Category.findOne({ slug: catSlug })
+      const existing = await Product.findOne({ slug: prod.slug })
+      if (existing) {
+        await Product.findOneAndUpdate({ slug: prod.slug }, {
+          ...prod,
+          category: cat ? cat._id : undefined,
+          categoryName: cat ? undefined : prod.categoryName,
+        })
+      } else {
+        await Product.create({
+          ...prod,
+          category: cat ? cat._id : undefined,
+          categoryName: cat ? undefined : prod.categoryName,
+        })
+      }
+    }
+    results.push(`${ORGANIC_PRODUCTS.length} organic products ready`)
+
+    for (const combo of ORGANIC_COMBOS) {
+      await Bundle.deleteMany({ name: combo.name })
+
+      const items = []
+      for (const item of combo.itemSlugs) {
+        const product = await Product.findOne({ slug: item.slug })
+        if (product) {
+          const variant = product.variants.find(v => v.name === item.variantName)
+          items.push({
+            product: product._id,
+            variantId: variant ? variant._id : undefined,
+            variantName: item.variantName,
+            variantWeight: variant ? variant.weightLabel : '',
+            quantity: item.quantity,
+            price: variant ? variant.price : product.basePrice,
+          })
+        }
+      }
+
+      if (items.length > 0) {
+        await Bundle.create({
+          name: combo.name,
+          description: combo.description,
+          isCombo: combo.isCombo,
+          discountPercent: combo.discountPercent,
+          items,
+        })
+      }
+    }
+    results.push(`${ORGANIC_COMBOS.length} organic combos ready`)
 
     res.json({ message: results.join(' | ') })
   } catch (err) {
