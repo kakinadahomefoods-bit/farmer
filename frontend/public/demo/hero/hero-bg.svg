@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="900" viewBox="0 0 1920 900">
+  <defs>
+    <linearGradient id="hh" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#1B4332"/><stop offset="40%" stop-color="#2D6A4F"/><stop offset="100%" stop-color="#40916C"/></linearGradient>
+    <pattern id="hhdots" width="40" height="40" patternUnits="userSpaceOnUse"><circle cx="20" cy="20" r="1" fill="#52B788" opacity="0.06"/></pattern>
+  </defs>
+  <rect width="1920" height="900" fill="url(#hh)"/>
+  <rect width="1920" height="900" fill="url(#hhdots)"/>
+  <circle cx="1600" cy="250" r="300" fill="#52B788" opacity="0.08"/>
+  <circle cx="1400" cy="680" r="200" fill="#40916C" opacity="0.06"/>
+  <circle cx="1750" cy="480" r="150" fill="#D97745" opacity="0.1"/>
+  <circle cx="300" cy="200" r="120" fill="#52B788" opacity="0.05"/>
+  <circle cx="400" cy="750" r="100" fill="#40916C" opacity="0.04"/>
+  <rect x="0" y="0" width="500" height="900" fill="url(#hh)" opacity="0.3"/>
+</svg>

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+  <defs><linearGradient id="b" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FFFDF9"/><stop offset="100%" stop-color="#F8F4EE"/></linearGradient>
+  <linearGradient id="co" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#F5F5F5"/><stop offset="100%" stop-color="#E0E0E0"/></linearGradient></defs>
+  <rect fill="url(#b)" width="600" height="600" rx="16"/>
+  <rect x="220" y="110" width="160" height="280" rx="24" fill="url(#co)" opacity="0.5"/>
+  <rect x="240" y="160" width="120" height="180" rx="12" fill="#F5F5F5" opacity="0.6"/>
+  <rect x="240" y="160" width="120" height="60" rx="12" fill="#E0E0E0" opacity="0.5"/>
+  <text x="300" y="205" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="11" font-weight="700" fill="#8B5E3C">COCONUT</text>
+  <text x="300" y="225" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" fill="#8B5E3C" opacity="0.6">Virgin · Cold Pressed</text>
+  <text x="300" y="480" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="14" font-weight="600" fill="#8B5E3C">Kobbari (Coconut Oil)</text>
+  <text x="300" y="510" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="11" fill="#8B5E3C" opacity="0.5">500ml · 1L</text>
+</svg>

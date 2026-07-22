@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+  <defs><linearGradient id="b" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FFFDF9"/><stop offset="100%" stop-color="#F8F4EE"/></linearGradient>
+  <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#C9A24C"/><stop offset="100%" stop-color="#A88330"/></linearGradient></defs>
+  <rect fill="url(#b)" width="600" height="600" rx="16"/>
+  <rect x="160" y="80" width="280" height="320" rx="24" fill="url(#g2)" opacity="0.15"/>
+  <rect x="200" y="110" width="200" height="60" rx="10" fill="#C9A24C" opacity="0.2"/>
+  <rect x="200" y="190" width="200" height="60" rx="10" fill="#D4A857" opacity="0.18"/>
+  <rect x="200" y="270" width="200" height="60" rx="10" fill="#B89239" opacity="0.2"/>
+  <rect x="200" y="350" width="200" height="40" rx="10" fill="#C49A40" opacity="0.15"/>
+  <text x="300" y="480" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="16" font-weight="700" fill="#8B5E3C">Millet Lover's Pack</text>
+  <text x="300" y="510" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="11" fill="#8B5E3C" opacity="0.5">4 Traditional Millets</text>
+</svg>

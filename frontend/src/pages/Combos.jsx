@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../lib/api'
+import { DEMO_MODE } from '../lib/withDemoFallback'
+import { demoCombos } from '../lib/demoData'
 import SeoHead from '../components/SeoHead'
 import BundleCard from '../components/BundleCard'
 import { getComboBundles as getSupabaseComboBundles } from '../lib/productService'
@@ -15,7 +17,7 @@ export default function Combos() {
       try {
         let data = await api.getBundles({ combo: 'true' })
         if (!data || data.length === 0) data = await getSupabaseComboBundles().catch(() => [])
-        setBundles(data || [])
+        setBundles(DEMO_MODE && (!data || data.length === 0) ? demoCombos : (data || []))
       } catch (e) { console.error(e) }
       finally { setLoading(false) }
     }

@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { getFarmers } from '../lib/farmerService'
+import { DEMO_MODE } from '../lib/withDemoFallback'
+import { demoFarmers } from '../lib/demoData'
 import { useSiteSettings } from '../contexts/SiteSettingsContext'
 import { getImageUrl } from '../lib/utils'
 import { generatePlaceholder } from '../lib/placeholders'
@@ -14,7 +17,7 @@ export default function Farmers() {
     const load = async () => {
       try {
         const data = await getFarmers()
-        setFarmers(data || [])
+        setFarmers(DEMO_MODE && (!data || data.length === 0) ? demoFarmers : (data || []))
       } catch (e) { console.error(e) }
       finally { setLoading(false) }
     }
@@ -48,17 +51,17 @@ export default function Farmers() {
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {farmers.map(farmer => (
-              <div key={farmer.id} className="rounded-xl border border-border bg-white overflow-hidden transition-all hover:shadow-md hover:-translate-y-0.5">
+              <div key={farmer.id} className="flex flex-col rounded-xl border border-border bg-white overflow-hidden transition-all hover:shadow-md hover:-translate-y-0.5">
                 {farmer.image_url ? (
-                  <img src={getImageUrl(farmer.image_url, settings?.placeholder_image)} alt={farmer.name} className="h-48 w-full object-cover"
+                  <img src={getImageUrl(farmer.image_url, settings?.placeholder_image)} alt={farmer.name} className="h-48 w-full object-cover flex-shrink-0"
                     onError={(e) => { if (!e.currentTarget.dataset.fallback) { e.currentTarget.dataset.fallback = 'true'; e.currentTarget.src = generatePlaceholder('farmer', farmer.name) } }} />
                 ) : (
-                  <img src={generatePlaceholder('farmer', farmer.name)} alt={farmer.name} className="h-48 w-full object-cover" />
+                  <img src={generatePlaceholder('farmer', farmer.name)} alt={farmer.name} className="h-48 w-full object-cover flex-shrink-0" />
                 )}
-                <div className="p-5">
+                <div className="flex flex-col flex-1 p-5">
                   <h3 className="font-heading text-lg font-bold text-ink">{farmer.name}</h3>
                   {farmer.location && <p className="mt-1 text-sm text-muted">{farmer.location}</p>}
-                  {farmer.bio && <p className="mt-3 text-sm text-muted leading-relaxed">{farmer.bio}</p>}
+                  {farmer.bio && <p className="mt-auto pt-3 text-sm text-muted leading-relaxed">{farmer.bio}</p>}
                 </div>
               </div>
             ))}

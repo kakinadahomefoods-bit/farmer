@@ -1,6 +1,8 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
 import { getProducts } from '../lib/productService'
+import { DEMO_MODE } from '../lib/withDemoFallback'
+import { demoProducts } from '../lib/demoData'
 import SeoHead from '../components/SeoHead'
 import ProductCard from '../components/ProductCard'
 
@@ -52,8 +54,8 @@ export default function Products() {
       setLoading(true)
       try {
         const result = await getProducts(page, 50, catSlug || null, search || null, sort, false)
-        setProducts(result?.data || [])
-        setTotal(result?.total || 0)
+        setProducts(DEMO_MODE && (!result?.data || result.data.length === 0) ? demoProducts : (result?.data || []))
+        setTotal(DEMO_MODE && (!result?.data || result.data.length === 0) ? demoProducts.length : (result?.total || 0))
       } catch (e) { console.error(e) }
       finally { setLoading(false) }
     }

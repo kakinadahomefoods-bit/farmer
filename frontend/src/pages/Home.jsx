@@ -10,6 +10,8 @@ import { api } from '../lib/api'
 import { getComboBundles as getSupabaseComboBundles } from '../lib/productService'
 import { formatPrice, getImageUrl } from '../lib/utils'
 import { generatePlaceholder } from '../lib/placeholders'
+import { DEMO_MODE } from '../lib/withDemoFallback'
+import { demoProducts, demoCombos, demoFarmers, demoStories, demoCategories, demoProductsByCategory } from '../lib/demoData'
 import { CartIcon } from '../components/Icons'
 import { HOME_ASSETS, getHeroAsset } from '../lib/homeAssets'
 
@@ -71,11 +73,13 @@ export default function Home() {
           api.getFarmers({ limit: 4 }).then(r => r.data || r || []).catch(() => []),
         ])
         if (cancelled) return
-        setProducts(productsData)
-        setBundles(Array.isArray(bundlesData) ? bundlesData : bundlesData?.data || [])
-        setMilletProducts(milletData)
-        setGrainProducts(grainData)
-        setFarmers(Array.isArray(farmersData) ? farmersData : farmersData?.data || [])
+        setProducts(DEMO_MODE && productsData.length === 0 ? demoProducts : productsData)
+        const finalBundles = Array.isArray(bundlesData) ? bundlesData : bundlesData?.data || []
+        setBundles(DEMO_MODE && finalBundles.length === 0 ? demoCombos : finalBundles)
+        setMilletProducts(DEMO_MODE && milletData.length === 0 ? demoProductsByCategory('millets') : milletData)
+        setGrainProducts(DEMO_MODE && grainData.length === 0 ? demoProductsByCategory('lentils-beans') : grainData)
+        const finalFarmers = Array.isArray(farmersData) ? farmersData : farmersData?.data || []
+        setFarmers(DEMO_MODE && finalFarmers.length === 0 ? demoFarmers : finalFarmers)
       } catch (err) { console.error(err) }
       finally { if (!cancelled) setLoading(false) }
     }
@@ -88,10 +92,17 @@ export default function Home() {
     let cancelled = false
     api.getCategories().then(data => {
       if (cancelled) return
-      const cats = Array.isArray(data) ? data : data?.data || []
+      let cats = Array.isArray(data) ? data : data?.data || []
+      if (DEMO_MODE && cats.length === 0) cats = demoCategories()
       setCategories(cats)
       if (cats.length > 0 && !activeCategory) setActiveCategory(cats[0].id || cats[0]._id)
-    }).catch(() => {})
+    }).catch(() => {
+      if (!cancelled && DEMO_MODE) {
+        const cats = demoCategories()
+        setCategories(cats)
+        if (cats.length > 0) setActiveCategory(cats[0].id || cats[0]._id)
+      }
+    })
     return () => { cancelled = true }
   }, [])
 
@@ -103,9 +114,12 @@ export default function Home() {
     if (categoryProducts[catName]?.length) return
     setCatLoading(prev => ({ ...prev, [catName]: true }))
     api.getProducts({ category: catName, limit: 8 }).then(r => {
-      const data = r?.data || []
+      let data = r?.data || []
+      if (DEMO_MODE && data.length === 0) data = demoProductsByCategory(catName)
       setCategoryProducts(prev => ({ ...prev, [catName]: data }))
-    }).catch(() => {}).finally(() => {
+    }).catch(() => {
+      if (DEMO_MODE) setCategoryProducts(prev => ({ ...prev, [catName]: demoProductsByCategory(catName) }))
+    }).finally(() => {
       setCatLoading(prev => ({ ...prev, [catName]: false }))
     })
   }, [activeCategory, categories])
@@ -116,6 +130,9 @@ export default function Home() {
 
       {/* 1. Hero slider */}
       <section className="relative bg-green-800 overflow-hidden">
+        {DEMO_MODE && (
+          <img src="/demo/hero/hero-bg.svg" alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover" />
+        )}
         <div className="relative min-h-[65vh] flex items-center">
           {HERO_SLIDES.map((slide, i) => {
             const asset = getHeroAsset(i)
@@ -125,7 +142,7 @@ export default function Home() {
                   <source srcSet={asset.desktop} media="(min-width: 768px)" />
                   <img src={asset.mobile} alt={asset.alt} loading={i === 0 ? 'eager' : 'lazy'} className="absolute inset-0 h-full w-full object-cover" />
                 </picture>
-                <div className="absolute inset-0 bg-gradient-to-r from-green-800/80 to-green-800/40" />
+                <div className="absolute inset-0 bg-gradient-to-r from-green-700/90 to-green-800/70" />
               </div>
             )
           })}
@@ -259,7 +276,12 @@ export default function Home() {
               className="text-xs font-semibold text-green-600 hover:text-green-700 transition-colors">Watch All →</a>
           </div>
           <div className="flex gap-3 overflow-x-auto hide-scrollbar carousel-snap pb-2">
-            {HOME_ASSETS.reels.map((reel, i) => (
+            {(DEMO_MODE ? demoStories.map(s => ({
+              poster: s.image,
+              alt: s.title,
+              src: null,
+              duration: s.duration
+            })) : HOME_ASSETS.reels).map((reel, i) => (
               <div key={i} className="flex-shrink-0 w-[200px] sm:w-[220px] lg:w-[240px]">
                 <div className="aspect-[9/16] rounded-xl overflow-hidden bg-green-50 relative group cursor-pointer">
                   {reel.src ? (
@@ -285,6 +307,9 @@ export default function Home() {
                     </>
                   )}
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/50 to-transparent p-3">
+                    {DEMO_MODE && reel.duration && (
+                      <span className="inline-block rounded-full bg-white/20 backdrop-blur-sm px-2 py-0.5 text-[10px] font-medium text-white mb-1">{reel.duration}</span>
+                    )}
                     <p className="text-xs font-medium text-white drop-shadow-sm line-clamp-1">{reel.alt}</p>
                   </div>
                 </div>
@@ -444,18 +469,18 @@ export default function Home() {
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {farmers.slice(0, 4).map(farmer => (
                 <Link key={farmer._id || farmer.id} to={`/farmers/${farmer.qrCode || farmer.code || farmer._id}`}
-                  className="group rounded-xl border border-border bg-off-white overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1">
-                  <div className="aspect-[1/1] overflow-hidden bg-green-100">
+                  className="group flex flex-col rounded-xl border border-border bg-off-white overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1">
+                  <div className="aspect-[1/1] overflow-hidden bg-green-100 flex-shrink-0">
                     {farmer.image_url ? (
                       <img src={getImageUrl(farmer.image_url)} alt={farmer.name} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                         onError={(e) => { if (!e.currentTarget.dataset.fallback) { e.currentTarget.dataset.fallback = 'true'; e.currentTarget.src = generatePlaceholder('farmer-card') } }} />
                     ) : (
-                  <div className="aspect-[1/1] overflow-hidden bg-green-100">
+                  <div className="aspect-[1/1] overflow-hidden bg-green-100 flex-shrink-0">
                     <img src={generatePlaceholder('farmer-card')} alt={farmer.name} className="h-full w-full object-cover" />
                   </div>
                     )}
                   </div>
-                  <div className="p-3">
+                  <div className="flex flex-col flex-1 p-3 mt-auto">
                     <h3 className="font-heading text-sm font-bold text-ink group-hover:text-green-600 transition-colors">{farmer.name}</h3>
                     {farmer.village && <p className="text-xs text-muted mt-0.5">{farmer.village}{farmer.district ? `, ${farmer.district}` : ''}</p>}
                   </div>
@@ -464,18 +489,13 @@ export default function Home() {
             </div>
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {[
-                { name: 'Rama Devi', village: 'Araku Valley' },
-                { name: 'Lakshmi Naidu', village: 'Paderu' },
-                { name: 'Sanya Bai', village: 'Chintapalli' },
-                { name: 'Mohan Rao', village: 'Maredumilli' },
-              ].map((farmer, i) => (
+              {demoFarmers.slice(0, 4).map((farmer, i) => (
                 <Link key={i} to="/farmers"
-                  className="group rounded-xl border border-border bg-off-white overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1">
-                  <img src={generatePlaceholder('farmer-card')} alt={farmer.name} className="h-full w-full object-cover" />
-                  <div className="p-3">
+                  className="group flex flex-col rounded-xl border border-border bg-off-white overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1">
+                  <img src={farmer.image || generatePlaceholder('farmer-card')} alt={farmer.name} className="h-48 w-full object-cover flex-shrink-0" />
+                  <div className="flex flex-col flex-1 p-3 mt-auto">
                     <h3 className="font-heading text-sm font-bold text-ink group-hover:text-green-600 transition-colors">{farmer.name}</h3>
-                    <p className="text-xs text-muted mt-0.5">{farmer.village}</p>
+                    <p className="text-xs text-muted mt-0.5">{farmer.village || farmer.location}</p>
                   </div>
                 </Link>
               ))}

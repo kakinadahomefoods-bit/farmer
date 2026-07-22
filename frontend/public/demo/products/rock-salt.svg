@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+  <defs><linearGradient id="b" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FFFDF9"/><stop offset="100%" stop-color="#F8F4EE"/></linearGradient>
+  <linearGradient id="rs" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#F5E6D0"/><stop offset="100%" stop-color="#E8D0B0"/></linearGradient></defs>
+  <rect fill="url(#b)" width="600" height="600" rx="16"/>
+  <rect x="180" y="100" width="240" height="280" rx="20" fill="url(#rs)" opacity="0.4"/>
+  <rect x="200" y="120" width="200" height="220" rx="16" fill="#FFFDF9" opacity="0.4"/>
+  <rect x="255" y="180" width="30" height="30" rx="4" fill="#F5E6D0" opacity="0.5" transform="rotate(15 270 195)"/>
+  <rect x="295" y="190" width="25" height="25" rx="4" fill="#E8D0B0" opacity="0.45" transform="rotate(-10 307 202)"/>
+  <rect x="280" y="225" width="28" height="28" rx="4" fill="#F0D8C0" opacity="0.4" transform="rotate(5 294 239)"/>
+  <text x="300" y="480" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="14" font-weight="600" fill="#8B5E3C">Saina (Rock Salt)</text>
+  <text x="300" y="510" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="11" fill="#8B5E3C" opacity="0.5">500g · 1kg</text>
+</svg>

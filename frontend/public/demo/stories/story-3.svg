@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+  <defs><linearGradient id="s3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#8B5E3C"/><stop offset="100%" stop-color="#5C3A1E"/></linearGradient></defs>
+  <rect fill="url(#s3)" width="400" height="300" rx="8"/>
+  <circle cx="200" cy="120" r="35" fill="#D97745" opacity="0.12"/>
+  <path d="M200 155 Q175 185 165 220 Q185 235 200 235 Q215 235 235 220 Q225 185 200 155Z" fill="#D97745" opacity="0.1"/>
+  <circle cx="180" cy="100" r="30" fill="#EADBC8" opacity="0.08"/>
+  <circle cx="220" cy="135" r="20" fill="#EADBC8" opacity="0.06"/>
+  <text x="200" y="230" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="12" font-weight="600" fill="#FFFDF9">Life of a Tribal Farmer</text>
+  <text x="200" y="250" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="10" fill="#FFFDF9" opacity="0.7">4:05</text>
+</svg>
