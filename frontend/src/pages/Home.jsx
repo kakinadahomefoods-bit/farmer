@@ -515,17 +515,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 11. Newsletter */}
-      <section className="py-14 lg:py-18 bg-white border-t border-border">
-        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 text-center">
-          <h2 className="font-heading text-2xl sm:text-3xl font-bold text-ink">Sign Up To Get Updates</h2>
-          <p className="text-sm text-muted mt-2 max-w-md mx-auto">Get 15% off your first order + updates on new products and exclusive offers.</p>
-          <div className="mt-6 flex gap-2 max-w-md mx-auto">
-            <input type="email" placeholder="Enter your email" className="flex-1 rounded-lg border border-border px-4 py-2.5 text-sm text-ink placeholder:text-muted-light outline-none focus:border-green-600 bg-white" />
-            <button className="rounded-lg bg-green-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-green-700 transition-colors shrink-0">Subscribe</button>
-          </div>
-        </div>
-      </section>
+
 
       {/* 12. Values strip */}
       <section className="py-6 bg-off-white border-t border-border">
