@@ -156,7 +156,7 @@ export default function Home() {
           <Link to="/products" className="group relative block rounded-xl overflow-hidden aspect-[4/1] sm:aspect-[6/1] lg:aspect-[10/1]">
             <picture>
               <source srcSet={HOME_ASSETS.adBanner.desktop} media="(min-width: 768px)" />
-              <img src={HOME_ASSETS.adBanner.mobile} alt={HOME_ASSETS.adBanner.alt} loading="lazy" className="absolute inset-0 h-full w-full object-cover object-center transition-none" />
+              <img src={HOME_ASSETS.adBanner.mobile} alt={HOME_ASSETS.adBanner.alt} loading="lazy" className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105" />
             </picture>
           </Link>
         </div>
