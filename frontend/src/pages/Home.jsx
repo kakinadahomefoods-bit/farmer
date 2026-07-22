@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import ProductCard from '../components/ProductCard'
+import BundleCard from '../components/BundleCard'
 import { useCart } from '../contexts/CartContext'
 import { useSiteSettings } from '../contexts/SiteSettingsContext'
 import SeoHead from '../components/SeoHead'
@@ -18,30 +19,6 @@ const TESTIMONIALS = [
   { quote: 'The millets taste just like home. So fresh and authentic!', name: 'Priya S.', rating: 5 },
   { quote: 'Finally, real chemical-free produce. The forest honey is incredible.', name: 'Rajesh K.', rating: 5 },
   { quote: 'Direct from tribal farmers with no middlemen. This is the future.', name: 'Ananya M.', rating: 5 },
-]
-
-const CERTIFICATIONS = [
-  { label: 'FSSAI Certified', icon: '✓' },
-  { label: '100% Natural', icon: '🌿' },
-  { label: 'Free Delivery', icon: '🚚' },
-
-]
-
-const CATEGORIES = [
-  { name: 'Millets', slug: 'millets', desc: 'Nutrient-rich traditional grains' },
-  { name: 'Honey', slug: 'honey', desc: 'Pure raw forest honey' },
-  { name: 'Spices', slug: 'spices', desc: 'Aromatic single-origin spices' },
-  { name: 'Pulses & Grains', slug: '', desc: 'Farm-fresh daily essentials' },
-  { name: 'Cold-Pressed Oils', slug: '', desc: 'Wood-pressed traditional oils' },
-  { name: 'Combos', slug: 'combos', desc: 'Curated value gift boxes' },
-]
-
-const BENEFITS = [
-  { label: 'Immunity', icon: '🛡️' },
-  { label: 'Gut Health', icon: '🌱' },
-  { label: 'Diabetes Friendly', icon: '🍃' },
-  { label: 'Energy', icon: '⚡' },
-  { label: 'Sleep', icon: '🌙' },
 ]
 
 const VALUES = [
@@ -82,7 +59,7 @@ export default function Home() {
     return () => { cancelled = true; clearInterval(id) }
   }, [])
 
-  const bestSellers = products.filter(p => p.is_best_seller || p.totalSold > 10 || p.isFeatured).slice(0, 4)
+  const bestSellers = products.filter(p => p.is_best_seller || p.totalSold > 10 || p.isFeatured).slice(0, 6)
   const section2Products = products.filter(p => !bestSellers.includes(p)).slice(0, 4)
   const section7Products = products.slice(4, 8)
 
@@ -114,51 +91,6 @@ export default function Home() {
           {HERO_SLIDES.map((_, i) => (
             <button key={i} onClick={() => setHeroIdx(i)} className={`w-2.5 h-2.5 rounded-full transition-all ${i === heroIdx ? 'bg-white w-6' : 'bg-white/40 hover:bg-white/60'}`} aria-label={`Slide ${i + 1}`} />
           ))}
-        </div>
-      </section>
-
-      {/* 1.5. Certifications strip */}
-      <section className="border-b border-border bg-sand/30">
-        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 py-4 lg:py-5">
-          <div className="flex items-center justify-center gap-8 sm:gap-12 lg:gap-20">
-            {CERTIFICATIONS.map((cert, i) => (
-              <div key={i} className="flex items-center gap-2 text-sm text-ink">
-                <span className="text-lg">{cert.icon}</span>
-                <span className="font-medium text-[13px]">{cert.label}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 1.75. Categories */}
-      <section className="py-14 lg:py-18 bg-white">
-        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="font-heading text-2xl sm:text-3xl font-bold text-ink">Shop by Category</h2>
-              <p className="text-sm text-muted mt-1">Explore our range of natural products</p>
-            </div>
-            <Link to="/products" className="text-sm font-semibold text-green-600 hover:text-green-700 transition-colors">View All →</Link>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-            {CATEGORIES.map(cat => (
-              <Link key={cat.name} to={cat.slug ? `/products?category=${cat.slug}` : '/products'} className="group block">
-                <div className="aspect-square rounded-xl bg-green-50 flex flex-col items-center justify-center p-4 text-center transition-all group-hover:shadow-md group-hover:-translate-y-0.5 border border-transparent group-hover:border-green-200">
-                  <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center text-2xl shadow-sm">
-                    {cat.name === 'Millets' && '🌾'}
-                    {cat.name === 'Honey' && '🍯'}
-                    {cat.name === 'Spices' && '🌶'}
-                    {cat.name === 'Pulses & Grains' && '🫘'}
-                    {cat.name === 'Cold-Pressed Oils' && '🫒'}
-                    {cat.name === 'Combos' && '📦'}
-                  </div>
-                  <h3 className="mt-2 text-sm font-semibold text-ink">{cat.name}</h3>
-                  <p className="text-[10px] text-muted mt-0.5">{cat.desc}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
         </div>
       </section>
 
@@ -198,28 +130,12 @@ export default function Home() {
               {Array.from({ length: 4 }).map((_, i) => <div key={i} className="rounded-xl bg-white border border-border h-80 animate-pulse" />)}
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-              {(bestSellers.length ? bestSellers : products.slice(0, 4)).map(product => (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+              {(bestSellers.length ? bestSellers : products.slice(0, 6)).map(product => (
                 <ProductCard key={product.id || product._id} product={product} />
               ))}
             </div>
           )}
-        </div>
-      </section>
-
-      {/* 3.5. Shop by Benefit */}
-      <section className="py-14 lg:py-18 bg-white">
-        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-          <h2 className="font-heading text-2xl sm:text-3xl font-bold text-ink text-center">Shop by Concern</h2>
-          <p className="text-sm text-muted text-center mt-1">Find products tailored to your wellness needs</p>
-          <div className="mt-8 grid grid-cols-3 sm:grid-cols-5 gap-4">
-            {BENEFITS.map(b => (
-              <Link key={b.label} to="/products" className="group block text-center">
-                <div className="aspect-square rounded-xl bg-green-50 flex items-center justify-center text-3xl transition-all group-hover:shadow-md group-hover:-translate-y-0.5 border border-transparent group-hover:border-green-200">{b.icon}</div>
-                <p className="mt-2 text-xs font-semibold text-ink">{b.label}</p>
-              </Link>
-            ))}
-          </div>
         </div>
       </section>
 
@@ -262,38 +178,10 @@ export default function Home() {
               {Array.from({ length: 3 }).map((_, i) => <div key={i} className="rounded-xl bg-white border border-border h-64 animate-pulse" />)}
             </div>
           ) : bundles.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-              {bundles.slice(0, 6).map(bundle => {
-                const id = bundle._id || bundle.id
-                const name = bundle.name || bundle.bundle_name
-                const image = bundle.image || bundle.bundle_image_url || bundle.image_url
-                const items = bundle?.items || bundle?.bundle_items || []
-                const discountPct = Math.round(bundle.discountPercent || bundle.bundle_discount_percent || 0)
-                const originalTotal = items.reduce((sum, item) => sum + (item.price || item.variant?.price || 0) * item.quantity, 0) || 0
-                const bundlePrice = discountPct > 0 ? Number((originalTotal - originalTotal * discountPct / 100).toFixed(2)) : Number(bundle?.price || bundle?.bundle_price || 0)
-                const savings = originalTotal > bundlePrice ? Math.round(originalTotal - bundlePrice) : 0
-                return (
-                  <Link key={id} to={`/combos/${bundle.slug || id}`} className="group bg-white rounded-xl border border-border overflow-hidden transition-all hover:shadow-md hover:-translate-y-0.5">
-                    <div className="aspect-[4/3] bg-white flex items-center justify-center p-4">
-                      <img src={getImageUrl(image, settings?.placeholder_image)} alt={name} className="h-full w-full object-contain" loading="lazy"
-                        onError={(e) => { e.currentTarget.src = settings?.placeholder_image || 'https://placehold.co/400x300?text=Combo' }} />
-                      {discountPct > 0 && (
-                        <span className="absolute top-3 left-3 rounded-full bg-sale px-2.5 py-0.5 text-[9px] font-semibold uppercase text-white shadow-sm">Save {discountPct}%</span>
-                      )}
-                    </div>
-                    <div className="p-4">
-                      <h3 className="text-sm font-semibold text-ink line-clamp-1 group-hover:text-green-600 transition-colors">{name}</h3>
-                      {items.length > 0 && <p className="text-[10px] text-muted mt-0.5">{items.length} Products</p>}
-                      <div className="mt-2 flex items-baseline gap-1.5">
-                        <span className="text-base font-bold text-ink">{formatPrice(bundlePrice)}</span>
-                        {savings > 0 && (
-                          <span className="text-[10px] font-semibold text-sale">Save {formatPrice(savings)}</span>
-                        )}
-                      </div>
-                    </div>
-                  </Link>
-                )
-              })}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+              {bundles.slice(0, 3).map(bundle => (
+                <BundleCard key={bundle._id || bundle.id} bundle={bundle} compact />
+              ))}
             </div>
           ) : (
             <div className="text-center py-12">
@@ -318,32 +206,6 @@ export default function Home() {
                 <svg className="h-6 w-6 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
               </div>
               <p className="mt-3 text-sm text-muted">YouTube embed placeholder — add your video URL here</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 6.5. Deal of the Week */}
-      <section className="py-14 lg:py-18 bg-white">
-        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-          <div className="rounded-2xl bg-green-700 overflow-hidden">
-            <div className="grid lg:grid-cols-2">
-              <div className="p-8 lg:p-12 flex flex-col justify-center">
-                <p className="text-green-200 text-[10px] font-semibold tracking-[0.12em] uppercase">Deal of the Week</p>
-                <h2 className="font-heading text-3xl sm:text-4xl font-bold text-white mt-2 leading-tight">Forest Honey<br />Combo Pack</h2>
-                <p className="text-white/70 text-sm mt-3">Pure wild honey + organic turmeric — the ultimate immunity duo.</p>
-                <div className="mt-4 flex items-baseline gap-2">
-                  <span className="font-heading text-3xl font-bold text-white">₹599</span>
-                  <span className="text-sm text-white/50 line-through">₹899</span>
-                  <span className="text-sm font-semibold text-white bg-white/15 px-2 py-0.5 rounded">Save ₹300</span>
-                </div>
-                <Link to="/combos" className="mt-6 inline-flex items-center justify-center bg-white text-green-700 px-8 py-3 rounded-lg text-sm font-semibold hover:bg-green-50 transition-colors w-fit">Shop the Deal →</Link>
-              </div>
-              <div className="bg-gradient-to-br from-green-600 to-green-800 min-h-[300px] flex items-center justify-center">
-                <div className="text-center p-8">
-                  <div className="w-32 h-32 mx-auto rounded-full bg-white/10 flex items-center justify-center text-5xl">🍯</div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -377,35 +239,12 @@ export default function Home() {
                   {Array.from({ length: 3 }).map((_, i) => <div key={i} className="rounded-xl bg-white border border-border h-80 animate-pulse" />)}
                 </div>
               ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
                   {(section7Products.length ? section7Products : products.slice(4, 7)).map(product => (
                     <ProductCard key={product.id || product._id} product={product} />
                   ))}
                 </div>
               )}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 7.5. Brand Story */}
-      <section className="py-14 lg:py-18 bg-white">
-        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-          <div className="grid lg:grid-cols-2 gap-10 items-center">
-            <div className="aspect-[4/3] rounded-xl bg-green-50 flex items-center justify-center">
-              <div className="text-center p-8">
-                <div className="w-20 h-20 rounded-full bg-green-200 flex items-center justify-center mx-auto text-3xl">👨‍🌾</div>
-                <p className="mt-4 text-sm text-muted italic">Our farmers are the heart of our purpose</p>
-              </div>
-            </div>
-            <div>
-              <h2 className="font-heading text-2xl sm:text-3xl font-bold text-ink">Our Farmers Are the Heart of Our Purpose</h2>
-              <p className="mt-4 text-sm text-muted leading-relaxed">HaiFarmer works hand-in-hand with tribal communities across India, bringing you wild-harvested and natural products while creating real impact where it matters most.</p>
-              <p className="mt-3 text-sm text-muted leading-relaxed">Every purchase supports fair trade, preserves traditional knowledge, and helps sustain forest ecosystems.</p>
-              <Link to="/farmers" className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-green-600 hover:text-green-700 transition-colors">
-                Meet the Farmers
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-              </Link>
             </div>
           </div>
         </div>
@@ -427,16 +266,14 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Trust strip */}
-      <section className="py-6 bg-white border-t border-border">
-        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2">
-            {CERTIFICATIONS.map(item => (
-              <div key={item.label} className="flex items-center gap-2 text-sm text-muted">
-                <span className="text-base">{item.icon}</span>
-                <span className="text-[11px] font-medium">{item.label}</span>
-              </div>
-            ))}
+      {/* 9. Newsletter */}
+      <section className="py-14 lg:py-18 bg-off-white">
+        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 text-center">
+          <h2 className="font-heading text-2xl sm:text-3xl font-bold text-ink">Sign Up To Get Updates</h2>
+          <p className="text-sm text-muted mt-2 max-w-md mx-auto">Get 15% off your first order + updates on new products and exclusive offers.</p>
+          <div className="mt-6 flex gap-2 max-w-md mx-auto">
+            <input type="email" placeholder="Enter your email" className="flex-1 rounded-lg border border-border px-4 py-2.5 text-sm text-ink placeholder:text-muted-light outline-none focus:border-green-600 bg-white" />
+            <button className="rounded-lg bg-green-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-green-700 transition-colors shrink-0">Subscribe</button>
           </div>
         </div>
       </section>
