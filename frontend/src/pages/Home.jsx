@@ -161,8 +161,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 3. Groceries — all products */}
-      <section className="py-14 lg:py-18 bg-off-white">
+      {/* 3. Groceries — all products (auto-scrolling carousel) */}
+      <section className="py-14 lg:py-18 bg-off-white overflow-hidden">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
           <div className="flex items-center justify-between mb-8">
             <div>
@@ -173,13 +173,42 @@ export default function Home() {
           </div>
           {loading ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
-              {Array.from({ length: 15 }).map((_, i) => <div key={i} className="rounded-xl bg-white border border-border h-80 animate-pulse" />)}
+              {Array.from({ length: 10 }).map((_, i) => <div key={i} className="rounded-xl bg-white border border-border h-80 animate-pulse" />)}
             </div>
           ) : products.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
-              {products.map(product => (
-                <ProductCard key={product.id || product._id} product={product} />
-              ))}
+            <div className="relative w-full">
+              <style>{`
+                @keyframes scroll-left {
+                  0% { transform: translateX(0); }
+                  100% { transform: translateX(-50%); }
+                }
+                .carousel-track {
+                  display: flex;
+                  gap: 1.25rem;
+                  width: max-content;
+                  animation: scroll-left 80s linear infinite;
+                }
+                .carousel-track:hover {
+                  animation-play-state: paused;
+                }
+                .carousel-track > * {
+                  width: 220px;
+                  flex-shrink: 0;
+                }
+                @media (min-width: 640px) {
+                  .carousel-track > * { width: 240px; }
+                }
+                @media (min-width: 1024px) {
+                  .carousel-track > * { width: 260px; }
+                }
+              `}</style>
+              <div className="carousel-track">
+                {[...products, ...products].map((product, i) => (
+                  <div key={`${product.id || product._id}-${i}`} className="h-full">
+                    <ProductCard product={product} />
+                  </div>
+                ))}
+              </div>
             </div>
           ) : (
             <div className="text-center py-16 bg-white rounded-xl border border-border">
