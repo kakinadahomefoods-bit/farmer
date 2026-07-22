@@ -60,7 +60,7 @@ export default function Header() {
 
       {/* Header */}
       <header className={`sticky top-0 left-0 right-0 z-50 transition-all duration-300 bg-white ${scrolled ? 'shadow-sm' : 'shadow-none'}`}>
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3 sm:px-8 lg:px-10">
+        <div className="section-container flex items-center justify-between py-3">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 shrink-0" onClick={closeAll}>
             {logo ? (
