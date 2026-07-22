@@ -5,10 +5,21 @@ import { deleteFromCloudinary } from '../utils/cloudinary.js'
 
 const router = express.Router()
 
+function buildActiveQuery(query) {
+  const now = new Date()
+  return {
+    ...query,
+    $and: [
+      { $or: [{ startDate: { $exists: false } }, { startDate: null }, { startDate: { $lte: now } }] },
+      { $or: [{ endDate: { $exists: false } }, { endDate: null }, { endDate: { $gte: now } }] },
+    ],
+  }
+}
+
 router.get('/', async (req, res) => {
   try {
     const { position } = req.query
-    const query = { isActive: true }
+    const query = buildActiveQuery({ isActive: true })
     if (position) query.position = position
     const banners = await Banner.find(query).sort({ order: 1 })
     res.json(banners)
@@ -49,7 +60,13 @@ router.delete('/:id', protect, adminOnly, async (req, res) => {
   try {
     const banner = await Banner.findById(req.params.id)
     if (!banner) return res.status(404).json({ error: 'Banner not found' })
-    if (banner.cloudinaryPublicId) await deleteFromCloudinary(banner.cloudinaryPublicId)
+    const publicIds = [
+      banner.cloudinaryPublicId,
+      banner.desktopPublicId,
+      banner.tabletPublicId,
+      banner.mobilePublicId,
+    ].filter(Boolean)
+    await Promise.all(publicIds.map(deleteFromCloudinary))
     await Banner.findByIdAndDelete(req.params.id)
     res.json({ message: 'Banner deleted' })
   } catch (err) {

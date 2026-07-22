@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import ProductCard from '../components/ProductCard'
 import LifestyleCard from '../components/LifestyleCard'
 import BundleCard from '../components/BundleCard'
+import HeroSlider from '../components/HeroSlider'
 import { useCart } from '../contexts/CartContext'
 import { useSiteSettings } from '../contexts/SiteSettingsContext'
 import SeoHead from '../components/SeoHead'
@@ -11,15 +12,9 @@ import { getComboBundles as getSupabaseComboBundles } from '../lib/productServic
 import { formatPrice, getImageUrl } from '../lib/utils'
 import { generatePlaceholder } from '../lib/placeholders'
 import { DEMO_MODE } from '../lib/withDemoFallback'
-import { demoProducts, demoCombos, demoFarmers, demoStories, demoCategories, demoProductsByCategory } from '../lib/demoData'
+import { demoProducts, demoCombos, demoFarmers, demoStories, demoCategories, demoProductsByCategory, demoBanners } from '../lib/demoData'
 import { CartIcon } from '../components/Icons'
-import { HOME_ASSETS, getHeroAsset } from '../lib/homeAssets'
-
-const HERO_SLIDES = [
-  { title: 'Pure Food from the Heart of the Forest', sub: 'Wild-harvested millets, honey, and spices sourced directly from tribal communities.', cta: 'Shop Now' },
-  { title: 'Nature\'s Finest, Direct to Your Door', sub: 'Chemical-free produce grown with traditional wisdom.', cta: 'Explore Products' },
-  { title: 'Support Tribal Farmers, Eat Pure', sub: 'Every purchase supports indigenous farming communities across India.', cta: 'Meet Our Farmers' },
-]
+import { HOME_ASSETS } from '../lib/homeAssets'
 
 const VALUES = [
   { label: 'Made in India', icon: '🇮🇳' },
@@ -43,7 +38,7 @@ export default function Home() {
   const [catLoading, setCatLoading] = useState({})
   const [activeCategory, setActiveCategory] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [heroIdx, setHeroIdx] = useState(0)
+  const [banners, setBanners] = useState([])
   const [milletProducts, setMilletProducts] = useState([])
   const [grainProducts, setGrainProducts] = useState([])
   const [farmers, setFarmers] = useState([])
@@ -61,7 +56,7 @@ export default function Home() {
     let cancelled = false
     async function load() {
       try {
-        const [productsData, bundlesData, milletData, grainData, farmersData] = await Promise.all([
+        const [productsData, bundlesData, milletData, grainData, farmersData, bannersData] = await Promise.all([
           api.getProducts({ limit: 100 }).then(r => r.data || []).catch(() => []),
           api.getBundles({ combo: 'true' }).then(async r => {
             let data = r?.data || r || []
@@ -71,6 +66,7 @@ export default function Home() {
           api.getProducts({ category: 'millets', limit: 6 }).then(r => r.data || []).catch(() => []),
           api.getProducts({ category: 'lentils-beans', limit: 6 }).then(r => r.data || []).catch(() => []),
           api.getFarmers({ limit: 4 }).then(r => r.data || r || []).catch(() => []),
+          api.getBanners({ position: 'hero' }).then(r => Array.isArray(r) ? r : r?.data || []).catch(() => []),
         ])
         if (cancelled) return
         setProducts(DEMO_MODE && productsData.length === 0 ? demoProducts : productsData)
@@ -80,12 +76,13 @@ export default function Home() {
         setGrainProducts(DEMO_MODE && grainData.length === 0 ? demoProductsByCategory('lentils-beans') : grainData)
         const finalFarmers = Array.isArray(farmersData) ? farmersData : farmersData?.data || []
         setFarmers(DEMO_MODE && finalFarmers.length === 0 ? demoFarmers : finalFarmers)
+        const finalBanners = Array.isArray(bannersData) ? bannersData : bannersData?.data || []
+        setBanners(DEMO_MODE && finalBanners.length === 0 ? demoBanners : finalBanners)
       } catch (err) { console.error(err) }
       finally { if (!cancelled) setLoading(false) }
     }
     load()
-    const id = setInterval(() => setHeroIdx(prev => (prev + 1) % HERO_SLIDES.length), 5000)
-    return () => { cancelled = true; clearInterval(id) }
+    return () => { cancelled = true }
   }, [])
 
   useEffect(() => {
@@ -129,26 +126,7 @@ export default function Home() {
       <SeoHead title="HaiFarmer" description="Wild-harvested and natural products sourced directly from tribal communities. Pure. Honest. Sustainable." />
 
       {/* 1. Hero slider */}
-      <section className="relative overflow-hidden rounded-none">
-        <div className="relative min-h-[55vh] sm:min-h-[60vh] lg:min-h-[65vh] flex items-center">
-          {HERO_SLIDES.map((_, i) => {
-            const asset = getHeroAsset(i)
-            return (
-              <div key={i} className={`absolute inset-0 transition-opacity duration-700 ${i === heroIdx ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-                <picture>
-                  <source srcSet={asset.desktop} media="(min-width: 768px)" />
-                  <img src={asset.mobile} alt={asset.alt} loading={i === 0 ? 'eager' : 'lazy'} className="absolute inset-0 h-full w-full object-cover object-center transition-none" />
-                </picture>
-              </div>
-            )
-          })}
-        </div>
-        <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-          {HERO_SLIDES.map((_, i) => (
-            <button key={i} onClick={() => setHeroIdx(i)} className={`w-2 h-2 rounded-full transition-all ${i === heroIdx ? 'bg-white w-5' : 'bg-white/40 hover:bg-white/60'}`} aria-label={`Slide ${i + 1}`} />
-          ))}
-        </div>
-      </section>
+      <HeroSlider banners={banners} />
 
       {/* 2. Advertisement banner — cinematic strip */}
       <section className="py-4 sm:py-5 lg:py-6 bg-white">

@@ -297,4 +297,21 @@ export function demoProductsByCategory(categoryName) {
   })
 }
 
+export const demoBanners = [
+  {
+    _id: 'dm-banner-1',
+    title: '',
+    subtitle: '',
+    buttonText: '',
+    redirectLink: '/products',
+    image: '/assets/main-banner.png',
+    desktopImage: '/assets/main-banner.png',
+    tabletImage: '/assets/main-banner.png',
+    mobileImage: '/assets/main-banner.png',
+    order: 0,
+    isActive: true,
+    position: 'hero',
+  },
+]
+
 export { DEMO_MODE, demoCategories }

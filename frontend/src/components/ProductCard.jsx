@@ -73,9 +73,9 @@ export default function ProductCard({ product, priority }) {
   }
 
   return (
-    <Link to={`/products/${slugify(product.name)}`} className="group relative flex h-full flex-col bg-white rounded-2xl border border-border transition-all duration-200 hover:shadow-lg hover:-translate-y-1 overflow-hidden">
+    <Link to={`/products/${slugify(product.name)}`} className="group relative flex h-full flex-col bg-white rounded-2xl border border-border shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:ring-1 hover:ring-green-100 overflow-hidden">
       {isSale && (
-        <span className="absolute left-3 top-3 z-10 rounded-full bg-sale px-2.5 py-1 text-[10px] font-bold uppercase text-white shadow-sm">{formatPrice(savings)} off</span>
+        <span className="absolute left-3 top-3 z-10 rounded-full bg-sale px-2.5 py-1 text-[10px] font-bold uppercase text-white shadow-sm">{discountPercent}% off</span>
       )}
       {isBestSeller && (
         <span className="absolute right-3 top-3 z-10 rounded-full bg-green-600 px-2.5 py-1 text-[10px] font-bold uppercase text-white shadow-sm">Best Seller</span>
@@ -91,20 +91,20 @@ export default function ProductCard({ product, priority }) {
 
       <div className="flex flex-col flex-1 px-4 pb-4 pt-3">
         {categoryTag && (
-          <span className="text-[11px] font-medium text-green-600 uppercase tracking-[0.08em]">{categoryTag}</span>
+          <span className="text-[10px] font-semibold text-green-600 uppercase tracking-[0.1em]">{categoryTag}</span>
         )}
 
-        <h3 className="mt-1 text-base font-bold text-ink leading-snug line-clamp-1 group-hover:text-green-600 transition-colors">{product.name}</h3>
+        <h3 className="mt-1.5 text-[15px] font-bold text-ink leading-snug line-clamp-1 group-hover:text-green-600 transition-colors">{product.name}</h3>
 
         {descriptor && (
-          <p className="mt-0.5 text-[12px] text-muted line-clamp-1">{descriptor}</p>
+          <p className="mt-1 text-[12px] text-muted line-clamp-1">{descriptor}</p>
         )}
 
         {rating > 0 && (
-          <div className="mt-1.5 flex items-center gap-1.5">
-            <div className="flex text-green-600">
+          <div className="mt-2 flex items-center gap-1.5">
+            <div className="flex items-center gap-0.5">
               {[1, 2, 3, 4, 5].map(s => (
-                <span key={s} className={`text-[12px] ${s <= Math.round(rating) ? 'text-green-600' : 'text-border'}`}>★</span>
+                <span key={s} className={`text-[12px] leading-none ${s <= Math.round(rating) ? 'text-amber-500' : 'text-border'}`}>★</span>
               ))}
             </div>
             <span className="text-[11px] text-muted">({reviewCount})</span>
@@ -112,13 +112,13 @@ export default function ProductCard({ product, priority }) {
         )}
 
         {hasVariants && (
-          <div className="mt-2 flex flex-wrap gap-1.5">
+          <div className="mt-2.5 flex flex-wrap gap-1.5">
             {variants.map(v => {
               const vid = v.id || v._id
               const isSelected = vid === selectedVariantId
               return (
                 <button key={vid} type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleVariantChange(vid) }}
-                  className={`px-3 py-1 rounded-md text-[12px] font-semibold transition-all border ${isSelected ? 'bg-green-600 text-white border-green-600' : 'bg-white text-muted border-border hover:border-green-300 hover:text-green-600'}`}>
+                  className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all border ${isSelected ? 'bg-green-600 text-white border-green-600' : 'bg-white text-muted border-border hover:border-green-300 hover:text-green-600'}`}>
                   {v.weight_label || v.weightLabel || v.name || v.unit}
                 </button>
               )
@@ -126,12 +126,12 @@ export default function ProductCard({ product, priority }) {
           </div>
         )}
 
-        <div className="mt-2 flex items-baseline gap-2 flex-wrap">
+        <div className="mt-2.5 flex items-baseline gap-2 flex-wrap">
           <span className="text-lg font-bold text-ink">{formatPrice(price)}</span>
           {mrp > price && (
             <>
               <span className="text-[12px] text-muted-light line-through">{formatPrice(mrp)}</span>
-              <span className="text-[11px] font-semibold text-sale">Save {formatPrice(savings)}/-</span>
+              <span className="text-[10px] font-semibold text-sale bg-sale-light px-1.5 py-0.5 rounded">Save {formatPrice(savings)}</span>
             </>
           )}
         </div>
@@ -145,7 +145,7 @@ export default function ProductCard({ product, priority }) {
             </div>
           ) : (
             <button onClick={handleAddToCart}
-              className="w-full rounded-lg bg-green-600 px-5 py-3 text-[12px] font-semibold uppercase text-white transition-all hover:bg-green-700 active:scale-[0.98]">
+              className="w-full rounded-lg bg-green-600 px-5 py-3 text-[12px] font-semibold uppercase tracking-wide text-white transition-all hover:bg-green-700 hover:shadow-md active:scale-[0.98]">
               Add to Cart
             </button>
           )}
