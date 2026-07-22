@@ -339,8 +339,8 @@ export default function Home() {
               {Array.from({ length: 3 }).map((_, i) => <div key={i} className="rounded-xl bg-white border border-border h-56 animate-pulse" />)}
             </div>
           ) : bundles.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-              {bundles.slice(0, 3).map(bundle => (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              {bundles.slice(0, 4).map(bundle => (
                 <BundleCard key={bundle._id || bundle.id} bundle={bundle} compact />
               ))}
             </div>

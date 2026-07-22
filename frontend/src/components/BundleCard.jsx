@@ -67,32 +67,32 @@ export default function BundleCard({ bundle, compact }) {
             </span>
           )}
         </Link>
-        <div className="p-4">
+        <div className="p-3">
           <Link to={`/combos/${slug}`} className="hover:text-green-600 transition-colors">
-            <h3 className="text-sm font-semibold text-ink line-clamp-1">{name}</h3>
+            <h3 className="text-xs font-semibold text-ink line-clamp-1">{name}</h3>
           </Link>
-          <p className="mt-1 text-[11px] text-muted line-clamp-2">{displayDesc}</p>
-          <div className="mt-3 space-y-1">
+          <p className="mt-0.5 text-[10px] text-muted line-clamp-2">{displayDesc}</p>
+          <div className="mt-2 space-y-0.5">
             {originalTotal > bundlePrice && (
-              <span className="block text-xs text-muted-light line-through">{formatPrice(originalTotal)}</span>
+              <span className="block text-[10px] text-muted-light line-through">{formatPrice(originalTotal)}</span>
             )}
-            <div className="flex items-center gap-2">
-              <span className="text-lg font-bold text-ink">{formatPrice(bundlePrice)}</span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-sm font-bold text-ink">{formatPrice(bundlePrice)}</span>
               {savings > 0 && (
-                <span className="text-[10px] font-semibold text-sale">Save {formatPrice(savings)}</span>
+                <span className="text-[9px] font-semibold text-sale">Save {formatPrice(savings)}</span>
               )}
             </div>
           </div>
-          <div className="mt-3 flex gap-2">
+          <div className="mt-2 flex gap-1.5">
             <button onClick={async () => {
                 if (isInCart) await removeFromCart(cartItem.id)
                 else await addToCart({ bundle_id: id, quantity, bundle: { _id: id, name, price: bundlePrice, discountPercent: discountPct, image, items, ...bundle } })
               }}
-              className={`flex-1 rounded-lg py-2 text-[11px] font-semibold uppercase transition-all ${isInCart ? 'bg-green-50 text-green-600 hover:bg-green-100' : 'bg-green-600 text-white hover:bg-green-700'}`}>
+              className={`flex-1 rounded-lg py-1.5 text-[10px] font-semibold uppercase transition-all ${isInCart ? 'bg-green-50 text-green-600 hover:bg-green-100' : 'bg-green-600 text-white hover:bg-green-700'}`}>
               {isInCart ? 'Remove' : 'Add to Cart'}
             </button>
-            <Link to={`/combos/${slug}`} className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted hover:text-green-600 hover:border-green-300 transition-all">
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
+            <Link to={`/combos/${slug}`} className="flex h-7 w-7 items-center justify-center rounded-lg border border-border text-muted hover:text-green-600 hover:border-green-300 transition-all">
+              <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
             </Link>
           </div>
         </div>
