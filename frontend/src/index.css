@@ -111,6 +111,14 @@ img, video, canvas, svg { max-width: 100%; }
 @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 .skeleton { background: linear-gradient(90deg, #F0F0F0 25%, #F9F9F9 50%, #F0F0F0 75%); background-size: 200% 100%; animation: shimmer 1.5s ease-in-out infinite; }
 
+/* Premium skeleton card */
+.skeleton-card { border-radius: 12px; background: linear-gradient(90deg, #F8F4EE 25%, #FFFDF9 50%, #F8F4EE 75%); background-size: 200% 100%; animation: shimmer 1.5s ease-in-out infinite; }
+
+/* Empty state illustration wrapper */
+.empty-state-illustration { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; text-align: center; }
+.empty-state-illustration svg { width: 80px; height: 80px; margin-bottom: 1rem; opacity: 0.5; }
+.empty-state-illustration p { color: #8B5E3C; font-size: 14px; font-weight: 500; }
+
 /* Focus styles */
 :focus-visible {
   outline: 2px solid #D97745;

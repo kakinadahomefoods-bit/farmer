@@ -1,13 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1920" height="900" viewBox="0 0 1920 900">
   <defs>
-    <linearGradient id="h3" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#6B4528"/><stop offset="100%" stop-color="#A74B1F"/></linearGradient>
-    <linearGradient id="h3o" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#8B5E3C"/><stop offset="50%" stop-color="#8B5E3C" stop-opacity="0"/></linearGradient>
+    <linearGradient id="h3" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#C05E2E"/><stop offset="50%" stop-color="#8B5E3C"/><stop offset="100%" stop-color="#A74B1F"/></linearGradient>
+    <linearGradient id="h3o" x1="1" y1="0" x2="0" y2="0"><stop offset="0%" stop-color="#8B5E3C"/><stop offset="60%" stop-color="#8B5E3C" stop-opacity="0"/></linearGradient>
+    <pattern id="h3dots" width="30" height="30" patternUnits="userSpaceOnUse"><circle cx="15" cy="15" r="0.8" fill="#F8F4EE" opacity="0.07"/></pattern>
   </defs>
   <rect width="1920" height="900" fill="url(#h3)"/>
-  <circle cx="1400" cy="250" r="200" fill="#D97745" opacity="0.12"/>
-  <circle cx="1200" cy="650" r="240" fill="#EADBC8" opacity="0.1"/>
-  <circle cx="1600" cy="500" r="180" fill="#F8F4EE" opacity="0.08"/>
-  <path d="M0 500 Q400 430 800 500 T1600 480 T1920 500" stroke="#EADBC8" stroke-width="2" fill="none" opacity="0.15"/>
-  <path d="M0 550 Q400 500 800 550 T1600 530 T1920 550" stroke="#F8F4EE" stroke-width="1.5" fill="none" opacity="0.1"/>
-  <rect x="0" y="0" width="600" height="900" fill="url(#h3o)" opacity="0.55"/>
+  <rect width="1920" height="900" fill="url(#h3dots)"/>
+  <circle cx="300" cy="300" r="280" fill="#EADBC8" opacity="0.1"/>
+  <circle cx="1600" cy="200" r="200" fill="#F8F4EE" opacity="0.06"/>
+  <circle cx="1400" cy="700" r="240" fill="#D97745" opacity="0.12"/>
+  <circle cx="1800" cy="400" r="140" fill="#EADBC8" opacity="0.07"/>
+  <circle cx="200" cy="800" r="90" fill="#F8F4EE" opacity="0.04"/>
+  <path d="M0 500 Q480 440 960 500 T1920 480" stroke="#EADBC8" stroke-width="1.5" fill="none" opacity="0.1"/>
+  <path d="M0 550 Q480 490 960 550 T1920 530" stroke="#F8F4EE" stroke-width="1" fill="none" opacity="0.07"/>
+  <path d="M0 600 Q480 540 960 600 T1920 580" stroke="#D97745" stroke-width="1" fill="none" opacity="0.05"/>
+  <rect x="1200" y="0" width="720" height="900" fill="url(#h3o)" opacity="0.4"/>
 </svg>

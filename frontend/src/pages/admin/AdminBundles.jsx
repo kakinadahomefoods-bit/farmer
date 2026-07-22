@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react'
 import { api } from '../../lib/api'
 import { formatPrice } from '../../lib/utils'
 import { cld } from '../../lib/cloudinary'
+import { generatePlaceholder } from '../../lib/placeholders'
+import ImageGenerator from '../../components/admin/ImageGenerator'
 import { toast } from 'react-toastify'
 
 export default function AdminBundles() {
@@ -178,11 +180,21 @@ export default function AdminBundles() {
               </div>
 
               <div>
-                <button type="button" onClick={() => fileRef.current?.click()} className="w-full rounded-xl border-2 border-dashed border-slate-300 px-4 py-4 text-sm text-slate-500 hover:border-brand-400 hover:text-brand-600 transition text-center">
-                  {form.image ? 'Change Image' : 'Upload Image'}
-                </button>
+                {form.image ? (
+                  <img src={cld(form.image, 'f_auto,q_auto,w_400,c_limit')} alt="" className="mt-2 h-16 w-full rounded-lg object-cover"
+                    onError={(e) => { if (!e.currentTarget.dataset.fallback) { e.currentTarget.dataset.fallback = 'true'; e.currentTarget.src = generatePlaceholder('bundle', form.name) } }} />
+                ) : (
+                  <div className="w-full h-16 rounded-xl border-2 border-dashed border-slate-300 flex items-center justify-center text-slate-400 text-sm mt-2">No image</div>
+                )}
+                <div className="flex items-center gap-2 mt-2">
+                  <button type="button" onClick={() => fileRef.current?.click()} className="flex-1 rounded-xl border-2 border-dashed border-slate-300 px-4 py-3 text-sm text-slate-500 hover:border-brand-400 hover:text-brand-600 transition text-center">
+                    {form.image ? 'Change Image' : 'Upload Image'}
+                  </button>
+                  <ImageGenerator entity="bundle" name={form.name} currentImage={form.image} currentPublicId={form.cloudinaryPublicId}
+                    onImageChange={(url, publicId) => setForm(prev => ({ ...prev, image: url, cloudinaryPublicId: publicId }))}
+                    fileInputRef={fileRef} />
+                </div>
                 <input ref={fileRef} type="file" accept="image/*" onChange={handleImageUpload} hidden />
-                {form.image && <img src={cld(form.image, 'f_auto,q_auto,w_400,c_limit')} alt="" className="mt-2 h-16 w-full rounded-lg object-cover" />}
               </div>
 
               <div className="flex gap-2">

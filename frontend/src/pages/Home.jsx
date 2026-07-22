@@ -9,6 +9,7 @@ import SeoHead from '../components/SeoHead'
 import { api } from '../lib/api'
 import { getComboBundles as getSupabaseComboBundles } from '../lib/productService'
 import { formatPrice, getImageUrl } from '../lib/utils'
+import { generatePlaceholder } from '../lib/placeholders'
 import { CartIcon } from '../components/Icons'
 import { HOME_ASSETS, getHeroAsset } from '../lib/homeAssets'
 
@@ -196,7 +197,7 @@ export default function Home() {
               {loading ? (
                 Array.from({ length: 8 }).map((_, i) => <div key={i} className="lifestyle-card bg-white/80 animate-pulse rounded-xl" />)
               ) : products.length > 0 ? (
-                products.slice(0, 20).map((product, i) => (
+                products.map((product, i) => (
                   <LifestyleCard key={product.id || product._id} product={product} priority={i < 4}
                     headline={i % 3 === 0 ? 'Support your vitality with nature\'s purity' : undefined} />
                 ))
@@ -446,9 +447,12 @@ export default function Home() {
                   className="group rounded-xl border border-border bg-off-white overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1">
                   <div className="aspect-[1/1] overflow-hidden bg-green-100">
                     {farmer.image_url ? (
-                      <img src={getImageUrl(farmer.image_url)} alt={farmer.name} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                      <img src={getImageUrl(farmer.image_url)} alt={farmer.name} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        onError={(e) => { if (!e.currentTarget.dataset.fallback) { e.currentTarget.dataset.fallback = 'true'; e.currentTarget.src = generatePlaceholder('farmer-card') } }} />
                     ) : (
-                      <div className="flex h-full items-center justify-center text-green-600/40 text-5xl">👨‍🌾</div>
+                  <div className="aspect-[1/1] overflow-hidden bg-green-100">
+                    <img src={generatePlaceholder('farmer-card')} alt={farmer.name} className="h-full w-full object-cover" />
+                  </div>
                     )}
                   </div>
                   <div className="p-3">
@@ -468,7 +472,7 @@ export default function Home() {
               ].map((farmer, i) => (
                 <Link key={i} to="/farmers"
                   className="group rounded-xl border border-border bg-off-white overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1">
-                  <div className="aspect-[1/1] overflow-hidden bg-green-100 flex items-center justify-center text-green-600/40 text-5xl">👨‍🌾</div>
+                  <img src={generatePlaceholder('farmer-card')} alt={farmer.name} className="h-full w-full object-cover" />
                   <div className="p-3">
                     <h3 className="font-heading text-sm font-bold text-ink group-hover:text-green-600 transition-colors">{farmer.name}</h3>
                     <p className="text-xs text-muted mt-0.5">{farmer.village}</p>

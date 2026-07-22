@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useCart } from '../contexts/CartContext'
-import { formatPrice, getImageUrl, getImageProps, getImageSizes } from '../lib/utils'
+import { formatPrice, getImageUrl, getImageProps, getImageSizes, smartImageUrl } from '../lib/utils'
+import { generatePlaceholder } from '../lib/placeholders'
 import { useSiteSettings } from '../contexts/SiteSettingsContext'
 
 function slugify(name) {
@@ -31,8 +32,10 @@ export default function ProductCard({ product, priority }) {
   const cartItem = cartItems?.find(item => item.product_id === product.id && item.variant_id === selectedVariantId)
   const isInCart = Boolean(cartItem)
   const cartQuantity = cartItem?.quantity || selection.quantity || 1
-  const imageUrl = getImageUrl(product.image_url || product.images?.[0], settings?.placeholder_image)
-  const imgProps = getImageProps(product.image_url || product.images?.[0], {
+  const productImage = product.image_url || product.images?.[0]
+  const imageUrl = getImageUrl(productImage, settings?.placeholder_image)
+  const fallbackSrc = generatePlaceholder('product', product.name)
+  const imgProps = getImageProps(productImage, {
     width: 600,
     sizes: getImageSizes([1280, 768, 480]),
     priority,
@@ -83,7 +86,7 @@ export default function ProductCard({ product, priority }) {
         <img src={imgProps.src} alt={product.name} loading={imgProps.loading} fetchpriority={imgProps.fetchpriority}
           srcSet={imgProps.srcSet} sizes={imgProps.sizes}
           className="relative h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105 z-10"
-          onError={(e) => { if (e.currentTarget.dataset.fallbackApplied !== 'true') { e.currentTarget.dataset.fallbackApplied = 'true'; e.currentTarget.src = settings?.placeholder_image || '/placeholder.jpg' } }} />
+          onError={(e) => { if (e.currentTarget.dataset.fallbackApplied !== 'true') { e.currentTarget.dataset.fallbackApplied = 'true'; e.currentTarget.src = fallbackSrc } }} />
       </div>
 
       <div className="flex flex-col flex-1 px-4 pb-4 pt-3">

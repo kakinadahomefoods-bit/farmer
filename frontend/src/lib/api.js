@@ -148,4 +148,10 @@ export const api = {
     return request('/upload/multiple', { method: 'POST', body: formData })
   },
   deleteImage: (url) => request('/upload', { method: 'DELETE', body: JSON.stringify({ url }) }),
+
+  // Image generation
+  generateImage: (entity, name, existingPublicId) =>
+    request('/generate-image', { method: 'POST', body: JSON.stringify({ entity, name, existingPublicId }) }),
+  previewImage: (entity, name) =>
+    request('/generate-image/preview', { method: 'POST', body: JSON.stringify({ entity, name }) }),
 }

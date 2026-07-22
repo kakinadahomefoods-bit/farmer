@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { api } from '../lib/api'
 import { cld } from '../lib/cloudinary'
+import { generatePlaceholder } from '../lib/placeholders'
 import SeoHead from '../components/SeoHead'
 
 export default function FarmerDetail() {
@@ -29,7 +30,7 @@ export default function FarmerDetail() {
   if (error || !data?.farmer) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 py-12 text-center bg-white">
-        <div className="mb-4 text-5xl">👨‍🌾</div>
+        <img src={generatePlaceholder('farmer', 'Farmer')} alt="" className="w-24 h-24 rounded-full mb-4" />
         <h2 className="font-heading text-2xl font-bold text-ink">Farmer Not Found</h2>
         <p className="mt-2 text-sm text-muted">{error || 'This QR code is no longer valid'}</p>
         <Link to="/" className="mt-6 rounded-lg bg-green-600 px-6 py-3 text-sm font-semibold text-white hover:bg-green-700 transition">Go Home</Link>
@@ -58,8 +59,11 @@ export default function FarmerDetail() {
 
       <div className="mx-auto max-w-3xl px-5 sm:px-8 lg:px-10 py-10">
         <div className="rounded-xl border border-border bg-white overflow-hidden">
-          {farmer.images?.[0] && (
-            <img src={cld(farmer.images[0], 'f_auto,q_auto,w_1200,h_400,c_fill')} alt={farmer.name} className="h-56 w-full object-cover sm:h-72" />
+          {farmer.images?.[0] ? (
+            <img src={cld(farmer.images[0], 'f_auto,q_auto,w_1200,h_400,c_fill')} alt={farmer.name} className="h-56 w-full object-cover sm:h-72"
+              onError={(e) => { if (!e.currentTarget.dataset.fallback) { e.currentTarget.dataset.fallback = 'true'; e.currentTarget.src = generatePlaceholder('farmer', farmer.name) } }} />
+          ) : (
+            <img src={generatePlaceholder('farmer', farmer.name)} alt={farmer.name} className="h-56 w-full object-cover sm:h-72" />
           )}
           <div className="p-6 sm:p-8">
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import SeoHead from '../components/SeoHead'
 import { formatPrice, getImageUrl, getImageProps, getImageSizes } from '../lib/utils'
+import { generatePlaceholder } from '../lib/placeholders'
 import { useSiteSettings } from '../contexts/SiteSettingsContext'
 import { useCart } from '../contexts/CartContext'
 import ProductCard from '../components/ProductCard'
@@ -248,7 +249,7 @@ export default function ProductDetail() {
             </div>
             <div className="bg-green-50 min-h-[200px] flex items-center justify-center">
               <div className="text-center p-8">
-                <div className="w-20 h-20 rounded-full bg-green-200 flex items-center justify-center mx-auto text-3xl">👨‍🌾</div>
+                <img src={generatePlaceholder('farmer-card')} alt="Farmer" className="w-20 h-20 rounded-full mx-auto object-cover" />
               </div>
             </div>
           </div>

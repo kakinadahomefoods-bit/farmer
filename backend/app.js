@@ -13,6 +13,7 @@ import bundleRoutes from './routes/bundles.js'
 import settingsRoutes from './routes/settings.js'
 import uploadRoutes from './routes/upload.js'
 import seedRoutes from './routes/seed.js'
+import generateImageRoutes from './routes/generateImage.js'
 
 const app = express()
 
@@ -43,6 +44,7 @@ app.use('/api/bundles', bundleRoutes)
 app.use('/api/settings', settingsRoutes)
 app.use('/api/upload', uploadRoutes)
 app.use('/api', seedRoutes)
+app.use('/api/generate-image', generateImageRoutes)
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }))
 

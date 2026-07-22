@@ -1,11 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
   <defs>
-    <linearGradient id="vp" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#C05E2E"/><stop offset="100%" stop-color="#8B5E3C"/></linearGradient>
+    <linearGradient id="vp" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#C05E2E"/><stop offset="50%" stop-color="#8B5E3C"/><stop offset="100%" stop-color="#A74B1F"/></linearGradient>
+    <pattern id="vpdots" width="40" height="40" patternUnits="userSpaceOnUse"><circle cx="20" cy="20" r="1" fill="#F8F4EE" opacity="0.05"/></pattern>
   </defs>
   <rect width="1280" height="720" fill="url(#vp)"/>
-  <circle cx="1000" cy="200" r="160" fill="#F8F4EE" opacity="0.06"/>
-  <circle cx="300" cy="500" r="120" fill="#EADBC8" opacity="0.08"/>
-  <circle cx="1100" cy="550" r="100" fill="#D97745" opacity="0.1"/>
-  <path d="M0 400 Q320 340 640 400 T1280 380" stroke="#EADBC8" stroke-width="1.5" fill="none" opacity="0.12"/>
-  <polygon points="640,320 580,280 580,360" fill="#F8F4EE" opacity="0.3"/>
+  <rect width="1280" height="720" fill="url(#vpdots)"/>
+  <circle cx="1000" cy="200" r="180" fill="#F8F4EE" opacity="0.05"/>
+  <circle cx="300" cy="550" r="140" fill="#EADBC8" opacity="0.06"/>
+  <circle cx="1100" cy="600" r="100" fill="#D97745" opacity="0.08"/>
+  <circle cx="200" cy="150" r="80" fill="#EADBC8" opacity="0.04"/>
+  <path d="M0 400 Q320 340 640 400 T1280 380" stroke="#EADBC8" stroke-width="1.5" fill="none" opacity="0.1"/>
+  <path d="M0 440 Q320 380 640 440 T1280 420" stroke="#F8F4EE" stroke-width="1" fill="none" opacity="0.06"/>
+  <polygon points="640,340 580,295 580,385" fill="#F8F4EE" opacity="0.2"/>
+  <circle cx="640" cy="340" r="50" fill="none" stroke="#F8F4EE" stroke-width="2" opacity="0.15"/>
 </svg>

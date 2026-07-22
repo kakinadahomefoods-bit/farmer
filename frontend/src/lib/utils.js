@@ -1,3 +1,5 @@
+import { getImageWithFallback, generatePlaceholder } from './placeholders'
+
 const PLACEHOLDER_IMAGE = 'https://hnilmlhyqcgsbfbguuuz.supabase.co/storage/v1/object/public/images/placeholder.jpg'
 const CLOUDINARY_REGEX = /https?:\/\/res\.cloudinary\.com\/[^/]+\/image\/upload\//
 const SUPABASE_REGEX = /https?:\/\/[^.]+\.supabase\.co\/storage\/v1\/object\/public\/images\//
@@ -32,9 +34,15 @@ export function discountPercent(originalPrice, salePrice) {
 export function getImageUrl(path, fallback) {
   if (!path) return fallback || PLACEHOLDER_IMAGE
   if (CLOUDINARY_REGEX.test(path)) return optimizeImage(path, 600)
-  if (path.startsWith('http')) return path
+  if (path.startsWith('http') && !path.includes('placehold.co')) return path
+  if (path.startsWith('data:')) return path
   const base = 'https://hnilmlhyqcgsbfbguuuz.supabase.co/storage/v1/object/public/images'
   return `${base}/${path}`
+}
+
+export function smartImageUrl(path, entity = 'product', name = '') {
+  if (path && !path.includes('placeholder') && !path.includes('placehold.co')) return getImageUrl(path)
+  return generatePlaceholder(entity, name || entity)
 }
 
 export function getImageProps(path, { width = 600, sizes, priority } = {}) {

@@ -1,10 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1920" height="500" viewBox="0 0 1920 500">
   <defs>
     <linearGradient id="ab" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#A74B1F"/><stop offset="50%" stop-color="#C05E2E"/><stop offset="100%" stop-color="#8B5E3C"/></linearGradient>
+    <pattern id="abdots" width="30" height="30" patternUnits="userSpaceOnUse"><circle cx="15" cy="15" r="0.8" fill="#F8F4EE" opacity="0.06"/></pattern>
   </defs>
   <rect width="1920" height="500" fill="url(#ab)"/>
-  <circle cx="1600" cy="100" r="180" fill="#F8F4EE" opacity="0.06"/>
-  <circle cx="300" cy="400" r="150" fill="#EADBC8" opacity="0.08"/>
-  <circle cx="1800" cy="350" r="120" fill="#D97745" opacity="0.1"/>
-  <path d="M0 250 Q240 200 480 250 T960 240 T1440 260 T1920 240" stroke="#EADBC8" stroke-width="1.5" fill="none" opacity="0.15"/>
+  <rect width="1920" height="500" fill="url(#abdots)"/>
+  <circle cx="1600" cy="80" r="200" fill="#F8F4EE" opacity="0.05"/>
+  <circle cx="300" cy="420" r="160" fill="#EADBC8" opacity="0.06"/>
+  <circle cx="1800" cy="380" r="130" fill="#D97745" opacity="0.08"/>
+  <circle cx="100" cy="100" r="80" fill="#EADBC8" opacity="0.05"/>
+  <path d="M0 250 Q240 200 480 250 T960 240 T1440 260 T1920 240" stroke="#EADBC8" stroke-width="1.5" fill="none" opacity="0.12"/>
+  <path d="M0 280 Q240 230 480 280 T960 270 T1440 290 T1920 270" stroke="#F8F4EE" stroke-width="1" fill="none" opacity="0.08"/>
 </svg>

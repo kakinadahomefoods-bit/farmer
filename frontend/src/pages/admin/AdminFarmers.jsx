@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { api } from '../../lib/api'
+import { generatePlaceholder } from '../../lib/placeholders'
+import ImageGenerator from '../../components/admin/ImageGenerator'
 import { toast } from 'react-toastify'
 
 export default function AdminFarmers() {
@@ -161,9 +163,21 @@ export default function AdminFarmers() {
             </div>
             <div className="sm:col-span-2">
               <div className="flex flex-wrap gap-3 mb-2">
-                {form.images.map((url, i) => <img key={i} src={url} alt="" className="h-16 w-16 rounded-lg object-cover border" />)}
+                {form.images.length > 0 ? form.images.map((url, i) => (
+                  <img key={i} src={url} alt="" className="h-16 w-16 rounded-lg object-cover border"
+                    onError={(e) => { if (!e.currentTarget.dataset.fallback) { e.currentTarget.dataset.fallback = 'true'; e.currentTarget.src = generatePlaceholder('farmer', form.name) } }} />
+                )) : (
+                  <div className="h-16 w-16 rounded-lg border-2 border-dashed border-slate-300 flex items-center justify-center text-slate-400 text-xs">No img</div>
+                )}
               </div>
-              <button type="button" onClick={() => fileRef.current?.click()} className="rounded-xl border-2 border-dashed border-slate-300 px-4 py-3 text-sm text-slate-500 hover:border-brand-400 hover:text-brand-600">Upload Images</button>
+              <div className="flex items-center gap-2">
+                <button type="button" onClick={() => fileRef.current?.click()} className="flex-1 rounded-xl border-2 border-dashed border-slate-300 px-4 py-3 text-sm text-slate-500 hover:border-brand-400 hover:text-brand-600">Upload Images</button>
+                <ImageGenerator entity="farmer" name={form.name} currentImage={form.images[0]} currentPublicId={form.cloudinaryPublicIds?.[0]}
+                  onImageChange={(url, publicId) => {
+                    if (url) setForm(prev => ({ ...prev, images: [url, ...prev.images], cloudinaryPublicIds: [publicId, ...prev.cloudinaryPublicIds] }))
+                  }}
+                  fileInputRef={fileRef} />
+              </div>
               <input ref={fileRef} type="file" multiple accept="image/*" onChange={handleImageUpload} hidden />
             </div>
             <div className="sm:col-span-2 flex gap-2">

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { getFarmers } from '../lib/farmerService'
 import { useSiteSettings } from '../contexts/SiteSettingsContext'
 import { getImageUrl } from '../lib/utils'
+import { generatePlaceholder } from '../lib/placeholders'
 import SeoHead from '../components/SeoHead'
 
 export default function Farmers() {
@@ -48,7 +49,12 @@ export default function Farmers() {
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {farmers.map(farmer => (
               <div key={farmer.id} className="rounded-xl border border-border bg-white overflow-hidden transition-all hover:shadow-md hover:-translate-y-0.5">
-                {farmer.image_url && <img src={getImageUrl(farmer.image_url, settings?.placeholder_image)} alt={farmer.name} className="h-48 w-full object-cover" />}
+                {farmer.image_url ? (
+                  <img src={getImageUrl(farmer.image_url, settings?.placeholder_image)} alt={farmer.name} className="h-48 w-full object-cover"
+                    onError={(e) => { if (!e.currentTarget.dataset.fallback) { e.currentTarget.dataset.fallback = 'true'; e.currentTarget.src = generatePlaceholder('farmer', farmer.name) } }} />
+                ) : (
+                  <img src={generatePlaceholder('farmer', farmer.name)} alt={farmer.name} className="h-48 w-full object-cover" />
+                )}
                 <div className="p-5">
                   <h3 className="font-heading text-lg font-bold text-ink">{farmer.name}</h3>
                   {farmer.location && <p className="mt-1 text-sm text-muted">{farmer.location}</p>}

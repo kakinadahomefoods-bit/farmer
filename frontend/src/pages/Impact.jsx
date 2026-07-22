@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { generatePlaceholder } from '../lib/placeholders'
 
 const IMPACT_STATS = [
   { number: '500+', label: 'Tribal Farmers Supported' },
@@ -47,7 +48,7 @@ export default function Impact() {
           <div className="mt-10 grid sm:grid-cols-3 gap-6">
             {STORIES.map(s => (
               <div key={s.name} className="bg-off-white rounded-xl border border-border p-6">
-                <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-xl mb-4">👨‍🌾</div>
+                <img src={generatePlaceholder('farmer', s.name)} alt={s.name} className="w-12 h-12 rounded-full object-cover mb-4" />
                 <h3 className="font-semibold text-ink">{s.name}</h3>
                 <p className="text-[11px] text-muted">{s.village} — {s.product}</p>
                 <p className="mt-3 text-sm text-muted leading-relaxed italic">"{s.quote}"</p>

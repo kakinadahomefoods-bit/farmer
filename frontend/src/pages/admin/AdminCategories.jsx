@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { api } from '../../lib/api'
+import { generatePlaceholder } from '../../lib/placeholders'
+import ImageGenerator from '../../components/admin/ImageGenerator'
 import { toast } from 'react-toastify'
 
 export default function AdminCategories() {
@@ -82,11 +84,21 @@ export default function AdminCategories() {
               <input value={form.description} onChange={e => setForm(prev => ({ ...prev, description: e.target.value }))} placeholder="Description" className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-brand-500" />
               <input type="number" value={form.order} onChange={e => setForm(prev => ({ ...prev, order: Number(e.target.value) }))} placeholder="Order" className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-brand-500" />
               <div>
-                <button type="button" onClick={() => fileRef.current?.click()} className="w-full rounded-xl border-2 border-dashed border-slate-300 px-4 py-6 text-sm text-slate-500 hover:border-brand-400 hover:text-brand-600 transition text-center">
-                  {form.image ? 'Change Image' : 'Upload Image'}
-                </button>
+                {form.image ? (
+                  <img src={form.image} alt="" className="w-full h-32 rounded-xl object-cover mb-2"
+                    onError={(e) => { if (!e.currentTarget.dataset.fallback) { e.currentTarget.dataset.fallback = 'true'; e.currentTarget.src = generatePlaceholder('category', form.name) } }} />
+                ) : (
+                  <div className="w-full h-32 rounded-xl border-2 border-dashed border-slate-300 flex items-center justify-center text-slate-400 text-sm mb-2">No image</div>
+                )}
+                <div className="flex items-center gap-2">
+                  <button type="button" onClick={() => fileRef.current?.click()} className="flex-1 rounded-xl border-2 border-dashed border-slate-300 px-4 py-3 text-sm text-slate-500 hover:border-brand-400 hover:text-brand-600 transition text-center">
+                    {form.image ? 'Change Image' : 'Upload Image'}
+                  </button>
+                  <ImageGenerator entity="category" name={form.name} currentImage={form.image} currentPublicId={form.cloudinaryPublicId}
+                    onImageChange={(url, publicId) => setForm(prev => ({ ...prev, image: url, cloudinaryPublicId: publicId }))}
+                    fileInputRef={fileRef} />
+                </div>
                 <input ref={fileRef} type="file" accept="image/*" onChange={handleImageUpload} hidden />
-                {form.image && <img src={form.image} alt="" className="mt-2 h-16 rounded-lg object-cover" />}
               </div>
               <div className="flex gap-2">
                 <button type="submit" className="flex-1 rounded-xl bg-brand-600 py-2.5 text-sm font-bold text-white hover:bg-brand-700 transition">

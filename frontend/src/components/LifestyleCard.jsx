@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { formatPrice, getImageUrl, getImageProps } from '../lib/utils'
+import { generatePlaceholder } from '../lib/placeholders'
 
 function slugify(name) {
   return (name || '').toLowerCase().trim().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
@@ -13,8 +14,10 @@ export default function LifestyleCard({ product, headline, priority }) {
   const mrp = variants[0]?.original_price ?? variants[0]?.originalPrice ?? variants[0]?.mrp ?? product.mrp ?? firstPrice
   const savings = mrp - firstPrice
   const discountPercent = product.discount_percent || (mrp > firstPrice ? Math.round((savings / mrp) * 100) : 0)
-  const imgProps = getImageProps(product.image_url || product.images?.[0], { width: 520, sizes: '(min-width: 1024px) 260px, (min-width: 640px) 240px, 220px', priority })
-  const thumbProps = getImageProps(product.image_url || product.images?.[0], { width: 80, sizes: '38px' })
+  const productImage = product.image_url || product.images?.[0]
+  const fallbackSrc = generatePlaceholder('product', product.name)
+  const imgProps = getImageProps(productImage, { width: 520, sizes: '(min-width: 1024px) 260px, (min-width: 640px) 240px, 220px', priority })
+  const thumbProps = getImageProps(productImage, { width: 80, sizes: '38px' })
 
   return (
     <Link to={`/products/${slugify(product.name)}`} className="lifestyle-card group block">
@@ -23,7 +26,7 @@ export default function LifestyleCard({ product, headline, priority }) {
         <img src={imgProps.src} alt={product.name} loading={imgProps.loading} fetchpriority={imgProps.fetchpriority}
           srcSet={imgProps.srcSet} sizes={imgProps.sizes}
           className="relative h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 z-10"
-          onError={(e) => { if (!e.currentTarget.dataset.fallback) { e.currentTarget.dataset.fallback = 'true'; e.currentTarget.style.background = 'linear-gradient(135deg, #EADBC8, #F8F4EE)' } }} />
+          onError={(e) => { if (!e.currentTarget.dataset.fallback) { e.currentTarget.dataset.fallback = 'true'; e.currentTarget.src = fallbackSrc } }} />
       </div>
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent z-20" />
 

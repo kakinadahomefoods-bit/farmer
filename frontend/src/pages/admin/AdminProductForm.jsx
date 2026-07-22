@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { api } from '../../lib/api'
+import { generatePlaceholder } from '../../lib/placeholders'
+import ImageGenerator from '../../components/admin/ImageGenerator'
 import { toast } from 'react-toastify'
 
 export default function AdminProductForm() {
@@ -212,15 +214,28 @@ export default function AdminProductForm() {
         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
           <h2 className="text-lg font-bold text-slate-900">Images</h2>
           <div className="flex flex-wrap gap-3">
-            {form.images.map((url, idx) => (
+            {form.images.length > 0 ? form.images.map((url, idx) => (
               <div key={idx} className="relative group">
-                <img src={url} alt="" className="h-20 w-20 rounded-xl object-cover border border-slate-200" />
+                <img src={url} alt="" className="h-20 w-20 rounded-xl object-cover border border-slate-200"
+                  onError={(e) => { if (!e.currentTarget.dataset.fallback) { e.currentTarget.dataset.fallback = 'true'; e.currentTarget.src = generatePlaceholder('product', form.name || 'Product') } }} />
                 <button type="button" onClick={() => removeImage(idx)} className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-red-600 text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition">×</button>
               </div>
-            ))}
+            )) : (
+              <div className="h-20 w-20 rounded-xl border-2 border-dashed border-slate-300 flex items-center justify-center text-slate-400">No images</div>
+            )}
             <button type="button" onClick={() => fileInputRef.current?.click()} className="h-20 w-20 rounded-xl border-2 border-dashed border-slate-300 flex items-center justify-center text-slate-400 hover:border-brand-400 hover:text-brand-500 transition text-2xl">+</button>
           </div>
           <input ref={fileInputRef} type="file" multiple accept="image/*" onChange={handleImageUpload} className="hidden" />
+          <div>
+            <label className="block text-xs font-medium text-slate-500 mb-1">AI Image Generator</label>
+            <ImageGenerator entity="product" name={form.name} currentImage={form.images[0]} currentPublicId={form.cloudinaryPublicIds[0]}
+              onImageChange={(url, publicId) => {
+                if (url) {
+                  setForm(prev => ({ ...prev, images: [url, ...prev.images], cloudinaryPublicIds: [publicId, ...prev.cloudinaryPublicIds] }))
+                }
+              }}
+              fileInputRef={fileInputRef} />
+          </div>
         </div>
 
         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">

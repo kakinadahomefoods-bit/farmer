@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useCart } from '../contexts/CartContext'
 import { formatPrice, getImageUrl } from '../lib/utils'
+import { generatePlaceholder } from '../lib/placeholders'
 import { useSiteSettings } from '../contexts/SiteSettingsContext'
 import { toast } from 'react-toastify'
 
@@ -41,6 +42,7 @@ export default function BundleCard({ bundle, compact }) {
   const quantity = cartItem?.quantity || bundleSelections?.[id]?.quantity || 1
   const productCount = items.length
   const savings = discountPct > 0 && originalTotal > 0 ? Math.round(originalTotal - bundlePrice) : 0
+  const bundleFallback = generatePlaceholder('bundle', name)
 
   const handleQuantityChange = async (newQty) => {
     if (newQty < 1) return
@@ -55,7 +57,7 @@ export default function BundleCard({ bundle, compact }) {
           <img src={getImageUrl(image, settings?.placeholder_image)} alt={name}
             className="aspect-[1/1] w-full object-cover object-center transition duration-500"
             loading="lazy"
-            onError={(e) => { e.target.src = settings?.placeholder_image || 'https://placehold.co/600x400?text=Combo' }} />
+            onError={(e) => { e.target.src = bundleFallback }} />
           {discountPct > 0 && (
             <span className="absolute top-3 left-3 rounded-full bg-sale px-2.5 py-0.5 text-[9px] font-semibold uppercase text-white shadow-sm">
               Save {discountPct}%
@@ -111,7 +113,7 @@ export default function BundleCard({ bundle, compact }) {
           <Link to={`/combos/${slug}`} className="relative block overflow-hidden rounded-xl bg-white">
             <img src={getImageUrl(image, settings?.placeholder_image)} alt={name}
               className="aspect-[1/1] w-full object-cover object-center transition duration-500"
-              onError={(e) => { e.target.src = settings?.placeholder_image || 'https://placehold.co/600x400?text=Combo' }} />
+              onError={(e) => { e.target.src = bundleFallback }} />
             {productCount > 0 && (
               <span className="absolute top-3 left-3 rounded-full bg-ink/80 px-2.5 py-0.5 text-[9px] font-semibold text-white shadow-sm">{productCount} Products</span>
             )}
