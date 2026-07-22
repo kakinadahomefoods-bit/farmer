@@ -10,7 +10,11 @@ router.get('/', async (req, res) => {
   try {
     const { page = 1, limit = 50, category, search, sort, featured, active } = req.query
     const query = {}
-    if (category) query.category = category
+    if (category) {
+      const catDoc = await Category.findOne({ slug: category })
+      if (catDoc) query.category = catDoc._id
+      else query.categoryName = { $regex: new RegExp(category, 'i') }
+    }
     if (search) query.$text = { $search: search }
     if (featured === 'true') query.isFeatured = true
     if (active === 'true' || !active) query.isActive = true

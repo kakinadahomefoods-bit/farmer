@@ -175,11 +175,16 @@ export default function Home() {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
               {Array.from({ length: 15 }).map((_, i) => <div key={i} className="rounded-xl bg-white border border-border h-80 animate-pulse" />)}
             </div>
-          ) : (
+          ) : products.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
               {products.map(product => (
                 <ProductCard key={product.id || product._id} product={product} />
               ))}
+            </div>
+          ) : (
+            <div className="text-center py-16 bg-white rounded-xl border border-border">
+              <p className="text-base text-muted">No products available yet.</p>
+              <p className="text-sm text-muted-light mt-1">Check back soon for our fresh harvest!</p>
             </div>
           )}
         </div>
