@@ -10,6 +10,7 @@ import { formatPrice, getImageUrl } from '../lib/utils'
 import { CartIcon } from '../components/Icons'
 import { HOME_ASSETS, getHeroAsset } from '../lib/homeAssets'
 
+
 const HERO_SLIDES = [
   { title: 'Pure Food from the Heart of the Forest', sub: 'Wild-harvested millets, honey, and spices sourced directly from tribal communities.', cta: 'Shop Now' },
   { title: 'Nature\'s Finest, Direct to Your Door', sub: 'Chemical-free produce grown with traditional wisdom. Taste the difference.', cta: 'Explore Products' },
@@ -37,19 +38,28 @@ export default function Home() {
   const [activeCategory, setActiveCategory] = useState(null)
   const [loading, setLoading] = useState(true)
   const [heroIdx, setHeroIdx] = useState(0)
+  const [milletProducts, setMilletProducts] = useState([])
+  const [grainProducts, setGrainProducts] = useState([])
+  const [farmers, setFarmers] = useState([])
   const cartCount = (cartItems || []).reduce((sum, item) => sum + (item.quantity || 0), 0)
 
   useEffect(() => {
     let cancelled = false
     async function load() {
       try {
-        const [productsData, bundlesData] = await Promise.all([
+        const [productsData, bundlesData, milletData, grainData, farmersData] = await Promise.all([
           api.getProducts({ limit: 100 }).then(r => r.data || []).catch(() => []),
           api.getBundles({ limit: 6 }).then(r => r.data || r || []).catch(() => []),
+          api.getProducts({ category: 'millets', limit: 6 }).then(r => r.data || []).catch(() => []),
+          api.getProducts({ category: 'lentils-beans', limit: 6 }).then(r => r.data || []).catch(() => []),
+          api.getFarmers({ limit: 4 }).then(r => r.data || r || []).catch(() => []),
         ])
         if (cancelled) return
         setProducts(productsData)
         setBundles(Array.isArray(bundlesData) ? bundlesData : bundlesData?.data || [])
+        setMilletProducts(milletData)
+        setGrainProducts(grainData)
+        setFarmers(Array.isArray(farmersData) ? farmersData : farmersData?.data || [])
       } catch (err) { console.error(err) }
       finally { if (!cancelled) setLoading(false) }
     }
@@ -237,31 +247,146 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 6. Our Best Sellers */}
+      {/* 6. YouTube video */}
       <section className="py-14 lg:py-18 bg-off-white">
+        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+          <div className="text-center mb-8">
+            <span className="text-[10px] font-semibold tracking-[0.12em] uppercase text-green-600">Watch & Learn</span>
+            <h2 className="mt-2 font-heading text-2xl sm:text-3xl font-bold text-ink">From Farm to Table</h2>
+            <p className="text-sm text-muted mt-1 max-w-md mx-auto">See how traditional farming methods preserve nature and nourish communities.</p>
+          </div>
+          <div className="aspect-video rounded-xl overflow-hidden bg-green-50 max-w-4xl mx-auto">
+            <div className="relative h-full w-full" style={{ padding: '56.25% 0 0 0' }}>
+              <iframe src={`https://www.youtube-nocookie.com/embed/${HOME_ASSETS.youtube.videoId}?rel=0&showinfo=0`}
+                title="HaiFarmer — From Farm to Table"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                loading="lazy"
+                className="absolute inset-0 h-full w-full rounded-xl" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 7. Millets */}
+      <section className="py-14 lg:py-18 bg-white">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="font-heading text-2xl sm:text-3xl font-bold text-ink">Our Best Sellers</h2>
-              <p className="text-sm text-muted mt-1">Most loved by our customers</p>
+              <span className="text-[10px] font-semibold tracking-[0.12em] uppercase text-green-600">Traditional Grains</span>
+              <h2 className="mt-1 font-heading text-2xl sm:text-3xl font-bold text-ink">Millets</h2>
+              <p className="text-sm text-muted mt-1">Rainwater-fed, chemical-free millets straight from tribal farms</p>
             </div>
-            <Link to="/products" className="text-sm font-semibold text-green-600 hover:text-green-700 transition-colors">View All →</Link>
+            <Link to="/products?category=millets" className="text-sm font-semibold text-green-600 hover:text-green-700 transition-colors">View All →</Link>
           </div>
           {loading ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-5">
-              {Array.from({ length: 6 }).map((_, i) => <div key={i} className="rounded-xl bg-white border border-border h-80 animate-pulse" />)}
+              {Array.from({ length: 3 }).map((_, i) => <div key={i} className="rounded-xl bg-white border border-border h-80 animate-pulse" />)}
             </div>
-          ) : (
+          ) : milletProducts.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-5">
-              {(bestSellers.length ? bestSellers : products.slice(0, 6)).map(product => (
+              {milletProducts.slice(0, 6).map(product => (
                 <ProductCard key={product.id || product._id} product={product} />
               ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 bg-off-white rounded-xl border border-border">
+              <p className="text-sm text-muted">No millet products available yet.</p>
+              <Link to="/products" className="mt-2 inline-flex text-sm font-semibold text-green-600 hover:text-green-700">Browse all products →</Link>
             </div>
           )}
         </div>
       </section>
 
-      {/* 7. Shop by Category — pills */}
+      {/* 8. Grains */}
+      <section className="py-14 lg:py-18 bg-off-white">
+        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <span className="text-[10px] font-semibold tracking-[0.12em] uppercase text-green-600">Protein Rich</span>
+              <h2 className="mt-1 font-heading text-2xl sm:text-3xl font-bold text-ink">Lentils & Beans</h2>
+              <p className="text-sm text-muted mt-1">Traditional protein-packed legumes from indigenous farms</p>
+            </div>
+            <Link to="/products?category=lentils-beans" className="text-sm font-semibold text-green-600 hover:text-green-700 transition-colors">View All →</Link>
+          </div>
+          {loading ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-5">
+              {Array.from({ length: 3 }).map((_, i) => <div key={i} className="rounded-xl bg-white border border-border h-80 animate-pulse" />)}
+            </div>
+          ) : grainProducts.length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-5">
+              {grainProducts.slice(0, 6).map(product => (
+                <ProductCard key={product.id || product._id} product={product} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 bg-white rounded-xl border border-border">
+              <p className="text-sm text-muted">No grain products available yet.</p>
+              <Link to="/products" className="mt-2 inline-flex text-sm font-semibold text-green-600 hover:text-green-700">Browse all products →</Link>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* 9. About Farmers */}
+      <section className="py-14 lg:py-18 bg-white">
+        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+          <div className="text-center mb-10">
+            <span className="text-[10px] font-semibold tracking-[0.12em] uppercase text-green-600">Our Heroes</span>
+            <h2 className="mt-2 font-heading text-2xl sm:text-3xl font-bold text-ink">Meet Our Tribal Farmers</h2>
+            <p className="text-sm text-muted mt-1 max-w-lg mx-auto">Every product tells a story of dedication, tradition, and harmony with nature.</p>
+          </div>
+          {farmers.length > 0 ? (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {farmers.slice(0, 4).map(farmer => (
+                <Link key={farmer._id || farmer.id} to={`/farmers/${farmer.qrCode || farmer.code || farmer._id}`}
+                  className="group rounded-xl border border-border bg-off-white overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1">
+                  <div className="aspect-[1/1] overflow-hidden bg-green-100">
+                    {farmer.image_url ? (
+                      <img src={getImageUrl(farmer.image_url)} alt={farmer.name} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-green-600/40 text-5xl">👨‍🌾</div>
+                    )}
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-heading text-base font-bold text-ink group-hover:text-green-600 transition-colors">{farmer.name}</h3>
+                    {farmer.village && <p className="text-xs text-muted mt-0.5">{farmer.village}{farmer.district ? `, ${farmer.district}` : ''}</p>}
+                    <p className="text-xs text-muted mt-1 line-clamp-2">{farmer.bio || farmer.products || 'Traditional tribal farmer'}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[
+                { name: 'Rama Devi', village: 'Araku Valley', products: 'Millets, Honey', bio: 'Third-generation tribal farmer practicing traditional millet cultivation' },
+                { name: 'Lakshmi Naidu', village: 'Paderu', products: 'Spices, Tamarind', bio: 'Forest spice gatherer and organic turmeric farmer' },
+                { name: 'Sanya Bai', village: 'Chintapalli', products: 'Honey, Medicinal Herbs', bio: 'Trained in sustainable forest honey harvesting' },
+                { name: 'Mohan Rao', village: 'Maredumilli', products: 'Lentils, Millets', bio: 'Leads a collective of 25 tribal farming families' },
+              ].map((farmer, i) => (
+                <Link key={i} to="/farmers"
+                  className="group rounded-xl border border-border bg-off-white overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1">
+                  <div className="aspect-[1/1] overflow-hidden bg-green-100 flex items-center justify-center text-green-600/40 text-5xl">👨‍🌾</div>
+                  <div className="p-4">
+                    <h3 className="font-heading text-base font-bold text-ink group-hover:text-green-600 transition-colors">{farmer.name}</h3>
+                    <p className="text-xs text-muted mt-0.5">{farmer.village}</p>
+                    <p className="text-xs text-muted mt-1 line-clamp-2">{farmer.bio}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+          <div className="mt-10 text-center">
+            <Link to="/farmers"
+              className="inline-flex items-center gap-2 bg-green-600 text-white px-8 py-3 rounded-lg text-sm font-semibold hover:bg-green-700 transition-colors">
+              Meet All Our Farmers
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* 10. Shop by Category — pills */}
       <section className="py-14 lg:py-18 bg-off-white">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
           <div className="text-center mb-10">
@@ -351,7 +476,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 8. Newsletter */}
+      {/* 11. Newsletter */}
       <section className="py-14 lg:py-18 bg-white border-t border-border">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10 text-center">
           <h2 className="font-heading text-2xl sm:text-3xl font-bold text-ink">Sign Up To Get Updates</h2>
@@ -363,7 +488,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 9. Values strip */}
+      {/* 12. Values strip */}
       <section className="py-6 bg-off-white border-t border-border">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
           <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
